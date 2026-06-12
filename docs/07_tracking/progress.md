@@ -38,6 +38,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Added unit tests for x-ray inspection scoring, combo, safe tap penalty, missed danger, false clear, and clear bonus.
 - Added a two-branch item encyclopedia with Danger and Safe databases.
 - Added local item discovery persistence for correctly detected dangerous items and correctly cleared safe items.
+- Renamed the GitHub repository and local `origin` remote to `X-Ray-Scan`.
 - Verified:
   - `flutter doctor -v`
   - `flutter test`
@@ -51,7 +52,7 @@ This file tracks the current project state so future AI assistants and contribut
 ## Handoff Notes
 
 - Active branch: `codex/neon-arcade-visuals`.
-- Remote repository before GitHub rename: `https://github.com/thanhtaimrjoe/Tap-Sort-Rush.git`.
+- Remote repository: `https://github.com/thanhtaimrjoe/X-Ray-Scan.git`.
 - Current product/app name: `X-Ray Scan`, not the original color lane-sort prototype name.
 - Android package/application ID remains `com.auren.tapsortrush`.
 - Do not rename the package or add production AdMob IDs without a release-critical decision and changelog entry.

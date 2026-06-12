@@ -5,6 +5,34 @@
 
 ---
 
+## [2026-06-13 00:15] - Update GitHub remote after repo rename
+
+**Owner**: AI Assistant
+**Type**: Chore/Docs
+**Related US**: N/A
+**Impact Scope**: Docs, Release
+
+### Changes
+- Updated the local `origin` remote to the renamed GitHub repository.
+- Updated progress handoff notes to point to `https://github.com/thanhtaimrjoe/X-Ray-Scan.git`.
+
+### Implementation Details
+- File: `docs/07_tracking/progress.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: The product owner renamed the GitHub repository after the product rename.
+- Technical decision: Keep the active branch name unchanged and only update the repository remote URL.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked (`git ls-remote`, `git remote -v`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- Local workspace folder remains `C:\Users\hanak\Documents\Tap-Sort-Rush` for the current Codex session.
+
+---
+
 ## [2026-06-13 00:08] - Rename product to X-Ray Scan
 
 **Owner**: AI Assistant
