@@ -8,12 +8,12 @@ Android first.
 
 Planned:
 
-- Flutter stable.
+- Flutter stable 3.44.2.
 - Flame for the game loop and rendering.
 - google_mobile_ads for AdMob.
 - shared_preferences for local settings and high score.
 
-Flutter is not currently installed in PATH on this machine. App scaffolding is pending.
+Flutter is installed at `C:\Users\hanak\development\flutter`, and the initial Flutter project is scaffolded under `app/`.
 
 ## Proposed App Package
 
@@ -28,9 +28,6 @@ After Flutter setup:
 ```text
 app/
 ├── android/
-├── assets/
-│   ├── audio/
-│   └── images/
 ├── lib/
 │   ├── main.dart
 │   ├── game/
@@ -42,6 +39,7 @@ app/
 │   │   ├── ads_service.dart
 │   │   └── storage_service.dart
 │   └── config/
+├── web/
 └── test/
 ```
 
@@ -147,4 +145,3 @@ Do not commit:
 - `key.properties`
 - Production AdMob IDs if they are kept in local config.
 - Any API keys not intended for public client use.
-

@@ -41,5 +41,10 @@ Tap-Sort-Rush/
 
 ## Current Status
 
-Specification phase. Flutter is not currently available in PATH on this machine, so app scaffolding is pending.
+Flutter 3.44.2 is installed locally at `C:\Users\hanak\development\flutter`, and the initial Flutter project has been scaffolded under `app/`.
 
+Verified:
+
+- `flutter doctor -v`
+- `flutter test`
+- `flutter build apk --debug`

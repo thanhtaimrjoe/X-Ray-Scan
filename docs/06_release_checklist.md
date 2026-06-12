@@ -2,14 +2,17 @@
 
 ## Development
 
-- [ ] Flutter installed and available in PATH.
-- [ ] Flutter project created under `app/`.
-- [ ] Flame integrated.
+- [x] Flutter installed and available in PATH.
+- [x] Flutter project created under `app/`.
+- [x] Flame dependency added.
 - [ ] Core gameplay implemented.
 - [ ] Local high score implemented.
 - [ ] Sound toggle implemented.
+- [x] AdMob dependency added.
 - [ ] AdMob test ads integrated.
 - [ ] Unit tests added for game rules.
+- [x] Default Flutter smoke test passes.
+- [x] Debug APK build succeeds.
 - [ ] Manual playtest completed on Android device or emulator.
 
 ## Google Play Console
@@ -61,4 +64,3 @@
 - [ ] Closed testing completed if required by account type.
 - [ ] Production release submitted.
 - [ ] Review feedback tracked.
-

@@ -1,5 +1,42 @@
 # Changelog
 
+## [2026-06-12 11:58] - Flutter environment and app scaffold
+
+**Owner**: AI Assistant
+**Type**: Chore
+**Scope**: Android/Docs/Release
+
+### Changes
+- Installed Flutter stable 3.44.2 at `C:\Users\hanak\development\flutter`.
+- Added Flutter SDK `bin` directory to the user PATH.
+- Accepted Android SDK licenses through Flutter tooling.
+- Scaffolded the initial Flutter app under `app/` with package namespace `com.auren.tapsortrush`.
+- Added `flame`, `google_mobile_ads`, and `shared_preferences` dependencies.
+- Normalized Android namespace and application ID to `com.auren.tapsortrush`.
+- Set the Android display label to `Tap Sort Rush`.
+- Updated README, technical spec, and release checklist with verified setup status.
+
+### Details
+- File: `app/pubspec.yaml`
+- File: `app/android/`
+- File: `app/lib/main.dart`
+- File: `app/test/widget_test.dart`
+- File: `README.md`
+- File: `docs/05_technical_spec.md`
+- File: `docs/06_release_checklist.md`
+- Reason: Prepare the repository for Android mini game implementation and future AdMob integration.
+- Decision: Keep Android and web platforms in the Flutter scaffold; Android remains the release target.
+
+### Verification
+- [x] `flutter doctor -v`
+- [x] `flutter test`
+- [x] `flutter build apk --debug`
+
+### Notes
+- Flutter doctor still reports Visual Studio missing for Windows desktop development. This is not required for Android builds.
+
+---
+
 ## [2026-06-12 11:35] - Initial game repository specs
 
 **Owner**: AI Assistant
