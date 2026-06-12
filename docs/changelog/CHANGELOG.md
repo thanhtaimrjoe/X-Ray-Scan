@@ -5,6 +5,105 @@
 
 ---
 
+## [2026-06-12 12:48] - Neon arcade gameplay visuals
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-002, US-003
+**Impact Scope**: Gameplay, Docs, Test
+
+### Changes
+- Adopted a neon arcade visual direction for the MVP gameplay screen.
+- Reworked falling items into glowing energy cores with diamond highlights and motion trails.
+- Added a subtle moving grid background, stronger action-zone treatment, lane glyphs, and lane glow.
+- Added success bursts, wrong-sort bursts, miss flash feedback, and tap lane pulse effects.
+- Updated progress tracking and decision log for the new visual direction.
+
+### Implementation Details
+- File: `app/lib/game/tap_sort_game.dart`
+- File: `app/lib/main.dart`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Make the playable loop more visually appealing and easier to understand at a glance.
+- Technical decision: Use Canvas/Flame-rendered procedural effects instead of external art assets so the MVP stays lightweight and license-safe.
+
+### Tests
+- [x] Unit tests added/updated (`flutter test`; no new rule tests needed because gameplay rules did not change)
+- [ ] Manual playtest completed
+- [x] Error handling checked (`flutter analyze`, `flutter build apk --debug`, emulator install/launch with running PID and no fatal crash log)
+- [x] Policy/ad placement checked (no ad placement changes; no live ads or production IDs added)
+
+### Notes
+- Visual intensity and lane readability should be reviewed during manual playtesting on device.
+
+---
+
+## [2026-06-12 12:45] - Fix debug crash from missing AdMob app ID
+
+**Owner**: AI Assistant
+**Type**: Bugfix
+**Related US**: US-001
+**Impact Scope**: Android, Ads, Policy
+
+### Changes
+- Added the Google Mobile Ads test application ID to the Android manifest.
+- Fixed launch-time crash caused by `MobileAdsInitProvider` rejecting a missing AdMob app ID.
+
+### Implementation Details
+- File: `app/android/app/src/main/AndroidManifest.xml`
+- Reason: `google_mobile_ads` initializes a native provider before Flutter starts, and Android requires the AdMob application ID metadata to be present.
+- Technical decision: Use Google's sample/test AdMob app ID for development so no production ad ID or secret is committed.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked (`adb logcat` crash diagnosis; rebuilt and reinstalled debug APK; confirmed running PID with no fatal crash log)
+- [x] Policy/ad placement checked (test AdMob app ID only; no live ads or production IDs added)
+
+### Notes
+- This only unblocks app startup with the ads SDK dependency present; actual banner/interstitial/rewarded ad UI remains pending.
+
+---
+
+## [2026-06-12 12:30] - First playable gameplay loop
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-001, US-002, US-003, US-004, US-006
+**Impact Scope**: Gameplay, Android, Docs, Test, Policy
+
+### Changes
+- Replaced the default Flutter counter app with the Tap Sort Rush shell.
+- Added main menu, active gameplay, and game-over screens.
+- Added a Flame-powered falling-item playfield with four colored tap lanes.
+- Added score, combo, lives, game-over transition, and local high score persistence.
+- Added unit/widget tests for core game rules and menu high score display.
+- Updated release checklist and progress tracking for the first playable loop.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `app/lib/game/tap_sort_game.dart`
+- File: `app/lib/game/systems/tap_sort_rules.dart`
+- File: `app/lib/services/storage_service.dart`
+- File: `app/test/game/tap_sort_rules_test.dart`
+- File: `app/test/widget_test.dart`
+- File: `docs/06_release_checklist.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Satisfy the MVP loop for starting a game, sorting falling items, building combo, losing/retrying, and persisting high score.
+- Technical decision: Keep scoring, combo, lives, and game-over state in a pure Dart rules class so gameplay behavior can be unit tested separately from Flame rendering.
+
+### Tests
+- [x] Unit tests added/updated (`flutter test`)
+- [ ] Manual playtest completed
+- [x] Error handling checked (`flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no live ads added; gameplay screen has no ad placement; menu/game-over use placeholder banner areas only)
+
+### Notes
+- AdMob test ads, rewarded continue, pause, and sound toggle remain pending.
+- Gameplay timing and action-zone tuning should be checked on an Android device or emulator.
+
+---
+
 ## [2026-06-12 12:20] - Changelog Governance Alignment
 
 **Owner**: AI Assistant

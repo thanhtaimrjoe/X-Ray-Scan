@@ -5,12 +5,12 @@
 - [x] Flutter installed and available in PATH.
 - [x] Flutter project created under `app/`.
 - [x] Flame dependency added.
-- [ ] Core gameplay implemented.
-- [ ] Local high score implemented.
+- [x] Core gameplay implemented.
+- [x] Local high score implemented.
 - [ ] Sound toggle implemented.
 - [x] AdMob dependency added.
 - [ ] AdMob test ads integrated.
-- [ ] Unit tests added for game rules.
+- [x] Unit tests added for game rules.
 - [x] Default Flutter smoke test passes.
 - [x] Debug APK build succeeds.
 - [ ] Manual playtest completed on Android device or emulator.

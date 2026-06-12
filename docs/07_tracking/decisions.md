@@ -91,3 +91,26 @@ The game depends on fast tapping. Ads during active play or near tap lanes incre
 - No banner ads during active gameplay for MVP.
 - No interstitial on first launch or immediately after tapping Play.
 - Rewarded continues must be optional and limited to one per round.
+
+---
+
+## DEC-005 - Neon arcade MVP visual direction
+
+**Date**: 2026-06-12
+**Status**: Accepted
+**Owner**: AI Assistant
+**Scope**: Product, Gameplay, Art Direction
+
+### Decision
+
+Use a neon arcade visual direction for the MVP gameplay screen.
+
+### Reason
+
+The first playable loop was functional but too plain to attract casual players. A neon arcade style can be implemented with lightweight Flame/Canvas rendering, avoids external asset licensing risk, and gives immediate feedback through glow, trails, bursts, and lane pulses.
+
+### Consequences
+
+- MVP gameplay visuals should prioritize crisp energy-core items, neon lanes, visible action-zone feedback, and readable HUD/lane controls.
+- Future asset work can still move to a stronger theme such as juice bar or package sorter, but should be recorded as a new product/art decision.
+- Effects should stay performant on Android and must not obscure the primary tap lanes.

@@ -23,6 +23,12 @@ This file tracks the current project state so future AI assistants and contribut
   - `shared_preferences`
 - Set Android package/application ID to `com.auren.tapsortrush`.
 - Set Android display label to `Tap Sort Rush`.
+- Replaced the default Flutter counter app with the first playable Tap Sort Rush loop.
+- Added main menu, gameplay, and game-over screens.
+- Added four tap lanes, falling colored items, score, combo, lives, and local high score persistence.
+- Added unit tests for score, combo multiplier, life loss, and game-over rules.
+- Adopted a neon arcade MVP visual direction for the gameplay screen.
+- Added glow, trails, lane glyphs, tap pulse feedback, success bursts, miss flashes, and a subtle moving grid background.
 - Verified:
   - `flutter doctor -v`
   - `flutter test`
@@ -30,20 +36,20 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## In Progress
 
-- Build the first playable gameplay loop.
+- Tune the first playable gameplay loop and prepare ad integration.
 
 ## Next Steps
 
-1. Replace the default Flutter counter app with the Tap Sort Rush shell.
-2. Add the main menu and game-over screens.
-3. Implement basic endless gameplay with falling colored items and tap lanes.
-4. Add scoring, combo, lives, and high score persistence.
-5. Add game-rule unit tests.
-6. Integrate AdMob test ads after gameplay screens exist.
+1. Manual playtest the neon gameplay loop on an Android device or emulator.
+2. Tune spawn timing, fall speed, action-zone forgiveness, effects intensity, and scoring feedback.
+3. Add pause and sound toggle UI.
+4. Integrate AdMob test ads on menu and game-over screens.
+5. Add interstitial frequency and rewarded-continue rule tests before enabling those ad formats.
 
 ## Known Gaps
 
-- No playable game loop yet.
+- Gameplay is playable but needs device playtesting and tuning.
+- Banner areas are placeholders; AdMob test ads are not integrated yet.
 - No production AdMob IDs yet.
 - No release signing config yet.
 - No privacy policy URL yet.
