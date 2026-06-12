@@ -5,6 +5,34 @@
 
 ---
 
+## [2026-06-13 00:20] - Create renamed local workspace folder
+
+**Owner**: AI Assistant
+**Type**: Chore/Docs
+**Related US**: N/A
+**Impact Scope**: Docs, Release
+
+### Changes
+- Created the renamed local workspace folder `C:\Users\hanak\Documents\X-Ray-Scan` from the pushed repository.
+- Updated handoff notes so future local path references match the renamed repository folder.
+
+### Implementation Details
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: The product owner noticed the local folder still used the previous repository name after the GitHub repo rename.
+- Technical decision: Create a fresh local folder from the pushed GitHub repository because Windows locks the active Codex workspace folder during this session; keep the Android package/application ID unchanged.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked (`Test-Path`, `git status`, `git remote -v`, `git clone`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- No app code changed in this step.
+- The old locked workspace folder can be removed after this Codex session releases it.
+
+---
+
 ## [2026-06-13 00:15] - Update GitHub remote after repo rename
 
 **Owner**: AI Assistant
@@ -29,7 +57,7 @@
 - [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
 
 ### Notes
-- Local workspace folder remains `C:\Users\hanak\Documents\Tap-Sort-Rush` for the current Codex session.
+- Superseded by the later local workspace folder rename to `C:\Users\hanak\Documents\X-Ray-Scan`.
 
 ---
 

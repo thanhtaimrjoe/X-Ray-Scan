@@ -73,6 +73,8 @@ This file tracks the current project state so future AI assistants and contribut
 - ADB direct path on this machine: `C:\Users\hanak\AppData\Local\Android\Sdk\platform-tools\adb.exe`.
 - AVD name available on this machine: `TapSortRush_Test`.
 - Git recovery note: a previous agent renamed valid metadata to `.git-old` and left an invalid `.git` without `HEAD`/`config`; the valid metadata was restored, and the broken directory was preserved as `.git-broken-20260612-2344`.
+- Current renamed workspace path: `C:\Users\hanak\Documents\X-Ray-Scan`.
+- The old active Codex session folder may remain at `C:\Users\hanak\Documents\Tap-Sort-Rush` until the session releases its Windows file lock.
 - A temporary clone exists at `C:\Users\hanak\Documents\Tap-Sort-Rush-Temp`; it has no known unique changes beyond the pushed pause commit, but verify before deleting.
 - Next agent should install the latest debug APK to `TapSortRush_Test`, manually playtest pause/resume, sound toggle, scanner loop, and item database, then tune object readability/hitboxes/timing.
 
