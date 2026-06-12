@@ -1,8 +1,8 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-import 'game/systems/tap_sort_rules.dart';
-import 'game/tap_sort_game.dart';
+import 'game/systems/xray_inspector_rules.dart';
+import 'game/xray_inspector_game.dart';
 import 'services/storage_service.dart';
 
 void main() {
@@ -16,14 +16,14 @@ class TapSortRushApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tap Sort Rush',
+      title: 'X-Ray Inspector',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF38BDF8),
+          seedColor: const Color(0xFF38F6FF),
           brightness: Brightness.dark,
         ),
-        scaffoldBackgroundColor: const Color(0xFF111827),
+        scaffoldBackgroundColor: const Color(0xFF030912),
         useMaterial3: true,
       ),
       home: const AppShell(),
@@ -72,7 +72,7 @@ class _AppShellState extends State<AppShell> {
     });
   }
 
-  Future<void> _finishGame(TapSortSnapshot snapshot) async {
+  Future<void> _finishGame(XrayInspectorSnapshot snapshot) async {
     final storage = _storage;
     final newHighScore = snapshot.score > _highScore;
 
@@ -135,6 +135,12 @@ class MainMenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.displaySmall?.copyWith(
+      fontWeight: FontWeight.w900,
+      color: const Color(0xFFE5FEFF),
+      letterSpacing: 0,
+    );
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -142,24 +148,41 @@ class MainMenuScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Spacer(),
+              const SizedBox(height: 18),
               Text(
-                'Tap Sort Rush',
+                'X-Ray Inspector',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                style: titleStyle,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Best clearance: $highScore',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: const Color(0xFFB7EFF4),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 26),
+              const Expanded(child: _AssetHero()),
+              const SizedBox(height: 22),
+              FilledButton.icon(
+                onPressed: onPlay,
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: const Text('SCAN'),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(56),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
               const SizedBox(height: 18),
-              Text(
-                'High score: $highScore',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 34),
-              FilledButton(onPressed: onPlay, child: const Text('Play')),
-              const Spacer(),
               const _BannerPlaceholder(),
             ],
           ),
@@ -172,15 +195,15 @@ class MainMenuScreen extends StatelessWidget {
 class GameplayScreen extends StatefulWidget {
   const GameplayScreen({required this.onGameOver, super.key});
 
-  final ValueChanged<TapSortSnapshot> onGameOver;
+  final ValueChanged<XrayInspectorSnapshot> onGameOver;
 
   @override
   State<GameplayScreen> createState() => _GameplayScreenState();
 }
 
 class _GameplayScreenState extends State<GameplayScreen> {
-  late final TapSortGame _game;
-  TapSortSnapshot _snapshot = const TapSortSnapshot(
+  late final XrayInspectorGame _game;
+  XrayInspectorSnapshot _snapshot = const XrayInspectorSnapshot(
     score: 0,
     combo: 0,
     lives: 3,
@@ -190,7 +213,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
   @override
   void initState() {
     super.initState();
-    _game = TapSortGame(
+    _game = XrayInspectorGame(
       onSnapshotChanged: (snapshot) {
         if (mounted) {
           setState(() => _snapshot = snapshot);
@@ -205,7 +228,13 @@ class _GameplayScreenState extends State<GameplayScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(child: GameWidget(game: _game)),
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapDown: (details) => _game.tapAt(details.localPosition),
+              child: GameWidget(game: _game),
+            ),
+          ),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(14),
@@ -217,20 +246,24 @@ class _GameplayScreenState extends State<GameplayScreen> {
             child: SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                child: Row(
-                  children: [
-                    for (final lane in SortLane.values)
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: _LaneButton(
-                            lane: lane,
-                            onPressed: () => _game.tapLane(lane),
-                          ),
-                        ),
-                      ),
-                  ],
+                padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
+                child: FilledButton.icon(
+                  onPressed: _game.clearBag,
+                  icon: const Icon(Icons.check_circle_outline_rounded),
+                  label: const Text('CLEAR'),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(54),
+                    backgroundColor: const Color(0xFF0F766E),
+                    foregroundColor: Colors.white,
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -268,11 +301,12 @@ class GameOverScreen extends StatelessWidget {
             children: [
               const Spacer(),
               Text(
-                'Game Over',
+                'Inspection Closed',
                 textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w800),
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                ),
               ),
               const SizedBox(height: 22),
               Text(
@@ -283,15 +317,23 @@ class GameOverScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 isNewHighScore
-                    ? 'New high score: $highScore'
-                    : 'High score: $highScore',
+                    ? 'New best: $highScore'
+                    : 'Best clearance: $highScore',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 32),
-              FilledButton(onPressed: onRetry, child: const Text('Retry')),
+              FilledButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.replay_rounded),
+                label: const Text('RETRY'),
+              ),
               const SizedBox(height: 12),
-              OutlinedButton(onPressed: onMenu, child: const Text('Menu')),
+              OutlinedButton.icon(
+                onPressed: onMenu,
+                icon: const Icon(Icons.home_rounded),
+                label: const Text('MENU'),
+              ),
               const Spacer(),
               const _BannerPlaceholder(),
             ],
@@ -302,31 +344,38 @@ class GameOverScreen extends StatelessWidget {
   }
 }
 
-class _Hud extends StatelessWidget {
-  const _Hud({required this.snapshot});
-
-  final TapSortSnapshot snapshot;
+class _AssetHero extends StatelessWidget {
+  const _AssetHero();
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-      fontWeight: FontWeight.w700,
-      color: Colors.white,
-    );
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.28),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0x6638F6FF)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            Text('Score ${snapshot.score}', style: textStyle),
-            Text('Combo ${snapshot.combo}', style: textStyle),
-            Text('Lives ${snapshot.lives}', style: textStyle),
+            Image.asset(
+              'assets/images/xray_asset_sheet_approved.png',
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    const Color(0xFF030912).withValues(alpha: 0.22),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -334,34 +383,49 @@ class _Hud extends StatelessWidget {
   }
 }
 
-class _LaneButton extends StatelessWidget {
-  const _LaneButton({required this.lane, required this.onPressed});
+class _Hud extends StatelessWidget {
+  const _Hud({required this.snapshot});
 
-  final SortLane lane;
-  final VoidCallback onPressed;
+  final XrayInspectorSnapshot snapshot;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 58,
-      child: FilledButton(
-        style: FilledButton.styleFrom(
-          backgroundColor: laneColor(lane),
-          foregroundColor: lane == SortLane.yellow
-              ? Colors.black
-              : Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: EdgeInsets.zero,
-        ),
-        onPressed: onPressed,
-        child: Text(
-          '${laneGlyph(lane)}  ${laneLabel(lane)}',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w800),
+    final textStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      fontWeight: FontWeight.w800,
+      color: Colors.white,
+      letterSpacing: 0,
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.34),
+        border: Border.all(color: const Color(0x5538F6FF)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Score ${snapshot.score}', style: textStyle),
+            Text('Combo ${snapshot.combo}', style: textStyle),
+            Text('Lives ${snapshot.lives}', style: textStyle),
+            Text(_eventLabel(snapshot.lastEvent), style: textStyle),
+          ],
         ),
       ),
     );
+  }
+
+  String _eventLabel(XrayFeedbackEvent event) {
+    return switch (event) {
+      XrayFeedbackEvent.none => 'READY',
+      XrayFeedbackEvent.dangerFound => 'FOUND',
+      XrayFeedbackEvent.safeTapped => 'SAFE -5',
+      XrayFeedbackEvent.safeBagCleared => 'CLEAR +5',
+      XrayFeedbackEvent.dangerMissed => 'MISS',
+      XrayFeedbackEvent.falseClear => 'HOLD',
+    };
   }
 }
 

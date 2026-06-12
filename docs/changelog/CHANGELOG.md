@@ -5,6 +5,48 @@
 
 ---
 
+## [2026-06-12 14:45] - Rebuild app as X-Ray Inspector MVP
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-001, US-003, US-004, US-006, US-008, US-009
+**Impact Scope**: Gameplay, Android, Docs, Assets, Test, Policy
+
+### Changes
+- Replaced the lane-sort gameplay loop with an X-Ray Inspector suitcase scanning loop.
+- Added tappable dangerous and safe x-ray object silhouettes based on the approved asset direction.
+- Added direct scanner taps, safe-item score penalty, combo reset, missed-danger life loss, false-clear punishment, and safe-bag clear bonus.
+- Updated the menu, HUD, gameplay screen, and game-over copy for the x-ray inspector direction.
+- Added the approved x-ray asset sheet to Flutter assets for menu art direction.
+- Replaced lane-sort unit tests with X-Ray Inspector rule tests.
+- Updated README, technical spec, and progress tracking for the implemented pivot.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/lib/game/systems/xray_inspector_rules.dart`
+- File: `app/assets/images/xray_asset_sheet_approved.png`
+- File: `app/pubspec.yaml`
+- File: `app/test/game/xray_inspector_rules_test.dart`
+- File: `app/test/widget_test.dart`
+- File: `README.md`
+- File: `docs/05_technical_spec.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Implement the product-owner-approved Version B pivot using the approved x-ray visual benchmark.
+- Technical decision: Use procedural Canvas/Flame x-ray silhouettes for the first rebuilt MVP and keep the approved PNG as app/menu art direction until production individual sprites are extracted or redrawn.
+
+### Tests
+- [x] Unit tests added/updated (`flutter test`)
+- [ ] Manual playtest completed (no emulator/device attached to ADB during this pass)
+- [x] Error handling checked (`flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no live ads, production IDs, package-name changes, or gameplay ad placement added)
+
+### Notes
+- Object scale, hit radius, suitcase speed, and clear timing still need device tuning.
+- `adb` is available through the Android SDK path, but no running emulator/device was attached when checked.
+
+---
+
 ## [2026-06-12 14:30] - Approve X-Ray Inspector visual direction
 
 **Owner**: AI Assistant

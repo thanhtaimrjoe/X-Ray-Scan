@@ -1,6 +1,6 @@
 # Tap Sort Rush
 
-Tap Sort Rush is a small Android-first 2D reflex game designed for short play sessions and Google AdMob monetization.
+Tap Sort Rush is a small Android-first 2D reflex game designed for short play sessions and Google AdMob monetization. The current playable direction is **X-Ray Inspector**, an x-ray suitcase inspection game.
 
 ## Product Goal
 
@@ -8,11 +8,11 @@ Build a lightweight casual game that is easy to publish, easy to replay, and saf
 
 ## Core Loop
 
-1. Colored items fall from the top of the screen.
-2. The player taps lanes or swipes items into the matching color lane.
-3. Correct matches increase score and combo.
-4. Misses reduce lives.
-5. Speed increases over time until game over.
+1. Suitcases pass through an x-ray scanner.
+2. The player taps hidden dangerous objects inside the suitcase.
+3. Tapping safe objects applies a score penalty and resets combo.
+4. Clearing a safe suitcase gives a small bonus.
+5. Missed dangerous objects reduce lives until game over.
 
 ## Planned Tech Stack
 
@@ -50,4 +50,5 @@ Verified:
 
 - `flutter doctor -v`
 - `flutter test`
+- `flutter analyze`
 - `flutter build apk --debug`

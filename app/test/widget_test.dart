@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tap_sort_rush/main.dart';
 
 void main() {
-  testWidgets('main menu shows title, play action, and high score', (
+  testWidgets('main menu shows title, scan action, and high score', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({'high_score': 120});
@@ -11,8 +11,8 @@ void main() {
     await tester.pumpWidget(const TapSortRushApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Tap Sort Rush'), findsOneWidget);
-    expect(find.text('Play'), findsOneWidget);
-    expect(find.text('High score: 120'), findsOneWidget);
+    expect(find.text('X-Ray Inspector'), findsOneWidget);
+    expect(find.text('SCAN'), findsOneWidget);
+    expect(find.text('Best clearance: 120'), findsOneWidget);
   });
 }

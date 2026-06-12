@@ -32,28 +32,33 @@ This file tracks the current project state so future AI assistants and contribut
 - Researched the casual mini-game direction and selected the X-Ray Inspector pivot over the lane-sort concept.
 - Created the Figma visual bible for the x-ray scanner direction.
 - Approved the x-ray object asset sheet as the visual benchmark and saved it at `docs/assets/xray_asset_sheet_approved.png`.
+- Rebuilt the playable Flutter app around the X-Ray Inspector loop.
+- Added x-ray suitcase gameplay with tappable dangerous/safe objects, safe tap score penalties, missed danger life loss, false-clear punishment, clear bonus, score, combo, lives, and high score persistence.
+- Added the approved x-ray asset sheet to the app menu art direction.
+- Added unit tests for X-Ray Inspector scoring, combo, safe tap penalty, missed danger, false clear, and clear bonus.
 - Verified:
   - `flutter doctor -v`
   - `flutter test`
+  - `flutter analyze`
   - `flutter build apk --debug`
 
 ## In Progress
 
-- Define the X-Ray Inspector MVP gameplay spec before changing code.
+- Manual playtest the X-Ray Inspector loop on an Android device or emulator.
 
 ## Next Steps
 
-1. Update implementation plan for the X-Ray Inspector pivot.
-2. Replace lane-sort rules with x-ray bag inspection rules: danger tap, safe tap penalty, missed danger life loss, clear safe bag.
-3. Implement scanner screen using the approved asset sheet as art direction.
-4. Add or update unit tests for safe-tap penalty, combo reset, missed danger life loss, and clear-bag scoring.
-5. Run `flutter test`, `flutter analyze`, and a debug APK build after gameplay code changes.
+1. Launch the debug APK on an emulator/device and tune object scale, suitcase speed, hit radius, and clear timing.
+2. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
+3. Add pause and sound toggle UI.
+4. Integrate AdMob test ads on menu and game-over screens.
+5. Add interstitial frequency and rewarded-continue rule tests before enabling those ad formats.
 
 ## Known Gaps
 
-- Current code still implements the lane-sort prototype, not the approved X-Ray Inspector pivot.
 - X-ray objects need production-ready in-game assets extracted or redrawn from the approved visual benchmark.
 - Gameplay will need device playtesting and tuning after the pivot is implemented.
+- No Android device/emulator was attached during the rebuild pass, so install/launch smoke testing is still pending.
 - Banner areas are placeholders; AdMob test ads are not integrated yet.
 - No production AdMob IDs yet.
 - No release signing config yet.
