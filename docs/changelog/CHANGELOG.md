@@ -5,6 +5,43 @@
 
 ---
 
+## [2026-06-12 14:30] - Approve X-Ray Inspector visual direction
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-008, US-009
+**Impact Scope**: Docs, Gameplay, Assets
+
+### Changes
+- Recorded the approved pivot from lane sorting toward an X-Ray Inspector suitcase inspection game.
+- Added user stories for x-ray bag inspection and safe-item tap penalties.
+- Updated game concept and game design notes with the danger tap, safe tap penalty, missed danger life loss, and clear safe bag loop.
+- Added a durable decision for the X-Ray Inspector direction.
+- Saved the approved x-ray object asset sheet at `docs/assets/xray_asset_sheet_approved.png`.
+- Updated progress next steps to focus on the x-ray inspection MVP.
+
+### Implementation Details
+- File: `docs/01_game_concept.md`
+- File: `docs/02_user_stories.md`
+- File: `docs/03_game_design.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- File: `docs/assets/xray_asset_sheet_approved.png`
+- Reason: The product owner approved the Version B x-ray inspector concept and the generated x-ray object visual benchmark.
+- Technical decision: Keep the Android package name unchanged while treating X-Ray Inspector as the next product direction.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked (documentation and asset-only change)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- Current Flutter code still implements the lane-sort prototype and must be updated in a later gameplay implementation pass.
+- Figma visual bible: `https://www.figma.com/design/oKUWVtHFIJPNJ2n5vJsBU7`
+
+---
+
 ## [2026-06-12 12:48] - Neon arcade gameplay visuals
 
 **Owner**: AI Assistant

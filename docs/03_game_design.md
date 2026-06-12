@@ -4,43 +4,43 @@
 
 Endless score attack.
 
+## Approved Pivot: X-Ray Inspector
+
+The next gameplay direction replaces color-lane sorting with an x-ray suitcase inspection loop. The existing lane-sort MVP remains a prototype baseline, but new design work should prioritize the inspection mechanic.
+
 ## Board Layout
 
 - Portrait orientation.
-- Top area: spawn zone.
-- Center area: falling item field.
-- Bottom area: three or four color lanes.
+- Top area: HUD with score, combo, lives, and pause.
+- Center area: x-ray scanner field showing suitcase contents.
+- Bottom area: explicit action buttons such as Clear/Hold when needed.
 - HUD: score, combo, lives, pause.
 
 ## Controls
 
-MVP control model:
+Approved pivot control model:
 
-- Player taps a target lane when an item reaches the action zone.
-- The active falling item is sorted into the tapped lane.
+- Player taps dangerous objects inside the x-ray suitcase.
+- Player avoids tapping safe objects.
+- Player can clear a suitcase when no dangerous object remains.
 
 Alternative for later:
 
-- Drag or swipe individual items into lanes.
+- Drag, swipe, or hold-to-inspect individual objects if tap-only inspection is not expressive enough.
 
-The tap-lane model is preferred for MVP because it is simpler, faster to tune, and easier to use on small screens.
+The tap-inspection model is preferred for the next MVP because it is more distinct from rhythm/tile games and creates a stronger visual hook.
 
 ## Colors
 
-Use high-contrast, colorblind-friendlier combinations where possible. Each color should also have a shape or icon marker in later versions if accessibility issues appear.
-
-Initial colors:
-
-- Blue
-- Green
-- Yellow
-- Red
+Use a monochrome cyan/teal x-ray scanner palette with danger/safe readability driven by object shape, silhouette, glow, and feedback states rather than text labels or color alone.
 
 ## Scoring
 
 Base score:
 
-- Correct sort: 10 points.
+- Dangerous object tapped: 10 points.
+- Safe object tapped: -5 points and combo reset.
+- Safe suitcase cleared: small bonus after tuning.
 - Combo multiplier starts at 1.0.
 - Every 10 combo increases multiplier by 0.25.
 
@@ -53,8 +53,8 @@ Example:
 ## Lives and Mistakes
 
 - Start with 3 lives.
-- Wrong lane: -1 life and combo reset.
-- Missed item: -1 life and combo reset.
+- Missed dangerous object: -1 life and combo reset.
+- Safe object tapped: score penalty and combo reset.
 - Game over at 0 lives.
 
 ## Difficulty Curve
@@ -108,7 +108,14 @@ MVP tuning:
 
 ## Visual Style
 
-Simple, crisp 2D shapes. Prioritize clarity and frame rate over detailed art.
+Arcade x-ray scanner visuals with realistic but readable object silhouettes. Approved visual benchmark is stored at `docs/assets/xray_asset_sheet_approved.png` and in the Figma file `X-Ray Sort Rush Visual Bible`.
+
+Prioritize:
+
+- Recognizable real-world objects.
+- Clear danger/safe detection by object form.
+- Strong scanner glow and feedback.
+- Mobile readability and frame rate.
 
 ## Audio
 
@@ -119,4 +126,3 @@ MVP can ship with minimal audio:
 - New high score sound.
 
 Audio may be deferred if asset sourcing slows release.
-

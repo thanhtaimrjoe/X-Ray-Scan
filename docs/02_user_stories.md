@@ -75,3 +75,25 @@ As a player, I want to toggle sound so that I can play quietly.
 - Preference persists locally.
 - Muted state applies to future sessions.
 
+## US-008 - Inspect X-Ray Bags
+
+As a player, I want to scan suitcase contents and identify dangerous items so that each round feels like a quick visual challenge.
+
+### Acceptance Criteria
+
+- Each suitcase shows recognizable x-ray object silhouettes.
+- Dangerous and safe objects are distinguishable by shape, not hidden text or color alone.
+- Tapping a dangerous object increases score and combo.
+- Letting a dangerous object pass reduces lives and resets combo.
+- The scanner view remains readable on a typical Android phone screen.
+
+## US-009 - Penalize Safe-Item Taps
+
+As a player, I want mistakes to matter when I tap safe objects so that the game rewards careful inspection instead of random tapping.
+
+### Acceptance Criteria
+
+- Tapping a safe object applies a score penalty.
+- Tapping a safe object resets combo.
+- Wrong-tap feedback is visible without blocking the next action.
+- The score penalty cannot reduce game clarity or trigger ads.

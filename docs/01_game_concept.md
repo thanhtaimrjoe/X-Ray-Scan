@@ -4,9 +4,13 @@
 
 Tap Sort Rush
 
+## Approved Pivot Direction
+
+The approved next product direction is an x-ray inspection reflex game, internally called **X-Ray Inspector**. The repository and Android package can remain Tap Sort Rush / `com.auren.tapsortrush` until a release-critical naming decision is made.
+
 ## Elevator Pitch
 
-A fast, colorful sorting reflex game where players route falling items into matching lanes, build combos, and chase high scores in short sessions.
+A fast x-ray inspection game where players scan moving suitcases, tap hidden dangerous objects, avoid tapping safe items, and chase high scores in short sessions.
 
 ## Target Audience
 
@@ -20,7 +24,7 @@ Create a simple game that can be completed, polished, monetized with AdMob, and 
 
 ## Core Gameplay
 
-Items fall from the top of the screen in one of several colors. The player must send each item to the matching lane before it reaches the bottom. Correct actions increase score and combo. Mistakes cost lives. The game ends when lives reach zero.
+Suitcases move through an x-ray scanner. Each suitcase contains recognizable real-world object silhouettes. The player taps dangerous objects before the suitcase clears the scanner. Tapping a dangerous object increases score and combo. Tapping a safe object applies a score penalty and breaks combo. Letting a dangerous object pass costs a life. The game ends when lives reach zero.
 
 ## Session Length
 
@@ -40,6 +44,8 @@ Ads should appear at natural breaks:
 - Single endless game mode.
 - Score, combo, lives, high score.
 - Game over screen.
+- X-ray suitcase inspection screen.
+- Dangerous and safe object sets using readable real-world silhouettes.
 - Basic sound toggles.
 - Local high score.
 - AdMob test ads.
@@ -53,4 +59,3 @@ Ads should appear at natural breaks:
 - In-app purchases.
 - Complex character progression.
 - Child-directed app experience.
-

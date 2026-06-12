@@ -114,3 +114,27 @@ The first playable loop was functional but too plain to attract casual players. 
 - MVP gameplay visuals should prioritize crisp energy-core items, neon lanes, visible action-zone feedback, and readable HUD/lane controls.
 - Future asset work can still move to a stronger theme such as juice bar or package sorter, but should be recorded as a new product/art decision.
 - Effects should stay performant on Android and must not obscure the primary tap lanes.
+
+---
+
+## DEC-006 - Pivot to X-Ray Inspector direction
+
+**Date**: 2026-06-12
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Product, Gameplay, Art Direction
+
+### Decision
+
+Move the next MVP concept toward an x-ray suitcase inspection game where players tap dangerous objects, avoid safe objects, and receive a score penalty plus combo reset for tapping safe items.
+
+### Reason
+
+The lane-sort prototype is playable, but it risks feeling too close to existing tile/reflex games. The x-ray inspector concept creates a clearer market hook, supports more distinctive visual assets, and makes object recognition the core skill instead of color matching.
+
+### Consequences
+
+- Existing lane-sort code remains a prototype baseline until the pivot is implemented.
+- Future gameplay specs should prioritize x-ray suitcase inspection, safe/danger object sets, wrong-tap penalties, and scanner feedback.
+- Approved visual benchmark is stored in `docs/assets/xray_asset_sheet_approved.png` and in the Figma visual bible.
+- Package name `com.auren.tapsortrush` remains unchanged unless a later release-critical naming decision is made.
