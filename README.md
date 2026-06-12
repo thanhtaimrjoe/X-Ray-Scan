@@ -33,6 +33,9 @@ Tap-Sort-Rush/
 │   ├── 04_monetization_ads.md
 │   ├── 05_technical_spec.md
 │   ├── 06_release_checklist.md
+│   ├── 07_tracking/
+│   │   ├── decisions.md
+│   │   └── progress.md
 │   └── changelog/CHANGELOG.md
 ├── app/
 │   └── Flutter project, created after Flutter is installed
