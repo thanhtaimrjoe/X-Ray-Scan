@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tap_sort_rush/main.dart';
+import 'package:xray_scan/main.dart';
 
 void main() {
   testWidgets('main menu shows title, scan action, and high score', (
@@ -8,10 +8,10 @@ void main() {
   ) async {
     SharedPreferences.setMockInitialValues({'high_score': 120});
 
-    await tester.pumpWidget(const TapSortRushApp());
+    await tester.pumpWidget(const XrayScanApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('X-Ray Inspector'), findsOneWidget);
+    expect(find.text('X-Ray Scan'), findsOneWidget);
     expect(find.text('SCAN'), findsOneWidget);
     expect(find.text('ITEM DATABASE'), findsOneWidget);
     expect(find.text('Best clearance: 120'), findsOneWidget);
@@ -20,7 +20,7 @@ void main() {
   testWidgets('item database opens danger and safe groups', (tester) async {
     SharedPreferences.setMockInitialValues({});
 
-    await tester.pumpWidget(const TapSortRushApp());
+    await tester.pumpWidget(const XrayScanApp());
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('ITEM DATABASE'));

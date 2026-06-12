@@ -6,13 +6,13 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Current Phase
 
-**Phase**: Concept pivot and visual direction
+**Phase**: X-Ray Scan playable MVP
 **Status**: In progress
-**Last updated**: 2026-06-12
+**Last updated**: 2026-06-13
 
 ## Completed
 
-- Created the Tap Sort Rush repository.
+- Created the original repository before the X-Ray Scan product rename.
 - Added product specs, user stories, game design, monetization notes, technical spec, and release checklist.
 - Installed Flutter stable 3.44.2 at `C:\Users\hanak\development\flutter`.
 - Accepted Android SDK licenses.
@@ -22,20 +22,20 @@ This file tracks the current project state so future AI assistants and contribut
   - `google_mobile_ads`
   - `shared_preferences`
 - Set Android package/application ID to `com.auren.tapsortrush`.
-- Set Android display label to `Tap Sort Rush`.
-- Replaced the default Flutter counter app with the first playable Tap Sort Rush loop.
+- Set Android display label to `X-Ray Scan`.
+- Replaced the default Flutter counter app with the first playable lane-sort prototype loop.
 - Added main menu, gameplay, and game-over screens.
 - Added four tap lanes, falling colored items, score, combo, lives, and local high score persistence.
 - Added unit tests for score, combo multiplier, life loss, and game-over rules.
 - Adopted a neon arcade MVP visual direction for the gameplay screen.
 - Added glow, trails, lane glyphs, tap pulse feedback, success bursts, miss flashes, and a subtle moving grid background.
-- Researched the casual mini-game direction and selected the X-Ray Inspector pivot over the lane-sort concept.
+- Researched the casual mini-game direction and selected the x-ray inspection pivot over the lane-sort concept.
 - Created the Figma visual bible for the x-ray scanner direction.
 - Approved the x-ray object asset sheet as the visual benchmark and saved it at `docs/assets/xray_asset_sheet_approved.png`.
-- Rebuilt the playable Flutter app around the X-Ray Inspector loop.
+- Rebuilt the playable Flutter app around the x-ray suitcase inspection loop.
 - Added x-ray suitcase gameplay with tappable dangerous/safe objects, safe tap score penalties, missed danger life loss, false-clear punishment, clear bonus, score, combo, lives, and high score persistence.
 - Added the approved x-ray asset sheet to the app menu art direction.
-- Added unit tests for X-Ray Inspector scoring, combo, safe tap penalty, missed danger, false clear, and clear bonus.
+- Added unit tests for x-ray inspection scoring, combo, safe tap penalty, missed danger, false clear, and clear bonus.
 - Added a two-branch item encyclopedia with Danger and Safe databases.
 - Added local item discovery persistence for correctly detected dangerous items and correctly cleared safe items.
 - Verified:
@@ -46,13 +46,13 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## In Progress
 
-- Manual playtest the X-Ray Inspector loop on an Android device or emulator.
+- Manual playtest the X-Ray Scan loop on an Android device or emulator.
 
 ## Handoff Notes
 
 - Active branch: `codex/neon-arcade-visuals`.
-- Remote repository: `https://github.com/thanhtaimrjoe/Tap-Sort-Rush.git`.
-- Current playable direction: `X-Ray Inspector`, not the original color lane-sort prototype.
+- Remote repository before GitHub rename: `https://github.com/thanhtaimrjoe/Tap-Sort-Rush.git`.
+- Current product/app name: `X-Ray Scan`, not the original color lane-sort prototype name.
 - Android package/application ID remains `com.auren.tapsortrush`.
 - Do not rename the package or add production AdMob IDs without a release-critical decision and changelog entry.
 - Approved visual benchmark:
@@ -79,7 +79,7 @@ This file tracks the current project state so future AI assistants and contribut
 
 1. Launch the debug APK on an emulator/device and tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability.
 2. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
-3. Add pause and sound toggle UI.
+3. Update stale lane-sort language in user stories and difficulty tuning docs so all specs match the X-Ray Scan loop.
 4. Integrate AdMob test ads on menu and game-over screens.
 5. Add interstitial frequency and rewarded-continue rule tests before enabling those ad formats.
 

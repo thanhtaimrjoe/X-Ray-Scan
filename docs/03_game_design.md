@@ -4,7 +4,7 @@
 
 Endless score attack.
 
-## Approved Pivot: X-Ray Inspector
+## Approved Pivot: X-Ray Scan
 
 The next gameplay direction replaces color-lane sorting with an x-ray suitcase inspection loop. The existing lane-sort MVP remains a prototype baseline, but new design work should prioritize the inspection mechanic.
 
@@ -127,7 +127,7 @@ Unlock rules:
 
 ## Visual Style
 
-Arcade x-ray scanner visuals with realistic but readable object silhouettes. Approved visual benchmark is stored at `docs/assets/xray_asset_sheet_approved.png` and in the Figma file `X-Ray Sort Rush Visual Bible`.
+Arcade x-ray scanner visuals with realistic but readable object silhouettes. Approved visual benchmark is stored at `docs/assets/xray_asset_sheet_approved.png` and in the Figma visual bible.
 
 Prioritize:
 

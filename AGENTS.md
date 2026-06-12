@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - AI Development Guidelines
 
-**Project**: Tap Sort Rush
+**Project**: X-Ray Scan
 **Created**: 2026-06-12
 **Purpose**: Development rules for AI assistants and future contributors
 
@@ -8,7 +8,7 @@
 
 ## Project Overview
 
-Tap Sort Rush is an Android-first casual mini game for Google Play. The product goal is to build a simple, replayable 2D reflex game that can be monetized with Google AdMob without positioning the app as child-directed.
+X-Ray Scan is an Android-first casual mini game for Google Play. The product goal is to build a simple, replayable 2D x-ray inspection game that can be monetized with Google AdMob without positioning the app as child-directed.
 
 ### Project Roles
 
@@ -225,7 +225,7 @@ Before implementation, read the relevant documents below. For gameplay, ads, rel
 ## Project Structure
 
 ```text
-Tap-Sort-Rush/
+X-Ray-Scan/
 â”œâ”€â”€ README.md
 â”œâ”€â”€ AGENTS.md
 â”œâ”€â”€ app/

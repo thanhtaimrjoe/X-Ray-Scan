@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="Tap Sort Rush"
+        android:label="X-Ray Scan"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <meta-data

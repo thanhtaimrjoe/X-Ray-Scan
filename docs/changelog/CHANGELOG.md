@@ -1,7 +1,51 @@
 # Changelog
 
-**Project**: Tap Sort Rush
+**Project**: X-Ray Scan
 **Purpose**: Development change history for AI assistants and future contributors
+
+---
+
+## [2026-06-13 00:08] - Rename product to X-Ray Scan
+
+**Owner**: AI Assistant
+**Type**: Chore/Docs
+**Related US**: N/A
+**Impact Scope**: Android, Docs, Release, Test
+
+### Changes
+- Renamed the product/app-facing name from Tap Sort Rush / X-Ray Inspector to X-Ray Scan.
+- Renamed the Flutter package from `tap_sort_rush` to `xray_scan` and updated test imports.
+- Updated Android display label, web metadata, README, concept, design, technical spec, release checklist, decision log, and progress tracking.
+- Recorded the durable product naming decision while preserving the Android package/application ID.
+
+### Implementation Details
+- File: `README.md`
+- File: `AGENTS.md`
+- File: `docs/01_game_concept.md`
+- File: `docs/03_game_design.md`
+- File: `docs/05_technical_spec.md`
+- File: `docs/06_release_checklist.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- File: `app/pubspec.yaml`
+- File: `app/lib/main.dart`
+- File: `app/android/app/src/main/AndroidManifest.xml`
+- File: `app/test/widget_test.dart`
+- File: `app/test/game/xray_inspector_rules_test.dart`
+- File: `app/test/services/storage_service_test.dart`
+- File: `app/web/index.html`
+- File: `app/web/manifest.json`
+- Reason: The product owner wanted a clearer repo/app name after the x-ray inspection pivot.
+- Technical decision: Keep `com.auren.tapsortrush` unchanged because Android package changes are release-critical.
+
+### Tests
+- [x] Unit tests added/updated (imports and widget expectations updated)
+- [ ] Manual playtest completed
+- [x] Error handling checked (`flutter test`, `flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- GitHub repository rename is a separate step that depends on available repository permissions.
 
 ---
 

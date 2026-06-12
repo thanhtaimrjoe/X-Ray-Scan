@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tap_sort_rush/game/systems/xray_inspector_rules.dart';
-import 'package:tap_sort_rush/services/storage_service.dart';
+import 'package:xray_scan/game/systems/xray_inspector_rules.dart';
+import 'package:xray_scan/services/storage_service.dart';
 
 void main() {
   group('StorageService x-ray discoveries', () {

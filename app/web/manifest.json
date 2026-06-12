@@ -1,6 +1,6 @@
 {
-    "name": "tap_sort_rush",
-    "short_name": "tap_sort_rush",
+    "name": "X-Ray Scan",
+    "short_name": "X-Ray Scan",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

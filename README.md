@@ -1,6 +1,6 @@
-# Tap Sort Rush
+# X-Ray Scan
 
-Tap Sort Rush is a small Android-first 2D reflex game designed for short play sessions and Google AdMob monetization. The current playable direction is **X-Ray Inspector**, an x-ray suitcase inspection game.
+X-Ray Scan is a small Android-first 2D reflex game designed for short play sessions and Google AdMob monetization. Players scan x-ray suitcases, spot dangerous objects, avoid safe items, and chase high scores.
 
 ## Product Goal
 
@@ -25,7 +25,7 @@ Build a lightweight casual game that is easy to publish, easy to replay, and saf
 ## Repository Structure
 
 ```text
-Tap-Sort-Rush/
+X-Ray-Scan/
 ├── docs/
 │   ├── 01_game_concept.md
 │   ├── 02_user_stories.md
@@ -44,7 +44,7 @@ Tap-Sort-Rush/
 
 ## Current Status
 
-Flutter 3.44.2 is installed locally at `C:\Users\hanak\development\flutter`, and the initial Flutter project has been scaffolded under `app/`.
+Flutter 3.44.2 is installed locally at `C:\Users\hanak\development\flutter`, and the Flutter project is scaffolded under `app/`.
 
 Verified:
 

@@ -1,6 +1,6 @@
 # Decision Log
 
-This file records durable product, technical, monetization, and release decisions for Tap Sort Rush.
+This file records durable product, technical, monetization, and release decisions for X-Ray Scan.
 
 ---
 
@@ -58,7 +58,7 @@ The package name becomes effectively permanent after the first Google Play uploa
 
 ### Decision
 
-Do not design, market, or declare Tap Sort Rush as child-directed for MVP.
+Do not design, market, or declare X-Ray Scan as child-directed for MVP.
 
 ### Reason
 
@@ -117,7 +117,7 @@ The first playable loop was functional but too plain to attract casual players. 
 
 ---
 
-## DEC-006 - Pivot to X-Ray Inspector direction
+## DEC-006 - Pivot to x-ray inspection direction
 
 **Date**: 2026-06-12
 **Status**: Accepted
@@ -163,3 +163,26 @@ The encyclopedia gives players a collection goal beyond high score and makes fut
 - Danger items unlock only when correctly tapped.
 - Safe items unlock only when the player correctly clears a suitcase containing them.
 - Future item additions should update both the gameplay object pool and encyclopedia metadata.
+
+---
+
+## DEC-008 - Product name X-Ray Scan
+
+**Date**: 2026-06-13
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Product, Docs, Android, Release
+
+### Decision
+
+Use **X-Ray Scan** as the product, app display, and repo-facing name for the x-ray inspection game.
+
+### Reason
+
+The previous names split the project between the original lane-sort prototype and an internal x-ray inspection pivot label. X-Ray Scan is shorter, easier to understand, and better communicates the actual gameplay hook.
+
+### Consequences
+
+- App display title, docs, README, and Dart package name should use X-Ray Scan / `xray_scan`.
+- Android package/application ID remains `com.auren.tapsortrush` for release safety.
+- GitHub/local folder rename can happen separately if repository permissions and workspace constraints allow it.

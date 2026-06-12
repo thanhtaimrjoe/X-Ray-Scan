@@ -1,6 +1,6 @@
-# tap_sort_rush
+# X-Ray Scan
 
-A new Flutter project.
+Android-first x-ray inspection reflex game built with Flutter and Flame.
 
 ## Getting Started
 

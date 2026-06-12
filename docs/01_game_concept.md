@@ -2,11 +2,11 @@
 
 ## Working Title
 
-Tap Sort Rush
+X-Ray Scan
 
 ## Approved Pivot Direction
 
-The approved next product direction is an x-ray inspection reflex game, internally called **X-Ray Inspector**. The repository and Android package can remain Tap Sort Rush / `com.auren.tapsortrush` until a release-critical naming decision is made.
+The approved product direction is an x-ray inspection reflex game called **X-Ray Scan**. The Android package remains `com.auren.tapsortrush` for release safety until a release-critical package decision is made.
 
 ## Elevator Pitch
 

@@ -7,7 +7,7 @@
 - [x] Flame dependency added.
 - [x] Core gameplay implemented.
 - [x] Local high score implemented.
-- [ ] Sound toggle implemented.
+- [x] Sound toggle implemented.
 - [x] AdMob dependency added.
 - [ ] AdMob test ads integrated.
 - [x] Unit tests added for game rules.

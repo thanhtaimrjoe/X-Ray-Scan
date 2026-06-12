@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tap_sort_rush/game/systems/xray_inspector_rules.dart';
+import 'package:xray_scan/game/systems/xray_inspector_rules.dart';
 
 void main() {
   group('XrayInspectorRules', () {

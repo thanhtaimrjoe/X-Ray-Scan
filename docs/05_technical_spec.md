@@ -4,6 +4,10 @@
 
 Android first.
 
+## Product Name
+
+`X-Ray Scan`
+
 ## Framework
 
 Planned:
@@ -15,11 +19,11 @@ Planned:
 
 Flutter is installed at `C:\Users\hanak\development\flutter`, and the initial Flutter project is scaffolded under `app/`.
 
-## Proposed App Package
+## Android Package
 
 `com.auren.tapsortrush`
 
-This can be changed before first Play Console upload. After release, package name should be treated as permanent.
+This package name is intentionally preserved after the product rename. It can be changed before first Play Console upload only with a release-critical decision. After release, package name should be treated as permanent.
 
 ## Project Layout
 

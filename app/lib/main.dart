@@ -7,16 +7,16 @@ import 'services/storage_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const TapSortRushApp());
+  runApp(const XrayScanApp());
 }
 
-class TapSortRushApp extends StatelessWidget {
-  const TapSortRushApp({super.key});
+class XrayScanApp extends StatelessWidget {
+  const XrayScanApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'X-Ray Inspector',
+      title: 'X-Ray Scan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -237,7 +237,7 @@ class MainMenuScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 18),
               Text(
-                'X-Ray Inspector',
+                'X-Ray Scan',
                 textAlign: TextAlign.center,
                 style: titleStyle,
               ),
