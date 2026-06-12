@@ -27,12 +27,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Item Database'), findsOneWidget);
-    expect(find.text('Danger Items'), findsOneWidget);
-    expect(find.text('Safe Items'), findsOneWidget);
+    expect(find.text('DANGER ITEMS'), findsOneWidget);
+    expect(find.text('SAFE ITEMS'), findsOneWidget);
     expect(find.text('0/5 discovered'), findsOneWidget);
     expect(find.text('0/6 discovered'), findsOneWidget);
 
-    await tester.tap(find.text('Danger Items'));
+    await tester.tap(find.text('DANGER ITEMS'));
     await tester.pumpAndSettle();
 
     expect(find.text('Danger Database'), findsOneWidget);

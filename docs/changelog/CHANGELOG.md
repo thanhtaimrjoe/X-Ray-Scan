@@ -5,11 +5,43 @@
 
 ---
 
+## [2026-06-12 23:55] - Repair Git metadata and pause compile error
+
+**Owner**: AI Assistant
+**Type**: Bugfix/Docs
+**Related US**: US-007
+**Impact Scope**: Gameplay, Docs, Test
+
+### Changes
+- Restored the main repository Git metadata after a broken `.git` directory replaced the valid metadata.
+- Fast-forwarded the main worktree to the already-pushed pause UI commit `495b733`.
+- Fixed the pause/resume calls to use Flame `pauseEngine()` and `resumeEngine()`.
+- Removed emoji prefixes from item database group titles to keep edited source text ASCII.
+- Added handoff notes to progress tracking for future assistants.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `docs/07_tracking/progress.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: The previous agent pushed a commit that did not compile locally and also left the main worktree with invalid Git metadata.
+- Technical decision: Preserve the broken `.git` directory as `.git-broken-20260612-2344` and restore `.git-old` as the active Git metadata instead of deleting anything.
+
+### Tests
+- [x] Unit tests added/updated (no new tests needed; compile fix)
+- [ ] Manual playtest completed
+- [x] Error handling checked (`flutter test`, `flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- The temporary repo at `C:\Users\hanak\Documents\Tap-Sort-Rush-Temp` contains the same pushed pause commit and can be removed later after confirming no extra work is needed.
+
+---
+
 ## [2026-06-12 16:45] - UI improvements and pause functionality
 
 **Owner**: AI Assistant
 **Type**: Feature, UI
-**Related US**: US-007, US-011
+**Related US**: US-007
 **Impact Scope**: UI, Gameplay
 
 ### Changes
@@ -30,7 +62,7 @@
 - [x] Policy/ad placement checked (no ad behavior changed)
 
 ### Notes
-- APK build pending, then push to GitHub.
+- The original pause commit used invalid `pause()`/`resume()` calls and was fixed in a later bugfix entry.
 
 ---
 

@@ -48,6 +48,33 @@ This file tracks the current project state so future AI assistants and contribut
 
 - Manual playtest the X-Ray Inspector loop on an Android device or emulator.
 
+## Handoff Notes
+
+- Active branch: `codex/neon-arcade-visuals`.
+- Remote repository: `https://github.com/thanhtaimrjoe/Tap-Sort-Rush.git`.
+- Current playable direction: `X-Ray Inspector`, not the original color lane-sort prototype.
+- Android package/application ID remains `com.auren.tapsortrush`.
+- Do not rename the package or add production AdMob IDs without a release-critical decision and changelog entry.
+- Approved visual benchmark:
+  - Figma visual bible: `https://www.figma.com/design/oKUWVtHFIJPNJ2n5vJsBU7`
+  - Repo asset: `docs/assets/xray_asset_sheet_approved.png`
+  - App asset: `app/assets/images/xray_asset_sheet_approved.png`
+- Core gameplay files:
+  - `app/lib/main.dart`
+  - `app/lib/game/xray_inspector_game.dart`
+  - `app/lib/game/systems/xray_inspector_rules.dart`
+  - `app/lib/services/storage_service.dart`
+- Core tests:
+  - `app/test/game/xray_inspector_rules_test.dart`
+  - `app/test/services/storage_service_test.dart`
+  - `app/test/widget_test.dart`
+- Latest debug APK path: `app/build/app/outputs/flutter-apk/app-debug.apk`.
+- ADB direct path on this machine: `C:\Users\hanak\AppData\Local\Android\Sdk\platform-tools\adb.exe`.
+- AVD name available on this machine: `TapSortRush_Test`.
+- Git recovery note: a previous agent renamed valid metadata to `.git-old` and left an invalid `.git` without `HEAD`/`config`; the valid metadata was restored, and the broken directory was preserved as `.git-broken-20260612-2344`.
+- A temporary clone exists at `C:\Users\hanak\Documents\Tap-Sort-Rush-Temp`; it has no known unique changes beyond the pushed pause commit, but verify before deleting.
+- Next agent should install the latest debug APK to `TapSortRush_Test`, manually playtest pause/resume, sound toggle, scanner loop, and item database, then tune object readability/hitboxes/timing.
+
 ## Next Steps
 
 1. Launch the debug APK on an emulator/device and tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability.

@@ -88,14 +88,14 @@ class _AppShellState extends State<AppShell> {
   }
 
   void _pauseGame() {
-    _currentGame?.pause();
+    _currentGame?.pauseEngine();
     setState(() {
       _screen = AppScreen.paused;
     });
   }
 
   void _resumeGame() {
-    _currentGame?.resume();
+    _currentGame?.resumeEngine();
     setState(() {
       _screen = AppScreen.playing;
     });
@@ -580,7 +580,7 @@ class EncyclopediaIndexScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _DatabaseGroupCard(
-                        title: '⚠️ DANGER ITEMS',
+                        title: 'DANGER ITEMS',
                         subtitle: 'Contraband profiles',
                         group: EncyclopediaGroup.danger,
                         unlockedCount: _countUnlocked(dangerXrayObjects),
@@ -592,7 +592,7 @@ class EncyclopediaIndexScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Expanded(
                       child: _DatabaseGroupCard(
-                        title: '✅ SAFE ITEMS',
+                        title: 'SAFE ITEMS',
                         subtitle: 'Cleared passenger objects',
                         group: EncyclopediaGroup.safe,
                         unlockedCount: _countUnlocked(safeXrayObjects),
