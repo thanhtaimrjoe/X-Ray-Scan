@@ -1,7 +1,36 @@
-﻿# Changelog
+# Changelog
 
 **Project**: Tap Sort Rush
 **Purpose**: Development change history for AI assistants and future contributors
+
+---
+
+## [2026-06-12 16:45] - UI improvements and pause functionality
+
+**Owner**: AI Assistant
+**Type**: Feature, UI
+**Related US**: US-007, US-011
+**Impact Scope**: UI, Gameplay
+
+### Changes
+- Added pause button to HUD and pause screen with resume/menu options.
+- Added sound toggle in pause screen with persistence.
+- Fixed HUD spacing between score/combo/lives/event text for better readability.
+- Fixed item database cards to expand fully to available width.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- Reason: Improve user experience with pause functionality and better UI readability.
+- Technical decision: Use built-in FlameGame pause/resume methods.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked (`flutter analyze`)
+- [x] Policy/ad placement checked (no ad behavior changed)
+
+### Notes
+- APK build pending, then push to GitHub.
 
 ---
 

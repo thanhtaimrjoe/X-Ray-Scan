@@ -31,7 +31,14 @@ class TapSortRushApp extends StatelessWidget {
   }
 }
 
-enum AppScreen { menu, playing, gameOver, encyclopediaIndex, encyclopediaGroup }
+enum AppScreen {
+  menu,
+  playing,
+  paused,
+  gameOver,
+  encyclopediaIndex,
+  encyclopediaGroup,
+}
 
 enum EncyclopediaGroup { danger, safe }
 
@@ -50,6 +57,8 @@ class _AppShellState extends State<AppShell> {
   bool _isNewHighScore = false;
   Set<XrayObjectType> _unlockedItems = {};
   EncyclopediaGroup _selectedGroup = EncyclopediaGroup.danger;
+  bool _soundEnabled = true;
+  XrayInspectorGame? _currentGame;
 
   @override
   void initState() {
@@ -66,6 +75,7 @@ class _AppShellState extends State<AppShell> {
       _storage = storage;
       _highScore = storage.getHighScore();
       _unlockedItems = storage.getUnlockedXrayItems();
+      _soundEnabled = storage.getSoundEnabled();
     });
   }
 
@@ -75,6 +85,28 @@ class _AppShellState extends State<AppShell> {
       _lastScore = 0;
       _isNewHighScore = false;
     });
+  }
+
+  void _pauseGame() {
+    _currentGame?.pause();
+    setState(() {
+      _screen = AppScreen.paused;
+    });
+  }
+
+  void _resumeGame() {
+    _currentGame?.resume();
+    setState(() {
+      _screen = AppScreen.playing;
+    });
+  }
+
+  Future<void> _toggleSound() async {
+    final newValue = !_soundEnabled;
+    setState(() {
+      _soundEnabled = newValue;
+    });
+    await _storage?.saveSoundEnabled(enabled: newValue);
   }
 
   Future<void> _finishGame(XrayInspectorSnapshot snapshot) async {
@@ -144,6 +176,16 @@ class _AppShellState extends State<AppShell> {
         onItemDiscovered: (type) {
           _recordDiscovery(type);
         },
+        onPause: _pauseGame,
+        onGameCreated: (game) {
+          _currentGame = game;
+        },
+      ),
+      AppScreen.paused => PauseScreen(
+        onResume: _resumeGame,
+        onMenu: _showMenu,
+        soundEnabled: _soundEnabled,
+        onToggleSound: _toggleSound,
       ),
       AppScreen.gameOver => GameOverScreen(
         score: _lastScore,
@@ -257,11 +299,15 @@ class GameplayScreen extends StatefulWidget {
   const GameplayScreen({
     required this.onGameOver,
     required this.onItemDiscovered,
+    required this.onPause,
+    required this.onGameCreated,
     super.key,
   });
 
   final ValueChanged<XrayInspectorSnapshot> onGameOver;
   final ValueChanged<XrayObjectType> onItemDiscovered;
+  final VoidCallback onPause;
+  final ValueChanged<XrayInspectorGame> onGameCreated;
 
   @override
   State<GameplayScreen> createState() => _GameplayScreenState();
@@ -288,6 +334,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
       onGameFinished: widget.onGameOver,
       onItemDiscovered: widget.onItemDiscovered,
     );
+    widget.onGameCreated(_game);
   }
 
   @override
@@ -305,7 +352,20 @@ class _GameplayScreenState extends State<GameplayScreen> {
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(14),
-              child: _Hud(snapshot: _snapshot),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _Hud(snapshot: _snapshot),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.pause_circle_outline,
+                      color: Colors.white,
+                      size: 36,
+                    ),
+                    onPressed: widget.onPause,
+                  ),
+                ],
+              ),
             ),
           ),
           Align(
@@ -336,6 +396,86 @@ class _GameplayScreenState extends State<GameplayScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class PauseScreen extends StatelessWidget {
+  const PauseScreen({
+    required this.onResume,
+    required this.onMenu,
+    required this.soundEnabled,
+    required this.onToggleSound,
+    super.key,
+  });
+
+  final VoidCallback onResume;
+  final VoidCallback onMenu;
+  final bool soundEnabled;
+  final VoidCallback onToggleSound;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'PAUSED',
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFFE5FEFF),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                FilledButton.icon(
+                  onPressed: onResume,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: const Text('RESUME'),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: onToggleSound,
+                  icon: Icon(
+                    soundEnabled
+                        ? Icons.volume_up_rounded
+                        : Icons.volume_off_rounded,
+                  ),
+                  label: Text(soundEnabled ? 'SOUND ON' : 'SOUND OFF'),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: onMenu,
+                  icon: const Icon(Icons.home_rounded),
+                  label: const Text('MAIN MENU'),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -436,10 +576,11 @@ class EncyclopediaIndexScreen extends StatelessWidget {
               const SizedBox(height: 20),
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
                       child: _DatabaseGroupCard(
-                        title: 'Danger Items',
+                        title: '⚠️ DANGER ITEMS',
                         subtitle: 'Contraband profiles',
                         group: EncyclopediaGroup.danger,
                         unlockedCount: _countUnlocked(dangerXrayObjects),
@@ -451,7 +592,7 @@ class EncyclopediaIndexScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Expanded(
                       child: _DatabaseGroupCard(
-                        title: 'Safe Items',
+                        title: '✅ SAFE ITEMS',
                         subtitle: 'Cleared passenger objects',
                         group: EncyclopediaGroup.safe,
                         unlockedCount: _countUnlocked(safeXrayObjects),
@@ -601,63 +742,65 @@ class _DatabaseGroupCard extends StatelessWidget {
         ? const Color(0xFFFF3B5C)
         : const Color(0xFF37FFB5);
 
-    return FilledButton(
-      onPressed: onPressed,
-      style: FilledButton.styleFrom(
-        padding: EdgeInsets.zero,
-        backgroundColor: const Color(0xFF061721),
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: accent.withValues(alpha: 0.58), width: 1.5),
-          borderRadius: BorderRadius.circular(8),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [accent.withValues(alpha: 0.2), const Color(0xFF030912)],
+    return SizedBox.expand(
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(8),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xFF061721),
+            border: Border.all(
+              color: accent.withValues(alpha: 0.58),
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(8),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [accent.withValues(alpha: 0.2), const Color(0xFF030912)],
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(_groupIcon(group), size: 42, color: accent),
-              const SizedBox(height: 10),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(_groupIcon(group), size: 42, color: accent),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFFB7EFF4),
+                const SizedBox(height: 6),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFFB7EFF4),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                '$unlockedCount/$totalCount discovered',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: accent,
-                  fontWeight: FontWeight.w800,
+                const SizedBox(height: 10),
+                Text(
+                  '$unlockedCount/$totalCount discovered',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: accent,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -821,13 +964,16 @@ class _Hud extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Score ${snapshot.score}', style: textStyle),
+            const SizedBox(width: 12),
             Text('Combo ${snapshot.combo}', style: textStyle),
+            const SizedBox(width: 12),
             Text('Lives ${snapshot.lives}', style: textStyle),
+            const SizedBox(width: 12),
             Text(_eventLabel(snapshot.lastEvent), style: textStyle),
           ],
         ),
