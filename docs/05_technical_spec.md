@@ -95,6 +95,9 @@ Keys:
 - `high_score`
 - `sound_enabled`
 - `rounds_since_interstitial`
+- `unlocked_xray_items`
+
+`unlocked_xray_items` stores discovered item IDs as a string list so the item encyclopedia can persist progress locally without a backend.
 
 ## Ads Configuration
 
@@ -118,6 +121,7 @@ Production IDs should be injected with build-time config or a local file exclude
 - Play, pause, resume.
 - Game over and retry.
 - High score persistence.
+- Item discovery persistence.
 - Test banner loads.
 - Test interstitial frequency.
 - Test rewarded continue.

@@ -79,6 +79,7 @@ MVP tuning:
 
 - App title.
 - Play button.
+- Item database button.
 - High score.
 - Sound toggle.
 - Banner ad area.
@@ -105,6 +106,24 @@ MVP tuning:
 - Retry.
 - Menu.
 - Banner ad area.
+
+### Item Encyclopedia
+
+- Opened from the main menu.
+- First screen has two large choices only:
+  - Danger Items
+  - Safe Items
+- Tapping either choice opens that category database.
+- No All tab for MVP.
+- Every category database shows all item slots so players can see future mystery items.
+- Locked items appear as dark silhouettes with unknown labels.
+- Unlocked items show name, category color, and a short discovery note.
+
+Unlock rules:
+
+- Danger item unlocks when the player taps it correctly during gameplay.
+- Safe item unlocks when the player correctly clears a suitcase containing it.
+- Wrong safe taps and missed danger items do not unlock entries.
 
 ## Visual Style
 

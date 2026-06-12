@@ -31,7 +31,9 @@ class TapSortRushApp extends StatelessWidget {
   }
 }
 
-enum AppScreen { menu, playing, gameOver }
+enum AppScreen { menu, playing, gameOver, encyclopediaIndex, encyclopediaGroup }
+
+enum EncyclopediaGroup { danger, safe }
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -46,6 +48,8 @@ class _AppShellState extends State<AppShell> {
   int _highScore = 0;
   int _lastScore = 0;
   bool _isNewHighScore = false;
+  Set<XrayObjectType> _unlockedItems = {};
+  EncyclopediaGroup _selectedGroup = EncyclopediaGroup.danger;
 
   @override
   void initState() {
@@ -61,6 +65,7 @@ class _AppShellState extends State<AppShell> {
     setState(() {
       _storage = storage;
       _highScore = storage.getHighScore();
+      _unlockedItems = storage.getUnlockedXrayItems();
     });
   }
 
@@ -100,16 +105,44 @@ class _AppShellState extends State<AppShell> {
     });
   }
 
+  void _showEncyclopediaIndex() {
+    setState(() {
+      _screen = AppScreen.encyclopediaIndex;
+    });
+  }
+
+  void _showEncyclopediaGroup(EncyclopediaGroup group) {
+    setState(() {
+      _selectedGroup = group;
+      _screen = AppScreen.encyclopediaGroup;
+    });
+  }
+
+  Future<void> _recordDiscovery(XrayObjectType type) async {
+    if (_unlockedItems.contains(type)) {
+      return;
+    }
+
+    setState(() {
+      _unlockedItems = {..._unlockedItems, type};
+    });
+    await _storage?.unlockXrayItem(type);
+  }
+
   @override
   Widget build(BuildContext context) {
     return switch (_screen) {
       AppScreen.menu => MainMenuScreen(
         highScore: _highScore,
         onPlay: _startGame,
+        onOpenDatabase: _showEncyclopediaIndex,
       ),
       AppScreen.playing => GameplayScreen(
         onGameOver: (snapshot) {
           _finishGame(snapshot);
+        },
+        onItemDiscovered: (type) {
+          _recordDiscovery(type);
         },
       ),
       AppScreen.gameOver => GameOverScreen(
@@ -119,6 +152,16 @@ class _AppShellState extends State<AppShell> {
         onRetry: _startGame,
         onMenu: _showMenu,
       ),
+      AppScreen.encyclopediaIndex => EncyclopediaIndexScreen(
+        unlockedItems: _unlockedItems,
+        onSelectGroup: _showEncyclopediaGroup,
+        onBack: _showMenu,
+      ),
+      AppScreen.encyclopediaGroup => EncyclopediaGroupScreen(
+        group: _selectedGroup,
+        unlockedItems: _unlockedItems,
+        onBack: _showEncyclopediaIndex,
+      ),
     };
   }
 }
@@ -127,11 +170,13 @@ class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({
     required this.highScore,
     required this.onPlay,
+    required this.onOpenDatabase,
     super.key,
   });
 
   final int highScore;
   final VoidCallback onPlay;
+  final VoidCallback onOpenDatabase;
 
   @override
   Widget build(BuildContext context) {
@@ -182,6 +227,22 @@ class MainMenuScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: onOpenDatabase,
+                icon: const Icon(Icons.folder_open_rounded),
+                label: const Text('ITEM DATABASE'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                  textStyle: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
               const SizedBox(height: 18),
               const _BannerPlaceholder(),
             ],
@@ -193,9 +254,14 @@ class MainMenuScreen extends StatelessWidget {
 }
 
 class GameplayScreen extends StatefulWidget {
-  const GameplayScreen({required this.onGameOver, super.key});
+  const GameplayScreen({
+    required this.onGameOver,
+    required this.onItemDiscovered,
+    super.key,
+  });
 
   final ValueChanged<XrayInspectorSnapshot> onGameOver;
+  final ValueChanged<XrayObjectType> onItemDiscovered;
 
   @override
   State<GameplayScreen> createState() => _GameplayScreenState();
@@ -220,6 +286,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
         }
       },
       onGameFinished: widget.onGameOver,
+      onItemDiscovered: widget.onItemDiscovered,
     );
   }
 
@@ -341,6 +408,357 @@ class GameOverScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class EncyclopediaIndexScreen extends StatelessWidget {
+  const EncyclopediaIndexScreen({
+    required this.unlockedItems,
+    required this.onSelectGroup,
+    required this.onBack,
+    super.key,
+  });
+
+  final Set<XrayObjectType> unlockedItems;
+  final ValueChanged<EncyclopediaGroup> onSelectGroup;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _ScreenHeader(title: 'Item Database', onBack: onBack),
+              const SizedBox(height: 20),
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: _DatabaseGroupCard(
+                        title: 'Danger Items',
+                        subtitle: 'Contraband profiles',
+                        group: EncyclopediaGroup.danger,
+                        unlockedCount: _countUnlocked(dangerXrayObjects),
+                        totalCount: dangerXrayObjects.length,
+                        onPressed: () =>
+                            onSelectGroup(EncyclopediaGroup.danger),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: _DatabaseGroupCard(
+                        title: 'Safe Items',
+                        subtitle: 'Cleared passenger objects',
+                        group: EncyclopediaGroup.safe,
+                        unlockedCount: _countUnlocked(safeXrayObjects),
+                        totalCount: safeXrayObjects.length,
+                        onPressed: () => onSelectGroup(EncyclopediaGroup.safe),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              const _BannerPlaceholder(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  int _countUnlocked(List<XrayObjectType> items) {
+    return items.where(unlockedItems.contains).length;
+  }
+}
+
+class EncyclopediaGroupScreen extends StatelessWidget {
+  const EncyclopediaGroupScreen({
+    required this.group,
+    required this.unlockedItems,
+    required this.onBack,
+    super.key,
+  });
+
+  final EncyclopediaGroup group;
+  final Set<XrayObjectType> unlockedItems;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = group == EncyclopediaGroup.danger
+        ? dangerXrayObjects
+        : safeXrayObjects;
+    final unlockedCount = items.where(unlockedItems.contains).length;
+
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _ScreenHeader(title: _groupTitle(group), onBack: onBack),
+              const SizedBox(height: 10),
+              Text(
+                '$unlockedCount/${items.length} discovered',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: const Color(0xFFB7EFF4),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: GridView.builder(
+                  itemCount: items.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.82,
+                  ),
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    return _ItemDatabaseTile(
+                      item: item,
+                      isUnlocked: unlockedItems.contains(item),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _groupTitle(EncyclopediaGroup group) {
+    return switch (group) {
+      EncyclopediaGroup.danger => 'Danger Database',
+      EncyclopediaGroup.safe => 'Safe Database',
+    };
+  }
+}
+
+class _ScreenHeader extends StatelessWidget {
+  const _ScreenHeader({required this.title, required this.onBack});
+
+  final String title;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+          onPressed: onBack,
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Back',
+        ),
+        Expanded(
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFFE5FEFF),
+              letterSpacing: 0,
+            ),
+          ),
+        ),
+        const SizedBox(width: 48),
+      ],
+    );
+  }
+}
+
+class _DatabaseGroupCard extends StatelessWidget {
+  const _DatabaseGroupCard({
+    required this.title,
+    required this.subtitle,
+    required this.group,
+    required this.unlockedCount,
+    required this.totalCount,
+    required this.onPressed,
+  });
+
+  final String title;
+  final String subtitle;
+  final EncyclopediaGroup group;
+  final int unlockedCount;
+  final int totalCount;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = group == EncyclopediaGroup.danger
+        ? const Color(0xFFFF3B5C)
+        : const Color(0xFF37FFB5);
+
+    return FilledButton(
+      onPressed: onPressed,
+      style: FilledButton.styleFrom(
+        padding: EdgeInsets.zero,
+        backgroundColor: const Color(0xFF061721),
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(color: accent.withValues(alpha: 0.58), width: 1.5),
+          borderRadius: BorderRadius.circular(8),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [accent.withValues(alpha: 0.2), const Color(0xFF030912)],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(_groupIcon(group), size: 42, color: accent),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFFB7EFF4),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '$unlockedCount/$totalCount discovered',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: accent,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _groupIcon(EncyclopediaGroup group) {
+    return switch (group) {
+      EncyclopediaGroup.danger => Icons.warning_rounded,
+      EncyclopediaGroup.safe => Icons.verified_rounded,
+    };
+  }
+}
+
+class _ItemDatabaseTile extends StatelessWidget {
+  const _ItemDatabaseTile({required this.item, required this.isUnlocked});
+
+  final XrayObjectType item;
+  final bool isUnlocked;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = item.isDangerous
+        ? const Color(0xFFFF3B5C)
+        : const Color(0xFF37FFB5);
+    final iconColor = isUnlocked ? accent : Colors.black;
+    final borderColor = isUnlocked
+        ? accent.withValues(alpha: 0.68)
+        : Colors.white.withValues(alpha: 0.16);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xFF061721),
+        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Center(
+                child: Icon(
+                  _itemIcon(item),
+                  size: 54,
+                  color: iconColor,
+                  shadows: isUnlocked
+                      ? [
+                          Shadow(
+                            color: accent.withValues(alpha: 0.9),
+                            blurRadius: 18,
+                          ),
+                        ]
+                      : null,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              isUnlocked ? item.displayName : '???',
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: isUnlocked ? Colors.white : Colors.white38,
+                letterSpacing: 0,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              isUnlocked ? item.discoveryNote : 'Unknown profile',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: isUnlocked ? const Color(0xFFB7EFF4) : Colors.white30,
+                height: 1.15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _itemIcon(XrayObjectType item) {
+    return switch (item) {
+      XrayObjectType.knife => Icons.restaurant_rounded,
+      XrayObjectType.scissors => Icons.content_cut_rounded,
+      XrayObjectType.lighter => Icons.local_fire_department_rounded,
+      XrayObjectType.razor => Icons.rectangle_rounded,
+      XrayObjectType.batteryPack => Icons.battery_charging_full_rounded,
+      XrayObjectType.phone => Icons.phone_iphone_rounded,
+      XrayObjectType.laptop => Icons.laptop_mac_rounded,
+      XrayObjectType.bottle => Icons.water_drop_rounded,
+      XrayObjectType.sandwich => Icons.lunch_dining_rounded,
+      XrayObjectType.keys => Icons.key_rounded,
+      XrayObjectType.headphones => Icons.headphones_rounded,
+    };
   }
 }
 

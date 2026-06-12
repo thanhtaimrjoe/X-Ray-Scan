@@ -9,6 +9,8 @@ typedef GameSnapshotChanged = void Function(XrayInspectorSnapshot snapshot);
 
 typedef GameFinished = void Function(XrayInspectorSnapshot snapshot);
 
+typedef ItemDiscovered = void Function(XrayObjectType type);
+
 class XrayObjectInstance {
   XrayObjectInstance({
     required this.type,
@@ -61,6 +63,7 @@ class XrayInspectorGame extends FlameGame {
   XrayInspectorGame({
     required this.onSnapshotChanged,
     required this.onGameFinished,
+    required this.onItemDiscovered,
     Random? random,
   }) : _random = random ?? Random();
 
@@ -71,6 +74,7 @@ class XrayInspectorGame extends FlameGame {
 
   final GameSnapshotChanged onSnapshotChanged;
   final GameFinished onGameFinished;
+  final ItemDiscovered onItemDiscovered;
   final Random _random;
   final XrayInspectorRules _rules = XrayInspectorRules();
   final List<XrayPulse> _pulses = [];
@@ -159,6 +163,7 @@ class XrayInspectorGame extends FlameGame {
     if (hit.type.isDangerous) {
       hit.found = true;
       _rules.resolveDangerTap();
+      onItemDiscovered(hit.type);
       _pulses.add(
         XrayPulse(center: center, color: _success, label: '+10', age: 0),
       );
@@ -201,6 +206,11 @@ class XrayInspectorGame extends FlameGame {
       return;
     }
 
+    for (final object in bag.objects) {
+      if (!object.type.isDangerous) {
+        onItemDiscovered(object.type);
+      }
+    }
     _rules.resolveSafeBagClear();
     _pulses.add(
       XrayPulse(

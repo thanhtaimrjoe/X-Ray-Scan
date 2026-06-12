@@ -97,3 +97,18 @@ As a player, I want mistakes to matter when I tap safe objects so that the game 
 - Tapping a safe object resets combo.
 - Wrong-tap feedback is visible without blocking the next action.
 - The score penalty cannot reduce game clarity or trigger ads.
+
+## US-010 - Discover Item Encyclopedia
+
+As a player, I want a database of dangerous and safe x-ray items so that I can see what I have discovered and feel there are more hidden objects to find.
+
+### Acceptance Criteria
+
+- The encyclopedia entry point is available from the main menu.
+- The first encyclopedia screen shows two choices only: Danger and Safe.
+- Each category database shows all item slots in that category.
+- Undiscovered items appear as dark locked silhouettes or unknown profiles.
+- Correctly detecting a dangerous item unlocks that danger item.
+- Correctly clearing a safe bag unlocks the safe items inside it.
+- Tapping a safe item by mistake does not unlock that safe item.
+- Discovery progress persists locally after app restart.

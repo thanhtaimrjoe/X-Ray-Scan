@@ -138,3 +138,28 @@ The lane-sort prototype is playable, but it risks feeling too close to existing 
 - Future gameplay specs should prioritize x-ray suitcase inspection, safe/danger object sets, wrong-tap penalties, and scanner feedback.
 - Approved visual benchmark is stored in `docs/assets/xray_asset_sheet_approved.png` and in the Figma visual bible.
 - Package name `com.auren.tapsortrush` remains unchanged unless a later release-critical naming decision is made.
+
+---
+
+## DEC-007 - Two-branch item encyclopedia
+
+**Date**: 2026-06-12
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Product, Gameplay, Progression
+
+### Decision
+
+Add an item encyclopedia that starts with two choices only: Danger Items and Safe Items. Each category shows all item slots, with undiscovered items rendered as locked dark profiles and discovered items revealing their name and note.
+
+### Reason
+
+The encyclopedia gives players a collection goal beyond high score and makes future item variety visible without exposing every item immediately. The two-branch structure matches the x-ray inspector fantasy better than a generic All/Danger/Safe tab set.
+
+### Consequences
+
+- No All tab for MVP.
+- Item discovery must persist locally.
+- Danger items unlock only when correctly tapped.
+- Safe items unlock only when the player correctly clears a suitcase containing them.
+- Future item additions should update both the gameplay object pool and encyclopedia metadata.

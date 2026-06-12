@@ -5,6 +5,49 @@
 
 ---
 
+## [2026-06-12 15:29] - Add item encyclopedia discovery loop
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-008, US-009, US-010
+**Impact Scope**: Gameplay, Docs, Test
+
+### Changes
+- Added a main-menu entry point for the item database.
+- Added a two-choice encyclopedia index with Danger Items and Safe Items only.
+- Added category database screens that show every item slot as locked or discovered.
+- Added local unlock persistence for x-ray item discoveries.
+- Connected gameplay discoveries so correct danger taps unlock danger items and correct safe-bag clears unlock safe items.
+- Added tests for item discovery persistence and encyclopedia navigation.
+- Updated concept, user stories, game design, technical spec, decision log, and progress tracking.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/lib/game/systems/xray_inspector_rules.dart`
+- File: `app/lib/services/storage_service.dart`
+- File: `app/test/services/storage_service_test.dart`
+- File: `app/test/widget_test.dart`
+- File: `docs/01_game_concept.md`
+- File: `docs/02_user_stories.md`
+- File: `docs/03_game_design.md`
+- File: `docs/05_technical_spec.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Add a collection/progression hook that shows future mystery items and rewards correct inspection.
+- Technical decision: Store discovered item IDs as a `shared_preferences` string list under `unlocked_xray_items`.
+
+### Tests
+- [x] Unit tests added/updated (`flutter test`)
+- [ ] Manual playtest completed
+- [x] Error handling checked (`flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- Database icons are still MVP placeholders; final item art should be replaced when individual x-ray sprites are extracted or redrawn.
+
+---
+
 ## [2026-06-12 14:45] - Rebuild app as X-Ray Inspector MVP
 
 **Owner**: AI Assistant

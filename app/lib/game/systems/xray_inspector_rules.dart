@@ -30,6 +30,48 @@ extension XrayObjectTypeRules on XrayObjectType {
       XrayObjectType.headphones => false,
     };
   }
+
+  String get id => name;
+
+  String get displayName {
+    return switch (this) {
+      XrayObjectType.knife => 'Knife',
+      XrayObjectType.scissors => 'Scissors',
+      XrayObjectType.lighter => 'Lighter',
+      XrayObjectType.razor => 'Razor',
+      XrayObjectType.batteryPack => 'Power Bank',
+      XrayObjectType.phone => 'Phone',
+      XrayObjectType.laptop => 'Laptop',
+      XrayObjectType.bottle => 'Bottle',
+      XrayObjectType.sandwich => 'Sandwich',
+      XrayObjectType.keys => 'Keys',
+      XrayObjectType.headphones => 'Headphones',
+    };
+  }
+
+  String get discoveryNote {
+    return switch (this) {
+      XrayObjectType.knife => 'Sharp edge. Flag immediately.',
+      XrayObjectType.scissors => 'Crossed blades can hide in clutter.',
+      XrayObjectType.lighter => 'Small ignition source.',
+      XrayObjectType.razor => 'Flat blade profile.',
+      XrayObjectType.batteryPack => 'Dense electronics block.',
+      XrayObjectType.phone => 'Common personal device.',
+      XrayObjectType.laptop => 'Large safe electronics profile.',
+      XrayObjectType.bottle => 'Rounded liquid container.',
+      XrayObjectType.sandwich => 'Soft triangular food shape.',
+      XrayObjectType.keys => 'Metal ring and teeth.',
+      XrayObjectType.headphones => 'Curved band with ear cups.',
+    };
+  }
+}
+
+List<XrayObjectType> get dangerXrayObjects {
+  return XrayObjectType.values.where((type) => type.isDangerous).toList();
+}
+
+List<XrayObjectType> get safeXrayObjects {
+  return XrayObjectType.values.where((type) => !type.isDangerous).toList();
 }
 
 enum XrayFeedbackEvent {

@@ -36,6 +36,8 @@ This file tracks the current project state so future AI assistants and contribut
 - Added x-ray suitcase gameplay with tappable dangerous/safe objects, safe tap score penalties, missed danger life loss, false-clear punishment, clear bonus, score, combo, lives, and high score persistence.
 - Added the approved x-ray asset sheet to the app menu art direction.
 - Added unit tests for X-Ray Inspector scoring, combo, safe tap penalty, missed danger, false clear, and clear bonus.
+- Added a two-branch item encyclopedia with Danger and Safe databases.
+- Added local item discovery persistence for correctly detected dangerous items and correctly cleared safe items.
 - Verified:
   - `flutter doctor -v`
   - `flutter test`
@@ -48,7 +50,7 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Launch the debug APK on an emulator/device and tune object scale, suitcase speed, hit radius, and clear timing.
+1. Launch the debug APK on an emulator/device and tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability.
 2. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
 3. Add pause and sound toggle UI.
 4. Integrate AdMob test ads on menu and game-over screens.

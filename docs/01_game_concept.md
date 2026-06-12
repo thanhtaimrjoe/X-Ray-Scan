@@ -46,6 +46,8 @@ Ads should appear at natural breaks:
 - Game over screen.
 - X-ray suitcase inspection screen.
 - Dangerous and safe object sets using readable real-world silhouettes.
+- Item encyclopedia with separate Danger and Safe databases.
+- Locked item silhouettes that reveal details after correct discovery.
 - Basic sound toggles.
 - Local high score.
 - AdMob test ads.
