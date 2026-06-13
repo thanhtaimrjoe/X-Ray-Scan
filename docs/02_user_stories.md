@@ -10,26 +10,26 @@ As a player, I want to start a game from the main menu so that I can play immedi
 - Tapping play starts the game within one second on a typical Android device.
 - The first game starts without showing an interstitial ad.
 
-## US-002 - Sort Falling Items
+## US-002 - Detect Dangerous Objects
 
-As a player, I want to sort falling items into matching color lanes so that I can score points.
+As a player, I want to tap dangerous objects inside x-ray suitcases so that careful inspection earns points.
 
 ### Acceptance Criteria
 
-- Items spawn with visible colors.
-- Lanes have matching color indicators.
-- Correct sort increases score.
-- Incorrect sort reduces lives or breaks combo.
+- Suitcases show a mix of safe and dangerous object silhouettes.
+- Dangerous objects are recognizable by shape, not text labels.
+- Correct danger taps increase score.
+- Correct danger taps increase combo.
 - Controls are responsive and usable with one hand.
 
-## US-003 - Build Combo
+## US-003 - Build Combo Through Inspection
 
-As a player, I want correct streaks to increase my combo so that skilled play feels rewarding.
+As a player, I want correct inspection actions to increase my combo so that skilled play feels rewarding.
 
 ### Acceptance Criteria
 
-- Consecutive correct sorts increase combo.
-- Mistakes reset combo.
+- Consecutive danger detections or correct safe-bag clears increase combo.
+- Safe-item taps, missed dangerous objects, and false clears reset combo.
 - Score bonus increases at combo thresholds.
 - Combo feedback is visible but does not block gameplay.
 
@@ -112,3 +112,23 @@ As a player, I want a database of dangerous and safe x-ray items so that I can s
 - Correctly clearing a safe bag unlocks the safe items inside it.
 - Tapping a safe item by mistake does not unlock that safe item.
 - Discovery progress persists locally after app restart.
+
+## US-011 - Stay in Portrait Orientation
+
+As a player, I want the game to stay in portrait orientation so that the scanner and controls remain readable during play.
+
+### Acceptance Criteria
+
+- The app launches in portrait orientation.
+- Rotating the phone does not switch gameplay into landscape.
+- HUD, scanner, and Clear action remain readable on a typical Android phone screen.
+
+## US-012 - Avoid HUD Overflow
+
+As a player, I want the HUD and pause button to fit on my phone screen so that I can read status and pause reliably.
+
+### Acceptance Criteria
+
+- Score, combo, lives, and feedback text stay inside the safe area.
+- The pause button remains visible and tappable on Galaxy S24-class screens.
+- HUD text scales down instead of overflowing horizontally.

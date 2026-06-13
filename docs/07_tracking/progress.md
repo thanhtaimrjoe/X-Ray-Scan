@@ -39,15 +39,21 @@ This file tracks the current project state so future AI assistants and contribut
 - Added a two-branch item encyclopedia with Danger and Safe databases.
 - Added local item discovery persistence for correctly detected dangerous items and correctly cleared safe items.
 - Renamed the GitHub repository and local `origin` remote to `X-Ray-Scan`.
+- Completed physical-device playtesting on a Samsung Galaxy S24-class device and fixed the discovered HUD overflow and landscape rotation issues.
+- Updated stale lane-sort user stories and difficulty tuning notes so the specs match the X-Ray Scan loop.
+- Integrated AdMob test banner ads on the main menu and game-over screens.
+- Added testable interstitial frequency and rewarded-continue eligibility rules.
+- Revised scoring for stronger arcade feedback: 100-point danger taps, 50-point clear bonuses, 50-point safe-tap penalties, 100-point perfect clear bonuses, faster combo tiers, and player-facing feedback labels.
 - Verified:
   - `flutter doctor -v`
   - `flutter test`
   - `flutter analyze`
   - `flutter build apk --debug`
+  - Samsung device install/launch through ADB
 
 ## In Progress
 
-- Manual playtest the X-Ray Scan loop on an Android device or emulator.
+- Prepare the next MVP slice: production-ready item visuals or interstitial/rewarded ad implementation.
 
 ## Handoff Notes
 
@@ -76,22 +82,20 @@ This file tracks the current project state so future AI assistants and contribut
 - Current renamed workspace path: `C:\Users\hanak\Documents\X-Ray-Scan`.
 - The old active Codex session folder may remain at `C:\Users\hanak\Documents\Tap-Sort-Rush` until the session releases its Windows file lock.
 - A temporary clone exists at `C:\Users\hanak\Documents\Tap-Sort-Rush-Temp`; it has no known unique changes beyond the pushed pause commit, but verify before deleting.
-- Next agent should install the latest debug APK to `TapSortRush_Test`, manually playtest pause/resume, sound toggle, scanner loop, and item database, then tune object readability/hitboxes/timing.
+- Next agent should continue with production-ready item visuals or interstitial/rewarded ad implementation, then keep using the connected Samsung device for smoke checks when available.
 
 ## Next Steps
 
-1. Launch the debug APK on an emulator/device and tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability.
-2. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
-3. Update stale lane-sort language in user stories and difficulty tuning docs so all specs match the X-Ray Scan loop.
-4. Integrate AdMob test ads on menu and game-over screens.
-5. Add interstitial frequency and rewarded-continue rule tests before enabling those ad formats.
+1. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
+2. Smoke test revised scoring, combo, and perfect clear feedback on the Samsung device.
+3. Implement interstitial and rewarded ads using Google test ad unit IDs.
+4. Tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.
 
 ## Known Gaps
 
 - X-ray objects need production-ready in-game assets extracted or redrawn from the approved visual benchmark.
-- Gameplay will need device playtesting and tuning after the pivot is implemented.
-- No Android device/emulator was attached during the rebuild pass, so install/launch smoke testing is still pending.
-- Banner areas are placeholders; AdMob test ads are not integrated yet.
+- Gameplay can still benefit from additional tuning passes after more physical-device playtests.
+- Interstitial and rewarded ads have rules/tests but are not integrated with the SDK yet.
 - No production AdMob IDs yet.
 - No release signing config yet.
 - No privacy policy URL yet.

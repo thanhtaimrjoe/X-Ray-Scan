@@ -9,11 +9,11 @@
 - [x] Local high score implemented.
 - [x] Sound toggle implemented.
 - [x] AdMob dependency added.
-- [ ] AdMob test ads integrated.
+- [x] AdMob test ads integrated.
 - [x] Unit tests added for game rules.
 - [x] Default Flutter smoke test passes.
 - [x] Debug APK build succeeds.
-- [ ] Manual playtest completed on Android device or emulator.
+- [x] Manual playtest completed on Android device or emulator.
 
 ## Google Play Console
 

@@ -1,12 +1,16 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'game/systems/xray_inspector_rules.dart';
 import 'game/xray_inspector_game.dart';
+import 'services/ads_service.dart';
 import 'services/storage_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await AdsService.initialize();
   runApp(const XrayScanApp());
 }
 
@@ -286,7 +290,7 @@ class MainMenuScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              const _BannerPlaceholder(),
+              const Center(child: XrayBannerAd()),
             ],
           ),
         ),
@@ -318,6 +322,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
   XrayInspectorSnapshot _snapshot = const XrayInspectorSnapshot(
     score: 0,
     combo: 0,
+    comboMultiplier: 1,
     lives: 3,
     isGameOver: false,
   );
@@ -351,18 +356,23 @@ class _GameplayScreenState extends State<GameplayScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(12),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _Hud(snapshot: _snapshot),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.pause_circle_outline,
-                      color: Colors.white,
-                      size: 36,
+                  Expanded(child: _Hud(snapshot: _snapshot)),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(
+                        Icons.pause_circle_outline,
+                        color: Colors.white,
+                        size: 36,
+                      ),
+                      onPressed: widget.onPause,
                     ),
-                    onPressed: widget.onPause,
                   ),
                 ],
               ),
@@ -542,7 +552,7 @@ class GameOverScreen extends StatelessWidget {
                 label: const Text('MENU'),
               ),
               const Spacer(),
-              const _BannerPlaceholder(),
+              const Center(child: XrayBannerAd()),
             ],
           ),
         ),
@@ -603,8 +613,6 @@ class EncyclopediaIndexScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              const _BannerPlaceholder(),
             ],
           ),
         ),
@@ -964,53 +972,32 @@ class _Hud extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Score ${snapshot.score}', style: textStyle),
-            const SizedBox(width: 12),
-            Text('Combo ${snapshot.combo}', style: textStyle),
-            const SizedBox(width: 12),
-            Text('Lives ${snapshot.lives}', style: textStyle),
-            const SizedBox(width: 12),
-            Text(_eventLabel(snapshot.lastEvent), style: textStyle),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Score ${snapshot.score}', style: textStyle),
+              const SizedBox(width: 12),
+              Text(
+                'Combo ${snapshot.combo} x${_formatMultiplier(snapshot.comboMultiplier)}',
+                style: textStyle,
+              ),
+              const SizedBox(width: 12),
+              Text('Lives ${snapshot.lives}', style: textStyle),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  String _eventLabel(XrayFeedbackEvent event) {
-    return switch (event) {
-      XrayFeedbackEvent.none => 'READY',
-      XrayFeedbackEvent.dangerFound => 'FOUND',
-      XrayFeedbackEvent.safeTapped => 'SAFE -5',
-      XrayFeedbackEvent.safeBagCleared => 'CLEAR +5',
-      XrayFeedbackEvent.dangerMissed => 'MISS',
-      XrayFeedbackEvent.falseClear => 'HOLD',
-    };
-  }
-}
-
-class _BannerPlaceholder extends StatelessWidget {
-  const _BannerPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 54,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white24),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        'Ad banner area',
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
-      ),
-    );
+  String _formatMultiplier(double multiplier) {
+    if (multiplier == multiplier.roundToDouble()) {
+      return multiplier.toStringAsFixed(0);
+    }
+    return multiplier.toStringAsFixed(1);
   }
 }

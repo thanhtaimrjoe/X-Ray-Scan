@@ -9,23 +9,32 @@ void main() {
       final first = rules.resolveDangerTap();
       final second = rules.resolveDangerTap();
 
-      expect(first.score, 10);
+      expect(first.score, 100);
       expect(first.combo, 1);
-      expect(second.score, 20);
+      expect(second.score, 200);
       expect(second.combo, 2);
+      expect(second.comboMultiplier, 1);
       expect(second.lives, 3);
       expect(second.lastEvent, XrayFeedbackEvent.dangerFound);
     });
 
-    test('combo multiplier increases every 10 combo', () {
+    test('combo multiplier increases every 5 combo and caps at x3', () {
       final rules = XrayInspectorRules();
 
-      for (var i = 0; i < 10; i++) {
+      for (var i = 0; i < 5; i++) {
         rules.resolveDangerTap();
       }
 
-      expect(rules.combo, 10);
-      expect(rules.pointsForNextDangerTap(), 13);
+      expect(rules.combo, 5);
+      expect(rules.pointsForNextDangerTap(), 150);
+
+      for (var i = 0; i < 15; i++) {
+        rules.resolveDangerTap();
+      }
+
+      expect(rules.combo, 20);
+      expect(rules.snapshot.comboMultiplier, 3);
+      expect(rules.pointsForNextDangerTap(), 300);
     });
 
     test('safe taps apply penalty and reset combo without removing lives', () {
@@ -35,7 +44,7 @@ void main() {
 
       final snapshot = rules.resolveSafeTap();
 
-      expect(snapshot.score, 15);
+      expect(snapshot.score, 150);
       expect(snapshot.combo, 0);
       expect(snapshot.lives, 3);
       expect(snapshot.lastEvent, XrayFeedbackEvent.safeTapped);
@@ -69,11 +78,42 @@ void main() {
 
       final snapshot = rules.resolveSafeBagClear();
 
-      expect(snapshot.score, 15);
+      expect(snapshot.score, 150);
       expect(snapshot.combo, 2);
       expect(snapshot.lives, 3);
       expect(snapshot.lastEvent, XrayFeedbackEvent.safeBagCleared);
     });
+
+    test(
+      'perfect safe bag clear grants flat bonus and uses clear multiplier',
+      () {
+        final rules = XrayInspectorRules();
+        for (var i = 0; i < 5; i++) {
+          rules.resolveDangerTap();
+        }
+
+        final snapshot = rules.resolveSafeBagClear(isPerfect: true);
+
+        expect(snapshot.score, 675);
+        expect(snapshot.combo, 6);
+        expect(snapshot.lastEvent, XrayFeedbackEvent.perfectBagCleared);
+      },
+    );
+
+    test(
+      'random tapping safe objects cancels a single danger score at base multiplier',
+      () {
+        final rules = XrayInspectorRules();
+
+        rules.resolveDangerTap();
+        rules.resolveSafeTap();
+        final snapshot = rules.resolveSafeTap();
+
+        expect(snapshot.score, 0);
+        expect(snapshot.combo, 0);
+        expect(snapshot.lives, 3);
+      },
+    );
 
     test('false clear removes one life and resets combo', () {
       final rules = XrayInspectorRules();
@@ -81,7 +121,7 @@ void main() {
 
       final snapshot = rules.resolveFalseClear();
 
-      expect(snapshot.score, 10);
+      expect(snapshot.score, 100);
       expect(snapshot.combo, 0);
       expect(snapshot.lives, 2);
       expect(snapshot.lastEvent, XrayFeedbackEvent.falseClear);

@@ -79,6 +79,7 @@ enum XrayFeedbackEvent {
   dangerFound,
   safeTapped,
   safeBagCleared,
+  perfectBagCleared,
   dangerMissed,
   falseClear,
 }
@@ -87,6 +88,7 @@ class XrayInspectorSnapshot {
   const XrayInspectorSnapshot({
     required this.score,
     required this.combo,
+    required this.comboMultiplier,
     required this.lives,
     required this.isGameOver,
     this.lastEvent = XrayFeedbackEvent.none,
@@ -94,6 +96,7 @@ class XrayInspectorSnapshot {
 
   final int score;
   final int combo;
+  final double comboMultiplier;
   final int lives;
   final bool isGameOver;
   final XrayFeedbackEvent lastEvent;
@@ -102,9 +105,13 @@ class XrayInspectorSnapshot {
 class XrayInspectorRules {
   XrayInspectorRules({this.startingLives = 3});
 
-  static const dangerTapBasePoints = 10;
-  static const safeTapPenalty = 5;
-  static const safeBagClearBonus = 5;
+  static const dangerTapBasePoints = 100;
+  static const safeTapPenalty = 50;
+  static const safeBagClearBonus = 50;
+  static const perfectBagBonus = 100;
+  static const comboStep = 5;
+  static const comboStepMultiplierBonus = 0.5;
+  static const maxComboMultiplier = 3.0;
 
   final int startingLives;
 
@@ -121,6 +128,7 @@ class XrayInspectorRules {
   XrayInspectorSnapshot get snapshot => XrayInspectorSnapshot(
     score: _score,
     combo: _combo,
+    comboMultiplier: comboMultiplierFor(_combo),
     lives: _lives,
     isGameOver: isGameOver,
     lastEvent: _lastEvent,
@@ -130,9 +138,13 @@ class XrayInspectorRules {
     return (dangerTapBasePoints * comboMultiplierFor(_combo)).round();
   }
 
+  int pointsForNextSafeBagClear() {
+    return (safeBagClearBonus * comboMultiplierFor(_combo)).round();
+  }
+
   double comboMultiplierFor(int combo) {
-    final bonusSteps = combo ~/ 10;
-    return 1 + (bonusSteps * 0.25);
+    final bonusSteps = combo ~/ comboStep;
+    return min(maxComboMultiplier, 1 + (bonusSteps * comboStepMultiplierBonus));
   }
 
   XrayInspectorSnapshot resolveDangerTap() {
@@ -140,7 +152,8 @@ class XrayInspectorRules {
       return snapshot;
     }
 
-    _score += pointsForNextDangerTap();
+    final points = pointsForNextDangerTap();
+    _score += points;
     _combo += 1;
     _lastEvent = XrayFeedbackEvent.dangerFound;
     return snapshot;
@@ -157,14 +170,20 @@ class XrayInspectorRules {
     return snapshot;
   }
 
-  XrayInspectorSnapshot resolveSafeBagClear() {
+  XrayInspectorSnapshot resolveSafeBagClear({bool isPerfect = false}) {
     if (isGameOver) {
       return snapshot;
     }
 
-    _score += safeBagClearBonus;
+    final points = pointsForNextSafeBagClear();
+    _score += points;
+    if (isPerfect) {
+      _score += perfectBagBonus;
+    }
     _combo += 1;
-    _lastEvent = XrayFeedbackEvent.safeBagCleared;
+    _lastEvent = isPerfect
+        ? XrayFeedbackEvent.perfectBagCleared
+        : XrayFeedbackEvent.safeBagCleared;
     return snapshot;
   }
 

@@ -63,7 +63,8 @@ Responsibilities:
 Current implementation note:
 
 - `xray_inspector_game.dart` renders the scanner, suitcase, object silhouettes, tap feedback, and clear action.
-- `xray_inspector_rules.dart` keeps danger taps, safe tap penalties, missed danger life loss, false clear, clear bonus, combo, and game-over behavior testable outside Flame.
+- `xray_inspector_rules.dart` keeps danger taps, safe tap penalties, missed danger life loss, false clear, clear bonus, perfect clear bonus, combo multiplier, and game-over behavior testable outside Flame.
+- `ad_break_rules.dart` keeps interstitial frequency and rewarded-continue eligibility testable outside the Google Mobile Ads SDK.
 
 ### UI Layer
 

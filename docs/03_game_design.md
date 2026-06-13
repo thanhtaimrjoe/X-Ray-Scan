@@ -4,9 +4,9 @@
 
 Endless score attack.
 
-## Approved Pivot: X-Ray Scan
+## Current Direction: X-Ray Scan
 
-The next gameplay direction replaces color-lane sorting with an x-ray suitcase inspection loop. The existing lane-sort MVP remains a prototype baseline, but new design work should prioritize the inspection mechanic.
+The current playable MVP uses an x-ray suitcase inspection loop. Players tap dangerous objects, avoid safe objects, and clear suitcases when no dangerous objects remain.
 
 ## Board Layout
 
@@ -38,17 +38,20 @@ Use a monochrome cyan/teal x-ray scanner palette with danger/safe readability dr
 
 Base score:
 
-- Dangerous object tapped: 10 points.
-- Safe object tapped: -5 points and combo reset.
-- Safe suitcase cleared: small bonus after tuning.
+- Dangerous object tapped: 100 points times the current combo multiplier.
+- Safe object tapped: -50 points and combo reset.
+- Safe suitcase cleared: 50 points times the current combo multiplier.
+- Perfect suitcase clear: flat 100 point bonus when the player clears a bag without false taps, missed danger items, or false clears.
 - Combo multiplier starts at 1.0.
-- Every 10 combo increases multiplier by 0.25.
+- Every 5 combo increases multiplier by 0.5.
+- Combo multiplier is capped at 3.0.
 
 Example:
 
-- Combo 0-9: 10 points.
-- Combo 10-19: 12 or 13 points.
-- Combo 20-29: 15 points.
+- Combo 0-4: 100 points per dangerous object.
+- Combo 5-9: 150 points per dangerous object.
+- Combo 10-14: 200 points per dangerous object.
+- Combo 20+: 300 points per dangerous object.
 
 ## Lives and Mistakes
 
@@ -56,22 +59,23 @@ Example:
 - Missed dangerous object: -1 life and combo reset.
 - Safe object tapped: score penalty and combo reset.
 - Game over at 0 lives.
+- Pressing Clear before a suitcase reaches the scanner does nothing.
 
 ## Difficulty Curve
 
 Difficulty increases through:
 
-- Falling speed.
-- Spawn interval.
-- Color variety.
-- Occasional near-back-to-back items.
+- Suitcase movement speed.
+- Number of objects in a suitcase.
+- Chance of multiple dangerous objects.
+- Visual clutter from overlapping safe and dangerous silhouettes.
 
 MVP tuning:
 
-- First 15 seconds: forgiving speed.
-- 15-45 seconds: gradual speed increase.
-- 45+ seconds: faster spawn interval.
-- Cap speed to avoid unfair gameplay.
+- First 15 seconds: forgiving suitcase speed and usually one dangerous object.
+- 15-45 seconds: gradual suitcase speed increase.
+- 35+ seconds: occasional suitcases with two dangerous objects.
+- Cap suitcase speed to avoid unfair taps on phone screens.
 
 ## Screens
 
@@ -89,6 +93,10 @@ MVP tuning:
 - Full-screen play field.
 - Score, combo, lives.
 - Pause button.
+- Portrait orientation locked.
+- HUD scales down on narrow/high-density phone screens to avoid overflow.
+- HUD shows score, combo, multiplier, and lives.
+- Momentary feedback labels such as MARKED, FALSE TAP, BAG CLEAR, PERFECT, MISS, and THREAT LEFT appear as scanner/playfield pulses instead of occupying persistent HUD space.
 - No banner ad during active gameplay for MVP.
 
 ### Pause
@@ -140,7 +148,7 @@ Prioritize:
 
 MVP can ship with minimal audio:
 
-- Correct sort sound.
+- Correct detection sound.
 - Mistake sound.
 - New high score sound.
 

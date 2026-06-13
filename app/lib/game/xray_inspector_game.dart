@@ -39,6 +39,7 @@ class XrayBag {
   final double yFactor;
   double x;
   double speed;
+  bool hadMistake = false;
 
   bool get hasDangerRemaining {
     return objects.any((object) => object.type.isDangerous && !object.found);
@@ -71,6 +72,7 @@ class XrayInspectorGame extends FlameGame {
   static const _cyanSoft = Color(0xFF67E8F9);
   static const _danger = Color(0xFFFF3B5C);
   static const _success = Color(0xFF37FFB5);
+  static const _perfect = Color(0xFFFFD166);
 
   final GameSnapshotChanged onSnapshotChanged;
   final GameFinished onGameFinished;
@@ -161,18 +163,32 @@ class XrayInspectorGame extends FlameGame {
 
     final center = _objectCenter(hit, _bagRect(bag));
     if (hit.type.isDangerous) {
+      final previousCombo = _rules.combo;
+      final points = _rules.pointsForNextDangerTap();
       hit.found = true;
-      _rules.resolveDangerTap();
+      final snapshot = _rules.resolveDangerTap();
       onItemDiscovered(hit.type);
       _pulses.add(
-        XrayPulse(center: center, color: _success, label: '+10', age: 0),
+        XrayPulse(
+          center: center,
+          color: _success,
+          label: 'MARKED +$points',
+          age: 0,
+        ),
       );
+      _addComboMilestonePulse(previousCombo, snapshot);
     } else {
+      bag.hadMistake = true;
       hit.flashAge = 0;
       _rules.resolveSafeTap();
       _screenFlash = 0.18;
       _pulses.add(
-        XrayPulse(center: center, color: _danger, label: '-5', age: 0),
+        XrayPulse(
+          center: center,
+          color: _danger,
+          label: 'FALSE TAP -${XrayInspectorRules.safeTapPenalty}',
+          age: 0,
+        ),
       );
     }
 
@@ -189,14 +205,19 @@ class XrayInspectorGame extends FlameGame {
       return;
     }
 
+    if (!_bagCanBeCleared(bag)) {
+      return;
+    }
+
     if (bag.hasDangerRemaining) {
+      bag.hadMistake = true;
       _rules.resolveFalseClear();
       _screenFlash = 0.28;
       _pulses.add(
         XrayPulse(
           center: _bagRect(bag).center,
           color: _danger,
-          label: 'HOLD',
+          label: 'THREAT LEFT!',
           age: 0,
         ),
       );
@@ -211,16 +232,30 @@ class XrayInspectorGame extends FlameGame {
         onItemDiscovered(object.type);
       }
     }
-    _rules.resolveSafeBagClear();
+    final previousCombo = _rules.combo;
+    final clearPoints = _rules.pointsForNextSafeBagClear();
+    final isPerfect = !bag.hadMistake;
+    final clearSnapshot = _rules.resolveSafeBagClear(isPerfect: isPerfect);
     _pulses.add(
       XrayPulse(
         center: _bagRect(bag).center,
         color: _success,
-        label: '+5 CLEAR',
+        label: 'BAG CLEAR +$clearPoints',
         age: 0,
       ),
     );
-    onSnapshotChanged(snapshot);
+    if (isPerfect) {
+      _pulses.add(
+        XrayPulse(
+          center: _bagRect(bag).center.translate(0, -34),
+          color: _perfect,
+          label: 'PERFECT +${XrayInspectorRules.perfectBagBonus}',
+          age: 0,
+        ),
+      );
+    }
+    _addComboMilestonePulse(previousCombo, clearSnapshot);
+    onSnapshotChanged(clearSnapshot);
     _spawnBag();
   }
 
@@ -329,6 +364,12 @@ class XrayInspectorGame extends FlameGame {
     );
   }
 
+  bool _bagCanBeCleared(XrayBag bag) {
+    final rect = _bagRect(bag);
+    final scanner = _scannerRect;
+    return rect.right >= scanner.left && rect.left <= scanner.right;
+  }
+
   List<Offset> get _bagSlots => const [
     Offset(-0.31, -0.23),
     Offset(-0.05, -0.25),
@@ -345,6 +386,33 @@ class XrayInspectorGame extends FlameGame {
       _finished = true;
       onGameFinished(snapshot);
     }
+  }
+
+  void _addComboMilestonePulse(
+    int previousCombo,
+    XrayInspectorSnapshot snapshot,
+  ) {
+    if (snapshot.combo <= previousCombo ||
+        snapshot.combo % XrayInspectorRules.comboStep != 0 ||
+        snapshot.comboMultiplier <= 1) {
+      return;
+    }
+
+    _pulses.add(
+      XrayPulse(
+        center: _scannerRect.topCenter.translate(0, 34),
+        color: _perfect,
+        label: 'COMBO x${_formatMultiplier(snapshot.comboMultiplier)}!',
+        age: 0,
+      ),
+    );
+  }
+
+  String _formatMultiplier(double multiplier) {
+    if (multiplier == multiplier.roundToDouble()) {
+      return multiplier.toStringAsFixed(0);
+    }
+    return multiplier.toStringAsFixed(1);
   }
 
   void _paintBackground(Canvas canvas) {

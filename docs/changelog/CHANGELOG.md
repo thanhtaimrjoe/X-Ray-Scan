@@ -5,6 +5,231 @@
 
 ---
 
+## [2026-06-13 12:33] - Simplify gameplay HUD feedback
+
+**Owner**: AI Assistant
+**Type**: Bugfix
+**Related US**: US-008, US-012
+**Impact Scope**: Gameplay, Docs, Test
+
+### Changes
+- Removed persistent action feedback text from the gameplay HUD.
+- Kept action feedback as scanner/playfield pulses so Score, Combo, and Lives remain easier to read during active play.
+- Updated game design notes to clarify that momentary feedback labels should not occupy HUD space.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `docs/03_game_design.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: Physical-device playtesting showed labels such as PERFECT and THREAT LEFT consumed too much top-HUD width and made score harder to scan.
+- Technical decision: Keep HUD focused on persistent state and keep event feedback near the relevant suitcase/object interaction.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed (installed and launched debug APK on Samsung device `RFCX80NW55E`)
+- [x] Error handling checked (`flutter test`, `flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- Product owner should confirm the simplified HUD is easier to scan during active play.
+
+---
+
+## [2026-06-13 12:25] - Revise arcade scoring and feedback
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-002, US-003, US-008, US-009, US-012
+**Impact Scope**: Gameplay, Docs, Test
+
+### Changes
+- Increased scoring scale to 100-point danger taps, 50-point clear bonuses, and 50-point safe-tap penalties.
+- Changed combo multiplier progression to +0.5 every 5 combo, capped at x3.0.
+- Added a flat 100-point perfect bag bonus for clean clears.
+- Updated gameplay feedback labels from debug-style text to player-facing labels such as SCAN, MARKED, FALSE TAP, BAG CLEAR, PERFECT, and THREAT LEFT.
+- Added a Clear guard so pressing Clear before the suitcase reaches the scanner does nothing.
+- Added combo multiplier text to the HUD and combo milestone pulse feedback.
+
+### Implementation Details
+- File: `app/lib/game/systems/xray_inspector_rules.dart`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/lib/main.dart`
+- File: `app/test/game/xray_inspector_rules_test.dart`
+- File: `docs/03_game_design.md`
+- File: `docs/05_technical_spec.md`
+- File: `docs/07_tracking/progress.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: Claude's game-design review and local brainstorming both identified low score scale and slow combo progression as the highest-impact game-feel issues.
+- Technical decision: Keep perfect clear as a flat bonus outside the multiplier and keep false safe taps as score plus combo penalties without life loss.
+
+### Tests
+- [x] Unit tests added/updated
+- [x] Manual playtest completed (installed and launched debug APK on Samsung device `RFCX80NW55E`)
+- [x] Error handling checked (`flutter test`, `flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- Revised scoring needs physical-device feel testing for readability, reward pacing, and random-tap resistance.
+
+---
+
+## [2026-06-13 11:55] - Add ad break rules tests
+
+**Owner**: AI Assistant
+**Type**: Test
+**Related US**: US-004, US-005
+**Impact Scope**: Ads, Gameplay, Docs, Test, Policy
+
+### Changes
+- Added testable rules for interstitial ad frequency.
+- Added rewarded-continue eligibility rules that prevent chained continues in the same round.
+- Added unit tests covering first-launch safety, frequency caps, counter reset, and rewarded availability.
+- Updated technical spec and progress tracking for the new ad break rules layer.
+
+### Implementation Details
+- File: `app/lib/game/systems/ad_break_rules.dart`
+- File: `app/test/game/ad_break_rules_test.dart`
+- File: `docs/05_technical_spec.md`
+- File: `docs/07_tracking/progress.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: Interstitial and rewarded ads should have test-covered policy/frequency behavior before SDK integration.
+- Technical decision: Keep ad break decisions independent from Flame and Google Mobile Ads so they can be unit tested before being wired into game-over flows.
+
+### Tests
+- [x] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked (`flutter test`, `flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (rules prevent first-launch/every-round interstitials and chained rewarded continues)
+
+### Notes
+- SDK integration for interstitial and rewarded test ads remains pending.
+
+---
+
+## [2026-06-13 11:33] - Add AdMob test banners
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-004
+**Impact Scope**: Ads, Gameplay, Android, Docs, Policy
+
+### Changes
+- Initialized the Google Mobile Ads SDK during app startup.
+- Added AdMob test banner widgets on the main menu and game-over screens.
+- Removed the banner placeholder from the item database so real ads stay limited to approved MVP placements.
+- Updated release checklist and progress tracking for banner ad integration.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `app/lib/services/ads_service.dart`
+- File: `docs/06_release_checklist.md`
+- File: `docs/07_tracking/progress.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: Continue the MVP plan by replacing menu/game-over banner placeholders with AdMob test banners while avoiding active gameplay ad placement.
+- Technical decision: Use Google's Android banner test ad unit ID and keep a local fallback placeholder for tests or unsupported plugin environments.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed (installed on Samsung device `RFCX80NW55E`; test banner loaded on main menu)
+- [x] Error handling checked (`flutter test`, `flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (test banner ID only; no active gameplay ads; no production IDs added)
+
+### Notes
+- Interstitial and rewarded ad formats remain pending and should get frequency/continue rule tests first.
+- Game-over banner should be checked during the next gameplay smoke pass.
+
+---
+
+## [2026-06-13 11:30] - Sync plan and specs after device playtest
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-002, US-003, US-008, US-011, US-012
+**Impact Scope**: Gameplay, Android, Docs, Release
+
+### Changes
+- Replaced stale lane-sort user stories with x-ray danger detection and inspection-combo requirements.
+- Added user stories for portrait orientation lock and HUD overflow safety based on Galaxy S24 playtesting.
+- Updated difficulty tuning notes from falling/color-lane language to suitcase speed, object count, and visual clutter.
+- Marked Android manual playtest complete and refreshed progress next steps.
+
+### Implementation Details
+- File: `docs/02_user_stories.md`
+- File: `docs/03_game_design.md`
+- File: `docs/06_release_checklist.md`
+- File: `docs/07_tracking/progress.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: The project plan called out stale lane-sort docs after the X-Ray Scan pivot, and physical-device testing has now validated the current gameplay baseline.
+- Technical decision: Keep the existing story numbering stable for core MVP stories and add new US-011/US-012 for the concrete device issues found during manual playtest.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed (Samsung device HUD/pause and portrait-lock checks)
+- [x] Error handling checked (documentation-only change after prior `flutter test`, `flutter analyze`, and debug APK install)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- Next implementation slice should focus on production-ready item visuals or AdMob test banner integration.
+
+---
+
+## [2026-06-13 11:28] - Lock app to portrait orientation
+
+**Owner**: AI Assistant
+**Type**: Bugfix
+**Related US**: US-008
+**Impact Scope**: Gameplay, Android, Docs, Test
+
+### Changes
+- Locked the Flutter app to portrait orientation before startup.
+- Added an Android activity portrait orientation guard so the gameplay screen cannot rotate into landscape.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `app/android/app/src/main/AndroidManifest.xml`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: The X-Ray Scan gameplay layout is designed for portrait phones and should not rotate sideways during physical-device playtesting.
+- Technical decision: Use both Flutter `SystemChrome.setPreferredOrientations` and Android `screenOrientation="portrait"` so the orientation policy is enforced at the framework and activity levels.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed (installed and launched debug APK on Samsung device `RFCX80NW55E`)
+- [x] Error handling checked (`flutter test`, `flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- Product owner should rotate the Galaxy S24 during gameplay to confirm the app remains portrait locked.
+
+---
+
+## [2026-06-13 11:05] - Fix gameplay HUD overflow on Galaxy S24
+
+**Owner**: AI Assistant
+**Type**: Bugfix
+**Related US**: US-008
+**Impact Scope**: Gameplay, Docs, Test
+
+### Changes
+- Fixed the gameplay HUD and pause button row so it stays inside the safe area on narrow/high-density Android screens.
+- Added scale-down behavior for HUD text to prevent right-side overflow when score, combo, lives, and status labels share the top row.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: Manual testing on a Samsung Galaxy S24 showed a Flutter right overflow beside the pause button.
+- Technical decision: Keep the existing HUD content but give it bounded width with `Expanded`, a fixed pause button slot, and `FittedBox` scale-down for the HUD text row.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed (emulator smoke check of gameplay HUD layout)
+- [x] Error handling checked (`flutter test`, `flutter analyze`, `flutter build apk --debug`)
+- [x] Policy/ad placement checked (no ad behavior changed; no live ads or production IDs added)
+
+### Notes
+- Product owner should reinstall the updated debug APK on the Galaxy S24 to confirm the physical-device overflow is gone.
+
+---
+
 ## [2026-06-13 00:20] - Create renamed local workspace folder
 
 **Owner**: AI Assistant
