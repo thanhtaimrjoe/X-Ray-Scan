@@ -47,19 +47,23 @@ This file tracks the current project state so future AI assistants and contribut
 - Added a 3-level progression vertical slice with objectives, stars, unlock persistence, and level clear/fail screens.
 - Added pure Dart level progression rules and storage persistence for highest unlocked level, best scores, and best stars.
 - Connected gameplay spawning to per-level danger/safe pools and speed tuning.
+- Expanded `Airport Basics` from the 3-level slice to a full 10-level pack with late-pack danger introductions and broader safe-item clutter.
+- Updated progression tests and persistence coverage so level unlocks clamp and render correctly across the full 10-level pack.
+- Wired interstitial and rewarded ads using Google Mobile Ads SDK to level clear/fail breakpoints, implementing rewarded continues.
 - Verified:
-  - `flutter test` (30 tests)
+  - `flutter test` (34 tests)
   - `flutter analyze`
   - `flutter build apk --debug`
   - Samsung device install/launch through ADB (`RFCX80NW55E`)
 
 ## In Progress
 
-- Expand the 3-level vertical slice toward the full 10-level `Airport Basics` pack if playtesting feels good.
+- Level select screen (allow replaying any unlocked level from main menu).
+- Sound engine integration using `_soundEnabled` flag.
 
 ## Handoff Notes
 
-- Active branch: `codex/neon-arcade-visuals`.
+- Active branch: `copilot`.
 - Remote repository: `https://github.com/thanhtaimrjoe/X-Ray-Scan.git`.
 - Current product/app name: `X-Ray Scan`, not the original color lane-sort prototype name.
 - Android package/application ID remains `com.auren.tapsortrush`.
@@ -86,22 +90,20 @@ This file tracks the current project state so future AI assistants and contribut
 - Current renamed workspace path: `C:\Users\hanak\Documents\X-Ray-Scan`.
 - The old active Codex session folder may remain at `C:\Users\hanak\Documents\Tap-Sort-Rush` until the session releases its Windows file lock.
 - A temporary clone exists at `C:\Users\hanak\Documents\Tap-Sort-Rush-Temp`; it has no known unique changes beyond the pushed pause commit, but verify before deleting.
-- Next agent should expand the level pack beyond the current 3-level vertical slice, then wire interstitial/rewarded SDK calls to level clear/fail breakpoints when requested.
+- Next agent should continue polish/tuning on the 10-level pack and validate the integrated interstitial/rewarded test-ad flows on device.
 
 ## Next Steps
 
-1. Expand the first level pack toward 10 `Airport Basics` levels if the vertical slice feels good.
-2. Tie item unlock pacing to level progression, especially danger item introductions beyond the first three levels.
-4. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
-5. Implement interstitial and rewarded ads using Google test ad unit IDs after level clear/fail flow exists.
-6. Tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.
+1. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
+2. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
+3. Tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.
 
 ## Known Gaps
 
 - X-ray objects need production-ready in-game assets extracted or redrawn from the approved visual benchmark.
 - Gameplay can still benefit from additional tuning passes after more physical-device playtests.
-- The game needs a level-based journey because pure endless score attack lost excitement after several playtest rounds.
-- Interstitial and rewarded ads have rules/tests but are not integrated with the SDK yet.
+- The game now has a 10-level journey, but it still needs tuning passes to validate pacing and clarity on physical devices.
+- Interstitial and rewarded ads are integrated with Google test IDs, but still need physical-device flow validation.
 - No production AdMob IDs yet.
 - No release signing config yet.
 - No privacy policy URL yet.

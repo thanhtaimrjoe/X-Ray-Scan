@@ -12,9 +12,14 @@ X-Ray Scan is an Android-first casual mini game for Google Play. The product goa
 
 ### Project Roles
 
-- **PM**: Codex / AI Assistant
+- **PM**: Codex / AI Assistant (on `main` branch)
 - **Product Owner**: Tai
-- **Developer**: AI Assistants and future human contributors
+- **Developer**: Copilot / AI Assistant (on `copilot` branch) and future human contributors
+
+### Git Branches
+
+- `main`: Main production/stable branch (previously `codex/neon-arcade-visuals`). All merges go here.
+- `copilot`: Active development branch for Copilot. Work here, then pull request/merge to `main`.
 
 ### Critical Rule
 

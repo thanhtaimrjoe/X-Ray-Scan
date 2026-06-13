@@ -33,6 +33,15 @@ void main() {
       expect(snapshot.bestStars, isEmpty);
     });
 
+    test('clamps stored highest unlocked level to the 10-level pack', () async {
+      SharedPreferences.setMockInitialValues({
+        StorageService.highestUnlockedLevelKey: 99,
+      });
+      final storage = await StorageService.load();
+
+      expect(storage.getHighestUnlockedLevel(), 10);
+    });
+
     test('persists unlock, best score, and best stars after restart', () async {
       SharedPreferences.setMockInitialValues({});
       final storage = await StorageService.load();

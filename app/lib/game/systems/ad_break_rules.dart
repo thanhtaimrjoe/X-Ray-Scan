@@ -22,8 +22,11 @@ class AdBreakRules {
     return state.copyWith(
       completedRounds: state.completedRounds + 1,
       roundsSinceInterstitial: state.roundsSinceInterstitial + 1,
-      rewardedContinueUsed: false,
     );
+  }
+
+  AdBreakState onLevelAttemptStarted(AdBreakState state) {
+    return state.copyWith(rewardedContinueUsed: false);
   }
 
   AdBreakState onInterstitialShown(AdBreakState state) {

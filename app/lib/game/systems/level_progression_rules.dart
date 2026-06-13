@@ -136,7 +136,7 @@ class LevelProgressUpdate {
 class LevelProgressionRules {
   LevelProgressionRules._();
 
-  static const int maxLevelNumber = 3;
+  static const int maxLevelNumber = 10;
 
   static int clampHighestUnlocked(int value) {
     return value.clamp(1, maxLevelNumber);
@@ -148,7 +148,7 @@ class LevelProgressionRules {
       throw ArgumentError.value(
         levelNumber,
         'levelNumber',
-        'Only levels 1-$maxLevelNumber are available in the vertical slice.',
+        'Only levels 1-$maxLevelNumber are available in Airport Basics.',
       );
     }
     return levelCatalog[index];
@@ -268,7 +268,7 @@ class LevelProgressionRules {
   }
 }
 
-/// First 3-level vertical slice from the Airport Basics pack.
+/// Airport Basics level pack.
 const List<LevelConfig> levelCatalog = [
   LevelConfig(
     levelNumber: 1,
@@ -316,6 +316,171 @@ const List<LevelConfig> levelCatalog = [
     baseBagSpeed: 78,
     maxBagSpeed: 128,
     speedRampSeconds: 35,
+    allowTwoDangerBags: true,
+  ),
+  LevelConfig(
+    levelNumber: 4,
+    bagsToClear: 5,
+    dangerPool: [
+      XrayObjectType.knife,
+      XrayObjectType.scissors,
+      XrayObjectType.lighter,
+    ],
+    safePool: [
+      XrayObjectType.phone,
+      XrayObjectType.bottle,
+      XrayObjectType.sandwich,
+      XrayObjectType.laptop,
+    ],
+    twoStarScore: 900,
+    threeStarScore: 1300,
+    baseBagSpeed: 82,
+    maxBagSpeed: 132,
+    speedRampSeconds: 34,
+    allowTwoDangerBags: true,
+  ),
+  LevelConfig(
+    levelNumber: 5,
+    bagsToClear: 6,
+    dangerPool: [
+      XrayObjectType.knife,
+      XrayObjectType.scissors,
+      XrayObjectType.lighter,
+      XrayObjectType.razor,
+    ],
+    safePool: [
+      XrayObjectType.phone,
+      XrayObjectType.bottle,
+      XrayObjectType.keys,
+      XrayObjectType.sandwich,
+    ],
+    twoStarScore: 1050,
+    threeStarScore: 1500,
+    baseBagSpeed: 86,
+    maxBagSpeed: 138,
+    speedRampSeconds: 32,
+    allowTwoDangerBags: true,
+  ),
+  LevelConfig(
+    levelNumber: 6,
+    bagsToClear: 6,
+    dangerPool: [
+      XrayObjectType.knife,
+      XrayObjectType.scissors,
+      XrayObjectType.lighter,
+      XrayObjectType.razor,
+    ],
+    safePool: [
+      XrayObjectType.phone,
+      XrayObjectType.bottle,
+      XrayObjectType.keys,
+      XrayObjectType.sandwich,
+      XrayObjectType.headphones,
+    ],
+    twoStarScore: 1150,
+    threeStarScore: 1650,
+    baseBagSpeed: 90,
+    maxBagSpeed: 144,
+    speedRampSeconds: 30,
+    allowTwoDangerBags: true,
+  ),
+  LevelConfig(
+    levelNumber: 7,
+    bagsToClear: 7,
+    dangerPool: [
+      XrayObjectType.knife,
+      XrayObjectType.scissors,
+      XrayObjectType.lighter,
+      XrayObjectType.razor,
+    ],
+    safePool: [
+      XrayObjectType.phone,
+      XrayObjectType.bottle,
+      XrayObjectType.keys,
+      XrayObjectType.sandwich,
+      XrayObjectType.laptop,
+      XrayObjectType.headphones,
+    ],
+    twoStarScore: 1300,
+    threeStarScore: 1850,
+    baseBagSpeed: 94,
+    maxBagSpeed: 150,
+    speedRampSeconds: 28,
+    allowTwoDangerBags: true,
+  ),
+  LevelConfig(
+    levelNumber: 8,
+    bagsToClear: 7,
+    dangerPool: [
+      XrayObjectType.knife,
+      XrayObjectType.scissors,
+      XrayObjectType.lighter,
+      XrayObjectType.razor,
+      XrayObjectType.batteryPack,
+    ],
+    safePool: [
+      XrayObjectType.phone,
+      XrayObjectType.bottle,
+      XrayObjectType.keys,
+      XrayObjectType.sandwich,
+      XrayObjectType.laptop,
+      XrayObjectType.headphones,
+    ],
+    twoStarScore: 1450,
+    threeStarScore: 2050,
+    baseBagSpeed: 98,
+    maxBagSpeed: 156,
+    speedRampSeconds: 26,
+    allowTwoDangerBags: true,
+  ),
+  LevelConfig(
+    levelNumber: 9,
+    bagsToClear: 8,
+    dangerPool: [
+      XrayObjectType.knife,
+      XrayObjectType.scissors,
+      XrayObjectType.lighter,
+      XrayObjectType.razor,
+      XrayObjectType.batteryPack,
+    ],
+    safePool: [
+      XrayObjectType.phone,
+      XrayObjectType.bottle,
+      XrayObjectType.keys,
+      XrayObjectType.sandwich,
+      XrayObjectType.laptop,
+      XrayObjectType.headphones,
+    ],
+    twoStarScore: 1650,
+    threeStarScore: 2300,
+    baseBagSpeed: 104,
+    maxBagSpeed: 164,
+    speedRampSeconds: 24,
+    allowTwoDangerBags: true,
+  ),
+  LevelConfig(
+    levelNumber: 10,
+    bagsToClear: 10,
+    dangerPool: [
+      XrayObjectType.knife,
+      XrayObjectType.scissors,
+      XrayObjectType.lighter,
+      XrayObjectType.razor,
+      XrayObjectType.batteryPack,
+    ],
+    safePool: [
+      XrayObjectType.phone,
+      XrayObjectType.bottle,
+      XrayObjectType.keys,
+      XrayObjectType.sandwich,
+      XrayObjectType.laptop,
+      XrayObjectType.headphones,
+    ],
+    twoStarScore: 2000,
+    threeStarScore: 2750,
+    baseBagSpeed: 110,
+    maxBagSpeed: 172,
+    speedRampSeconds: 22,
     allowTwoDangerBags: true,
   ),
 ];

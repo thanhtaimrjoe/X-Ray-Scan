@@ -5,6 +5,137 @@
 
 ---
 
+## [2026-06-13 15:14] - Review ad continue flow before main merge
+
+**Owner**: AI Assistant
+**Type**: Bugfix/Test/Docs
+**Related US**: US-004, US-005
+**Impact Scope**: Ads, Gameplay, Docs, Policy
+
+### Changes
+- Fixed rewarded-continue eligibility so it resets only when a new level attempt starts, preventing repeat continues in the same attempt after a second failure.
+- Cleared consumed rewarded ads before showing them and guarded ad load failure callbacks after widget disposal.
+- Updated ad break tests and progress notes to reflect integrated interstitial/rewarded test-ad flows.
+
+### Implementation Details
+- File: `app/lib/game/systems/ad_break_rules.dart`
+- File: `app/lib/main.dart`
+- File: `app/test/game/ad_break_rules_test.dart`
+- File: `docs/07_tracking/progress.md`
+- Reason: Code review found that `onRoundCompleted()` reset rewarded continue state too early for a resumed level attempt.
+- Technical decision: Treat rewarded continue eligibility as level-attempt state, while keeping interstitial counters as completed-break counters.
+
+### Tests
+- [x] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- Physical-device validation of the new rewarded/interstitial SDK flow is still recommended before release.
+
+---
+
+## [2026-06-13 14:40] - Wire interstitial and rewarded ads to level clear/fail breakpoints
+
+**Owner**: Copilot
+**Type**: Feature
+**Related US**: N/A
+**Impact Scope**: Ads, Gameplay, Policy
+
+### Changes
+- Added `androidTestInterstitialAdUnitId` and `androidTestRewardedAdUnitId` to `AdsService`.
+- Added `loadInterstitial()` and `loadRewarded()` static helpers to `AdsService`.
+- Added `grantContinueLife()` to `XrayInspectorRules` to restore 1 life for rewarded continue.
+- Added `grantContinue()` to `XrayInspectorGame` to restore life and resume engine.
+- Wired `AdBreakState` and `AdBreakRules` into `_AppShellState` with preloading on init and reload after each show.
+- Interstitial shown (if loaded) after level clear or fail when `shouldShowInterstitial` returns true.
+- Rewarded continue button shown on `LevelFailedScreen` when `canOfferRewardedContinue` is true.
+- On reward granted: restores 1 life, marks `rewardedContinueUsed`, resumes gameplay screen.
+- Added two widget tests for `LevelFailedScreen` continue button visibility.
+- Added two unit tests for `grantContinueLife()` behavior.
+
+### Implementation Details
+- File: `app/lib/services/ads_service.dart` — added interstitial/rewarded test unit IDs and load helpers
+- File: `app/lib/game/systems/xray_inspector_rules.dart` — added `grantContinueLife()`
+- File: `app/lib/game/xray_inspector_game.dart` — added `grantContinue()`
+- File: `app/lib/main.dart` — ads state, load/show, rewarded continue flow, `LevelFailedScreen` new params
+- File: `app/test/game/xray_inspector_rules_test.dart` — two new `grantContinueLife` tests
+- File: `app/test/widget_test.dart` — two new `LevelFailedScreen` widget tests
+- Technical decision: Use Google test ad unit IDs only. Live IDs must be added by owner before release.
+- Policy: Rewarded continue limited to once per level attempt via `rewardedContinueUsed`. Interstitial blocked until minimum 3 rounds.
+
+### Tests
+- [x] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- Live interstitial and rewarded ad unit IDs must replace test IDs in production release before publishing.
+- Sound engine still not wired — `_soundEnabled` toggle is persisted but unused by audio.
+- Level select screen (replay any level) still not implemented.
+
+---
+
+## [2026-06-13 14:30] - Update branch names and setup copilot branch
+
+**Owner**: Copilot
+**Type**: Chore
+**Related US**: N/A
+**Impact Scope**: Docs, Android, Gameplay
+
+### Changes
+- Updated `AGENTS.md` to reflect `main` branch (renamed from `codex/neon-arcade-visuals`) and `copilot` development branch.
+- Committed all current changes to `copilot` branch.
+- Cleaned up local tracking branches.
+
+### Implementation Details
+- File: `AGENTS.md`
+- Reason: Branch renamed on origin, local branch needs aligning.
+
+### Tests
+- [x] Branch setup tested
+- [x] Remote updated
+
+---
+
+## [2026-06-13 13:52] - Expand Airport Basics level pack
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-001, US-004, US-008, US-010
+**Impact Scope**: Gameplay, Docs, Test, Progression
+
+### Changes
+- Expanded `Airport Basics` from the shipped 3-level slice to a full 10-level pack.
+- Added later-pack danger introductions for `Razor` at level 5 and `Power Bank` at level 8 while broadening safe-item clutter and speed pressure across levels 4-10.
+- Updated progression, persistence, and widget tests so the app clamps and displays unlock progress correctly across the full pack.
+- Updated game design and tracking docs so the next implementation slice starts from the 10-level baseline instead of the old vertical-slice handoff.
+
+### Implementation Details
+- File: `app/lib/game/systems/level_progression_rules.dart`
+- File: `app/test/game/level_progression_rules_test.dart`
+- File: `app/test/services/storage_service_test.dart`
+- File: `app/test/widget_test.dart`
+- File: `docs/03_game_design.md`
+- File: `docs/07_tracking/progress.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: The current branch already proved the level-clear loop; the next product milestone was to expand the first pack before wiring interstitial/rewarded ads.
+- Technical decision: Keep the existing bag-clear objective model and generic UI flow, and scale content by extending the level catalog rather than adding a new map or objective system in the same change.
+
+### Tests
+- [x] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked (no active gameplay ad placement changed)
+
+### Notes
+- The next implementation milestone is SDK wiring for interstitial and rewarded ads at level clear/fail breakpoints.
+- Physical-device tuning is still needed now that the pack extends to 10 levels.
+
+---
+
 ## [2026-06-13 14:30] - 3-level progression vertical slice
 
 **Owner**: AI Assistant

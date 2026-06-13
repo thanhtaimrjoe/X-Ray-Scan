@@ -107,7 +107,7 @@ void main() {
     });
 
     test(
-      'new round resets rewarded continue eligibility and increments round counters',
+      'completed round keeps rewarded continue locked until a new attempt starts',
       () {
         const rules = AdBreakRules();
         const state = AdBreakState(rewardedContinueUsed: true);
@@ -116,8 +116,23 @@ void main() {
 
         expect(updated.completedRounds, 1);
         expect(updated.roundsSinceInterstitial, 1);
-        expect(updated.rewardedContinueUsed, isFalse);
+        expect(updated.rewardedContinueUsed, isTrue);
       },
     );
+
+    test('new level attempt resets rewarded continue eligibility', () {
+      const rules = AdBreakRules();
+      const state = AdBreakState(
+        completedRounds: 2,
+        roundsSinceInterstitial: 2,
+        rewardedContinueUsed: true,
+      );
+
+      final updated = rules.onLevelAttemptStarted(state);
+
+      expect(updated.completedRounds, 2);
+      expect(updated.roundsSinceInterstitial, 2);
+      expect(updated.rewardedContinueUsed, isFalse);
+    });
   });
 }

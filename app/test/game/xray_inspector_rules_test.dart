@@ -126,5 +126,26 @@ void main() {
       expect(snapshot.lives, 2);
       expect(snapshot.lastEvent, XrayFeedbackEvent.falseClear);
     });
+
+    test('grantContinueLife restores 1 life when game over', () {
+      final rules = XrayInspectorRules();
+      rules.resolveMissedDanger();
+      rules.resolveMissedDanger();
+      rules.resolveMissedDanger();
+      expect(rules.isGameOver, isTrue);
+
+      final snapshot = rules.grantContinueLife();
+      expect(snapshot.lives, 1);
+      expect(snapshot.isGameOver, isFalse);
+    });
+
+    test('grantContinueLife does nothing when lives > 0', () {
+      final rules = XrayInspectorRules();
+      rules.resolveMissedDanger();
+      expect(rules.lives, 2);
+
+      final snapshot = rules.grantContinueLife();
+      expect(snapshot.lives, 2);
+    });
   });
 }

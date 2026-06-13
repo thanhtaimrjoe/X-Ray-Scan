@@ -209,6 +209,14 @@ class XrayInspectorRules {
     return snapshot;
   }
 
+  XrayInspectorSnapshot grantContinueLife() {
+    if (_lives <= 0) {
+      _lives = 1;
+      _lastEvent = XrayFeedbackEvent.none;
+    }
+    return snapshot;
+  }
+
   void _applyLifeMistake(XrayFeedbackEvent event) {
     _combo = 0;
     _lives -= 1;

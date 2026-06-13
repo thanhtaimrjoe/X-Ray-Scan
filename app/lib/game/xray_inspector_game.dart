@@ -413,6 +413,16 @@ class XrayInspectorGame extends FlameGame {
     }
   }
 
+  /// Called when the player earns a rewarded continue. Restores 1 life
+  /// and resumes the game so the player can keep playing the current level.
+  void grantContinue() {
+    if (!_rules.isGameOver) return;
+    _rules.grantContinueLife();
+    _finished = false;
+    onSnapshotChanged(snapshot);
+    resumeEngine();
+  }
+
   void _finishLevelComplete(XrayInspectorSnapshot snapshot) {
     if (_finished) {
       return;

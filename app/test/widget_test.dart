@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xray_scan/main.dart';
@@ -40,4 +41,72 @@ void main() {
     expect(find.text('0/5 discovered'), findsOneWidget);
     expect(find.text('???'), findsWidgets);
   });
+
+  testWidgets('main menu reflects highest unlocked level in the full pack', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'high_score': 120,
+      'highest_unlocked_level': 10,
+    });
+
+    await tester.pumpWidget(const XrayScanApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text('PLAY LEVEL 10'), findsOneWidget);
+    expect(find.text('Level 10 unlocked'), findsOneWidget);
+  });
+
+  testWidgets('LevelFailedScreen shows continue button when ad is available', (
+    tester,
+  ) async {
+    var continuePressed = false;
+    var retryPressed = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: LevelFailedScreen(
+          levelNumber: 1,
+          score: 300,
+          bagsCleared: 2,
+          bagsToClear: 3,
+          onRetry: () => retryPressed = true,
+          onMenu: () {},
+          canContinueWithAd: true,
+          onContinueWithAd: () => continuePressed = true,
+        ),
+      ),
+    );
+
+    expect(find.text('CONTINUE (WATCH AD)'), findsOneWidget);
+    await tester.tap(find.text('CONTINUE (WATCH AD)'));
+    await tester.pump();
+    expect(continuePressed, isTrue);
+
+    await tester.tap(find.text('RETRY'));
+    await tester.pump();
+    expect(retryPressed, isTrue);
+  });
+
+  testWidgets(
+    'LevelFailedScreen hides continue button when ad is not available',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: LevelFailedScreen(
+            levelNumber: 1,
+            score: 300,
+            bagsCleared: 2,
+            bagsToClear: 3,
+            onRetry: () {},
+            onMenu: () {},
+            canContinueWithAd: false,
+            onContinueWithAd: () {},
+          ),
+        ),
+      );
+
+      expect(find.text('CONTINUE (WATCH AD)'), findsNothing);
+    },
+  );
 }

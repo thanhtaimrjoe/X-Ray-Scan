@@ -6,6 +6,10 @@ class AdsService {
 
   static const androidTestBannerAdUnitId =
       'ca-app-pub-3940256099942544/6300978111';
+  static const androidTestInterstitialAdUnitId =
+      'ca-app-pub-3940256099942544/1033173712';
+  static const androidTestRewardedAdUnitId =
+      'ca-app-pub-3940256099942544/5224354917';
 
   static Future<void> initialize() async {
     try {
@@ -21,6 +25,34 @@ class AdsService {
       adUnitId: androidTestBannerAdUnitId,
       listener: listener,
       request: const AdRequest(),
+    );
+  }
+
+  static void loadInterstitial({
+    required ValueChanged<InterstitialAd> onAdLoaded,
+    required ValueChanged<LoadAdError> onAdFailedToLoad,
+  }) {
+    InterstitialAd.load(
+      adUnitId: androidTestInterstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: onAdLoaded,
+        onAdFailedToLoad: onAdFailedToLoad,
+      ),
+    );
+  }
+
+  static void loadRewarded({
+    required ValueChanged<RewardedAd> onAdLoaded,
+    required ValueChanged<LoadAdError> onAdFailedToLoad,
+  }) {
+    RewardedAd.load(
+      adUnitId: androidTestRewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: onAdLoaded,
+        onAdFailedToLoad: onAdFailedToLoad,
+      ),
     );
   }
 }

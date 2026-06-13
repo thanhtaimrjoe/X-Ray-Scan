@@ -2,7 +2,7 @@
 
 ## Game Mode
 
-Level-based progression is the default MVP journey. The first vertical slice uses a 3-level `Airport Basics` pack with bag-clear objectives, star ratings, and local unlock persistence. Endless score attack remains a future secondary mode.
+Level-based progression is the default MVP journey. The current build uses a 10-level `Airport Basics` pack with bag-clear objectives, star ratings, and local unlock persistence. Endless score attack remains a future secondary mode.
 
 ## Current Direction: X-Ray Scan
 

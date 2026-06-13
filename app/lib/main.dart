@@ -1,7 +1,9 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import 'game/systems/ad_break_rules.dart';
 import 'game/systems/level_progression_rules.dart';
 import 'game/systems/xray_inspector_rules.dart';
 import 'game/xray_inspector_game.dart';
@@ -78,10 +80,87 @@ class _AppShellState extends State<AppShell> {
   int _activeLevelNumber = 1;
   XrayInspectorGame? _currentGame;
 
+  InterstitialAd? _interstitialAd;
+  RewardedAd? _rewardedAd;
+  AdBreakState _adBreakState = const AdBreakState();
+  final AdBreakRules _adBreakRules = const AdBreakRules();
+
   @override
   void initState() {
     super.initState();
     _loadStorage();
+    _loadInterstitialAd();
+    _loadRewardedAd();
+  }
+
+  @override
+  void dispose() {
+    _interstitialAd?.dispose();
+    _rewardedAd?.dispose();
+    super.dispose();
+  }
+
+  void _loadInterstitialAd() {
+    AdsService.loadInterstitial(
+      onAdLoaded: (ad) {
+        if (!mounted) {
+          ad.dispose();
+          return;
+        }
+        setState(() {
+          _interstitialAd?.dispose();
+          _interstitialAd = ad;
+        });
+      },
+      onAdFailedToLoad: (error) {
+        if (!mounted) {
+          return;
+        }
+        setState(() => _interstitialAd = null);
+      },
+    );
+  }
+
+  void _loadRewardedAd() {
+    AdsService.loadRewarded(
+      onAdLoaded: (ad) {
+        if (!mounted) {
+          ad.dispose();
+          return;
+        }
+        setState(() {
+          _rewardedAd?.dispose();
+          _rewardedAd = ad;
+        });
+      },
+      onAdFailedToLoad: (error) {
+        if (!mounted) {
+          return;
+        }
+        setState(() => _rewardedAd = null);
+      },
+    );
+  }
+
+  void _showInterstitialAd() {
+    final ad = _interstitialAd;
+    if (ad != null) {
+      ad.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (dismissedAd) {
+          dismissedAd.dispose();
+          _loadInterstitialAd();
+        },
+        onAdFailedToShowFullScreenContent: (failedAd, error) {
+          failedAd.dispose();
+          _loadInterstitialAd();
+        },
+      );
+      ad.show();
+      setState(() {
+        _adBreakState = _adBreakRules.onInterstitialShown(_adBreakState);
+        _interstitialAd = null;
+      });
+    }
   }
 
   Future<void> _loadStorage() async {
@@ -100,12 +179,14 @@ class _AppShellState extends State<AppShell> {
 
   void _startLevel(int levelNumber) {
     setState(() {
+      _adBreakState = _adBreakRules.onLevelAttemptStarted(_adBreakState);
       _activeLevelNumber = levelNumber;
       _screen = AppScreen.playing;
       _lastScore = 0;
       _lastBagsCleared = 0;
-      _lastBagsToClear =
-          LevelProgressionRules.configForLevel(levelNumber).bagsToClear;
+      _lastBagsToClear = LevelProgressionRules.configForLevel(
+        levelNumber,
+      ).bagsToClear;
       _lastStarsEarned = 0;
       _lastBestStars = 0;
       _canPlayNextLevel = false;
@@ -167,6 +248,7 @@ class _AppShellState extends State<AppShell> {
     }
 
     setState(() {
+      _adBreakState = _adBreakRules.onRoundCompleted(_adBreakState);
       if (update != null) {
         _levelProgress = update.updated;
       }
@@ -180,6 +262,13 @@ class _AppShellState extends State<AppShell> {
       _lastUnlockedDanger = config.newlyUnlockedDanger;
       _screen = AppScreen.levelClear;
     });
+
+    if (_adBreakRules.shouldShowInterstitial(
+      completedRounds: _adBreakState.completedRounds,
+      roundsSinceInterstitial: _adBreakState.roundsSinceInterstitial,
+    )) {
+      _showInterstitialAd();
+    }
   }
 
   Future<void> _finishLevelFailed({
@@ -192,11 +281,50 @@ class _AppShellState extends State<AppShell> {
     }
 
     setState(() {
+      _adBreakState = _adBreakRules.onRoundCompleted(_adBreakState);
       _lastScore = snapshot.score;
       _lastBagsCleared = bagsCleared;
       _lastBagsToClear = config.bagsToClear;
       _screen = AppScreen.levelFailed;
     });
+
+    if (_adBreakRules.shouldShowInterstitial(
+      completedRounds: _adBreakState.completedRounds,
+      roundsSinceInterstitial: _adBreakState.roundsSinceInterstitial,
+    )) {
+      _showInterstitialAd();
+    }
+  }
+
+  void _handleRewardedContinue() {
+    final ad = _rewardedAd;
+    if (ad == null) return;
+
+    setState(() => _rewardedAd = null);
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (dismissedAd) {
+        dismissedAd.dispose();
+        _loadRewardedAd();
+      },
+      onAdFailedToShowFullScreenContent: (failedAd, error) {
+        failedAd.dispose();
+        _loadRewardedAd();
+      },
+    );
+    ad.show(
+      onUserEarnedReward: (_, reward) {
+        if (!mounted) return;
+        setState(() {
+          _adBreakState = _adBreakRules.onRewardedContinueGranted(
+            _adBreakState,
+          );
+        });
+        _currentGame?.grantContinue();
+        setState(() {
+          _screen = AppScreen.playing;
+        });
+      },
+    );
   }
 
   void _showMenu() {
@@ -275,6 +403,11 @@ class _AppShellState extends State<AppShell> {
         bagsToClear: _lastBagsToClear,
         onRetry: () => _startLevel(_activeLevelNumber),
         onMenu: _showMenu,
+        canContinueWithAd: _adBreakRules.canOfferRewardedContinue(
+          rewardedAdAvailable: _rewardedAd != null,
+          rewardedContinueUsed: _adBreakState.rewardedContinueUsed,
+        ),
+        onContinueWithAd: _handleRewardedContinue,
       ),
       AppScreen.encyclopediaIndex => EncyclopediaIndexScreen(
         unlockedItems: _unlockedItems,
@@ -432,7 +565,9 @@ class _GameplayScreenState extends State<GameplayScreen> {
   @override
   void initState() {
     super.initState();
-    final levelConfig = LevelProgressionRules.configForLevel(widget.levelNumber);
+    final levelConfig = LevelProgressionRules.configForLevel(
+      widget.levelNumber,
+    );
     _bagsToClear = levelConfig.bagsToClear;
     _game = XrayInspectorGame(
       levelConfig: levelConfig,
@@ -733,6 +868,8 @@ class LevelFailedScreen extends StatelessWidget {
     required this.bagsToClear,
     required this.onRetry,
     required this.onMenu,
+    required this.canContinueWithAd,
+    required this.onContinueWithAd,
     super.key,
   });
 
@@ -742,6 +879,8 @@ class LevelFailedScreen extends StatelessWidget {
   final int bagsToClear;
   final VoidCallback onRetry;
   final VoidCallback onMenu;
+  final bool canContinueWithAd;
+  final VoidCallback onContinueWithAd;
 
   @override
   Widget build(BuildContext context) {
@@ -775,6 +914,18 @@ class LevelFailedScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 32),
+              if (canContinueWithAd) ...[
+                FilledButton.icon(
+                  onPressed: onContinueWithAd,
+                  icon: const Icon(Icons.ondemand_video_rounded),
+                  label: const Text('CONTINUE (WATCH AD)'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFD166),
+                    foregroundColor: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               FilledButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.replay_rounded),

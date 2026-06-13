@@ -4,11 +4,13 @@ import 'package:xray_scan/game/systems/xray_inspector_rules.dart';
 
 void main() {
   group('LevelProgressionRules', () {
-    test('level catalog exposes the 3-level vertical slice', () {
-      expect(levelCatalog.length, 3);
+    test('level catalog exposes the full 10-level airport basics pack', () {
+      expect(levelCatalog.length, 10);
+      expect(LevelProgressionRules.maxLevelNumber, 10);
       expect(LevelProgressionRules.configForLevel(1).bagsToClear, 3);
       expect(LevelProgressionRules.configForLevel(2).bagsToClear, 4);
       expect(LevelProgressionRules.configForLevel(3).bagsToClear, 5);
+      expect(LevelProgressionRules.configForLevel(10).bagsToClear, 10);
     });
 
     test('level 1 uses knife-only danger pool and easy safe pool', () {
@@ -33,6 +35,16 @@ void main() {
 
       expect(config.newlyUnlockedDanger, XrayObjectType.lighter);
       expect(config.allowTwoDangerBags, isTrue);
+    });
+
+    test('level 5 introduces razor and level 8 introduces battery pack', () {
+      final level5 = LevelProgressionRules.configForLevel(5);
+      final level8 = LevelProgressionRules.configForLevel(8);
+
+      expect(level5.newlyUnlockedDanger, XrayObjectType.razor);
+      expect(level5.dangerPool, contains(XrayObjectType.razor));
+      expect(level8.newlyUnlockedDanger, XrayObjectType.batteryPack);
+      expect(level8.dangerPool, contains(XrayObjectType.batteryPack));
     });
 
     test('stars require objective completion first', () {
