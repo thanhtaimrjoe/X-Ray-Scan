@@ -47,6 +47,22 @@ app/
 └── test/
 ```
 
+## Asset Pipeline
+
+Production visual assets should follow `docs/08_asset_pipeline.md`.
+
+App-integrated image assets should live under:
+
+```text
+app/assets/images/
+  backgrounds/
+  items/danger/
+  items/safe/
+  ui/
+```
+
+Design references and generator candidates should live under `docs/assets/`, not directly in app runtime folders, until they are approved for integration.
+
 ## Architecture
 
 ### Game Layer

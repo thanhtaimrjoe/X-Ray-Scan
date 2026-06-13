@@ -59,6 +59,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Updated widget tests for the new menu, tabbed database, and rewarded continue label.
 - Completed the first Galaxy S24 evidence polish pass by reducing important text truncation, improving Item Database spacing, replacing misleading database icons with custom x-ray silhouettes, and fixing one-star result wording.
 - Improved gameplay scanner feel with larger item silhouettes, more forgiving tap hit radius, stronger scanner framing, and success/perfect flash feedback.
+- Defined the staged AI-assisted asset pipeline, including MVP asset inventory, folder structure, naming rules, Gemini prompt templates, and approval checklist.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -88,6 +89,7 @@ This file tracks the current project state so future AI assistants and contribut
   - Level failed/rewarded continue reference: `docs/assets/level_failed_visual_reference_approved.jpg`
   - Repo asset: `docs/assets/xray_asset_sheet_approved.png`
   - App asset: `app/assets/images/xray_asset_sheet_approved.png`
+  - Asset pipeline: `docs/08_asset_pipeline.md`
 - Core gameplay files:
   - `app/lib/main.dart`
   - `app/lib/game/xray_inspector_game.dart`
@@ -110,11 +112,11 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Device playtest the new paused suitcase loop, level map, result screens, and tabbed Item Database.
-2. Polish shared button styling across Play, Clear, Next, Continue, Retry, Map, Database, and Settings.
-3. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
-4. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
-5. Tune object scale, hit radius, clear timing, and database readability based on device playtests.
+1. Generate the first candidate batch for gameplay item assets using `docs/08_asset_pipeline.md`.
+2. Review and promote approved item assets into `app/assets/images/items/`.
+3. Wire approved item assets into Flame while keeping Canvas mock fallback.
+4. Generate and review candidate backgrounds for gameplay, main menu, level map, and result screens.
+5. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
 
 ## Known Gaps
 

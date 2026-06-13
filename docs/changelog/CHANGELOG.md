@@ -5,6 +5,41 @@
 
 ---
 
+## [2026-06-13 23:11] - Define asset pipeline
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-001, US-002, US-010
+**Impact Scope**: Docs, Assets, Gameplay, UX
+
+### Changes
+- Added a staged AI-assisted asset pipeline for generating, reviewing, naming, storing, and integrating production visual assets.
+- Defined MVP asset inventory for backgrounds, danger items, safe items, and optional UI/map accents.
+- Added Gemini-ready prompt templates for main menu, gameplay, level map, result backgrounds, and individual x-ray item assets.
+- Added folder structure and naming rules for candidate assets versus approved runtime assets.
+- Recorded a durable decision to keep raw generator output out of app runtime folders until approved.
+- Updated game design, technical spec, and progress tracking to link the asset pipeline.
+
+### Implementation Details
+- File: `docs/08_asset_pipeline.md`
+- File: `docs/03_game_design.md`
+- File: `docs/05_technical_spec.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: The playable core is ready for production visual assets, and the project needs a consistent workflow before generating asset batches.
+- Technical decision: Use `docs/assets/asset_candidates/` for review candidates and promote only approved runtime assets into structured `app/assets/images/` folders.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- This is documentation/workflow only; no runtime assets were integrated in this change.
+
+---
+
 ## [2026-06-13 22:53] - Improve gameplay scanner feel
 
 **Owner**: AI Assistant

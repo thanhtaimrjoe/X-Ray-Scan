@@ -350,3 +350,29 @@ These screens complete the core gameplay loop around level completion, failure, 
 - Rewarded continue must remain optional and visually distinct from Retry/Map.
 - New threat profile rewards should use cyan x-ray profile icons when a level introduces a danger item.
 - Shared button styling should be applied consistently across success, failure, gameplay, map, and menu screens.
+
+---
+
+## DEC-015 - Use staged AI asset pipeline
+
+**Date**: 2026-06-13
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Art Direction, Assets, Technical, Workflow
+
+### Decision
+
+Use a staged AI-assisted asset pipeline for production visuals. Generated candidates should first be saved and reviewed under `docs/assets/asset_candidates/`. Approved runtime assets should then be promoted into structured app folders under `app/assets/images/`.
+
+The pipeline, naming rules, prompt templates, and acceptance checklist are defined in `docs/08_asset_pipeline.md`.
+
+### Reason
+
+The game now has a playable core loop and approved screen direction, but visual quality depends on consistent backgrounds and x-ray item assets. A staged workflow avoids mixing unapproved generator output into runtime assets and helps keep the art style coherent.
+
+### Consequences
+
+- Do not put raw generator output directly into app runtime folders.
+- Use lowercase snake_case production filenames.
+- Keep item assets neutral cyan by default so they do not reveal safe/danger state before interaction.
+- Update `app/pubspec.yaml`, tests/build checks, and changelog whenever assets are integrated into the app.

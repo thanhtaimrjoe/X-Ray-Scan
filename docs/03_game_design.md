@@ -191,6 +191,8 @@ The target gameplay screen combines an anime airport/customs environment with a 
 
 The approved x-ray object benchmark is stored at `docs/assets/xray_asset_sheet_approved.png` and in the Figma visual bible.
 
+Asset generation, review, naming, and integration rules are defined in `docs/08_asset_pipeline.md`.
+
 Prioritize:
 
 - Recognizable real-world objects.
