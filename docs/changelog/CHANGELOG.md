@@ -5,6 +5,46 @@
 
 ---
 
+## [2026-06-13 14:30] - 3-level progression vertical slice
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-001, US-004, US-008, US-010
+**Impact Scope**: Gameplay, Docs, Test, Progression
+
+### Changes
+- Added pure Dart level progression rules with a 3-level `Airport Basics` catalog, bag-clear objectives, star thresholds, unlock logic, and best score/star updates.
+- Extended `StorageService` to persist `highest_unlocked_level`, `level_best_scores`, and `level_best_stars`.
+- Connected gameplay to level configs with per-level danger/safe pools, bag objective tracking, level clear on objective completion, and level failed on zero lives.
+- Updated main menu, gameplay HUD, level clear, and level failed screens for the default level-based play flow.
+- Updated game design and technical spec docs to reflect level mode as the default MVP journey.
+
+### Implementation Details
+- File: `app/lib/game/systems/level_progression_rules.dart`
+- File: `app/test/game/level_progression_rules_test.dart`
+- File: `app/lib/services/storage_service.dart`
+- File: `app/test/services/storage_service_test.dart`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/lib/main.dart`
+- File: `app/test/widget_test.dart`
+- File: `docs/03_game_design.md`
+- File: `docs/05_technical_spec.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Physical playtesting showed endless score attack loses excitement; levels add short goals, completion feedback, and unlock pacing.
+- Technical decision: Keep level rules independent from Flame and store per-level bests as JSON maps in `shared_preferences`.
+
+### Tests
+- [x] Unit tests added/updated
+- [x] Manual playtest completed (installed and launched debug APK on Samsung device `RFCX80NW55E`)
+- [x] Error handling checked
+- [x] Policy/ad placement checked (banner remains on menu/level clear/fail only; no ads during active gameplay)
+
+### Notes
+- Vertical slice covers levels 1-3 only; expand to the full 10-level pack after playtest confirmation.
+- Endless mode and interstitial/rewarded SDK integration remain future work.
+
+---
+
 ## [2026-06-13 12:53] - Document level progression direction
 
 **Owner**: AI Assistant

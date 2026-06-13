@@ -44,16 +44,18 @@ This file tracks the current project state so future AI assistants and contribut
 - Integrated AdMob test banner ads on the main menu and game-over screens.
 - Added testable interstitial frequency and rewarded-continue eligibility rules.
 - Revised scoring for stronger arcade feedback: 100-point danger taps, 50-point clear bonuses, 50-point safe-tap penalties, 100-point perfect clear bonuses, faster combo tiers, and player-facing feedback labels.
+- Added a 3-level progression vertical slice with objectives, stars, unlock persistence, and level clear/fail screens.
+- Added pure Dart level progression rules and storage persistence for highest unlocked level, best scores, and best stars.
+- Connected gameplay spawning to per-level danger/safe pools and speed tuning.
 - Verified:
-  - `flutter doctor -v`
-  - `flutter test`
+  - `flutter test` (30 tests)
   - `flutter analyze`
   - `flutter build apk --debug`
-  - Samsung device install/launch through ADB
+  - Samsung device install/launch through ADB (`RFCX80NW55E`)
 
 ## In Progress
 
-- Prepare the next MVP slice: level-based progression vertical slice.
+- Expand the 3-level vertical slice toward the full 10-level `Airport Basics` pack if playtesting feels good.
 
 ## Handoff Notes
 
@@ -70,9 +72,11 @@ This file tracks the current project state so future AI assistants and contribut
   - `app/lib/main.dart`
   - `app/lib/game/xray_inspector_game.dart`
   - `app/lib/game/systems/xray_inspector_rules.dart`
+  - `app/lib/game/systems/level_progression_rules.dart`
   - `app/lib/services/storage_service.dart`
 - Core tests:
   - `app/test/game/xray_inspector_rules_test.dart`
+  - `app/test/game/level_progression_rules_test.dart`
   - `app/test/services/storage_service_test.dart`
   - `app/test/widget_test.dart`
 - Latest debug APK path: `app/build/app/outputs/flutter-apk/app-debug.apk`.
@@ -82,13 +86,12 @@ This file tracks the current project state so future AI assistants and contribut
 - Current renamed workspace path: `C:\Users\hanak\Documents\X-Ray-Scan`.
 - The old active Codex session folder may remain at `C:\Users\hanak\Documents\Tap-Sort-Rush` until the session releases its Windows file lock.
 - A temporary clone exists at `C:\Users\hanak\Documents\Tap-Sort-Rush-Temp`; it has no known unique changes beyond the pushed pause commit, but verify before deleting.
-- Next agent should read `docs/08_level_progression_plan.md` and implement a small level progression vertical slice before expanding content or monetization, then keep using the connected Samsung device for smoke checks when available.
+- Next agent should expand the level pack beyond the current 3-level vertical slice, then wire interstitial/rewarded SDK calls to level clear/fail breakpoints when requested.
 
 ## Next Steps
 
-1. Implement a 3-level progression vertical slice with level objectives, level clear/fail screens, stars, and persisted unlock progress.
-2. Expand the first level pack toward 10 `Airport Basics` levels if the vertical slice feels good.
-3. Tie item unlock pacing to level progression, especially danger item introductions.
+1. Expand the first level pack toward 10 `Airport Basics` levels if the vertical slice feels good.
+2. Tie item unlock pacing to level progression, especially danger item introductions beyond the first three levels.
 4. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
 5. Implement interstitial and rewarded ads using Google test ad unit IDs after level clear/fail flow exists.
 6. Tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.

@@ -3,11 +3,20 @@ import 'dart:math';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
+import 'systems/level_progression_rules.dart';
 import 'systems/xray_inspector_rules.dart';
 
 typedef GameSnapshotChanged = void Function(XrayInspectorSnapshot snapshot);
 
-typedef GameFinished = void Function(XrayInspectorSnapshot snapshot);
+typedef LevelComplete = Future<void> Function({
+  required XrayInspectorSnapshot snapshot,
+  required int bagsCleared,
+});
+
+typedef LevelFailed = Future<void> Function({
+  required XrayInspectorSnapshot snapshot,
+  required int bagsCleared,
+});
 
 typedef ItemDiscovered = void Function(XrayObjectType type);
 
@@ -62,8 +71,10 @@ class XrayPulse {
 
 class XrayInspectorGame extends FlameGame {
   XrayInspectorGame({
+    required this.levelConfig,
     required this.onSnapshotChanged,
-    required this.onGameFinished,
+    required this.onLevelComplete,
+    required this.onLevelFailed,
     required this.onItemDiscovered,
     Random? random,
   }) : _random = random ?? Random();
@@ -74,8 +85,10 @@ class XrayInspectorGame extends FlameGame {
   static const _success = Color(0xFF37FFB5);
   static const _perfect = Color(0xFFFFD166);
 
+  final LevelConfig levelConfig;
   final GameSnapshotChanged onSnapshotChanged;
-  final GameFinished onGameFinished;
+  final LevelComplete onLevelComplete;
+  final LevelFailed onLevelFailed;
   final ItemDiscovered onItemDiscovered;
   final Random _random;
   final XrayInspectorRules _rules = XrayInspectorRules();
@@ -85,8 +98,11 @@ class XrayInspectorGame extends FlameGame {
   double _elapsed = 0;
   double _screenFlash = 0;
   bool _finished = false;
+  int _bagsCleared = 0;
 
   XrayInspectorSnapshot get snapshot => _rules.snapshot;
+  int get bagsCleared => _bagsCleared;
+  int get bagsToClear => levelConfig.bagsToClear;
 
   @override
   Future<void> onLoad() async {
@@ -255,7 +271,12 @@ class XrayInspectorGame extends FlameGame {
       );
     }
     _addComboMilestonePulse(previousCombo, clearSnapshot);
+    _bagsCleared += 1;
     onSnapshotChanged(clearSnapshot);
+    if (_bagsCleared >= levelConfig.bagsToClear) {
+      _finishLevelComplete(clearSnapshot);
+      return;
+    }
     _spawnBag();
   }
 
@@ -265,16 +286,15 @@ class XrayInspectorGame extends FlameGame {
     }
 
     final objectCount = 4 + _random.nextInt(3);
+    final maxDangerCount = levelConfig.allowTwoDangerBags && _elapsed > 35
+        ? 2
+        : 1;
     final dangerousCount = _random.nextDouble() < 0.78
-        ? 1 + _random.nextInt(_elapsed > 35 ? 2 : 1)
+        ? 1 + _random.nextInt(maxDangerCount)
         : 0;
     final objects = <XrayObjectInstance>[];
-    final dangerTypes = XrayObjectType.values
-        .where((type) => type.isDangerous)
-        .toList();
-    final safeTypes = XrayObjectType.values
-        .where((type) => !type.isDangerous)
-        .toList();
+    final dangerTypes = levelConfig.dangerPool;
+    final safeTypes = levelConfig.safePool;
     final slots = _bagSlots.toList()..shuffle(_random);
 
     for (var i = 0; i < dangerousCount; i++) {
@@ -299,7 +319,12 @@ class XrayInspectorGame extends FlameGame {
       objects: objects,
       x: -_bagSize.width * 0.62,
       yFactor: 0.52 + ((_random.nextDouble() - 0.5) * 0.08),
-      speed: min(132, 72 + (_elapsed * 1.4)),
+      speed: min(
+        levelConfig.maxBagSpeed,
+        levelConfig.baseBagSpeed +
+            (_elapsed * (levelConfig.maxBagSpeed - levelConfig.baseBagSpeed) /
+                levelConfig.speedRampSeconds),
+      ),
     );
   }
 
@@ -384,8 +409,16 @@ class XrayInspectorGame extends FlameGame {
   void _finishIfNeeded() {
     if (!_finished && _rules.isGameOver) {
       _finished = true;
-      onGameFinished(snapshot);
+      onLevelFailed(snapshot: snapshot, bagsCleared: _bagsCleared);
     }
+  }
+
+  void _finishLevelComplete(XrayInspectorSnapshot snapshot) {
+    if (_finished) {
+      return;
+    }
+    _finished = true;
+    onLevelComplete(snapshot: snapshot, bagsCleared: _bagsCleared);
   }
 
   void _addComboMilestonePulse(

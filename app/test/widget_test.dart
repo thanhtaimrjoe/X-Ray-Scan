@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xray_scan/main.dart';
 
 void main() {
-  testWidgets('main menu shows title, scan action, and high score', (
+  testWidgets('main menu shows title, play level action, and progress', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({'high_score': 120});
@@ -12,8 +12,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('X-Ray Scan'), findsOneWidget);
-    expect(find.text('SCAN'), findsOneWidget);
+    expect(find.text('PLAY LEVEL 1'), findsOneWidget);
     expect(find.text('ITEM DATABASE'), findsOneWidget);
+    expect(find.text('Level 1 unlocked'), findsOneWidget);
     expect(find.text('Best clearance: 120'), findsOneWidget);
   });
 

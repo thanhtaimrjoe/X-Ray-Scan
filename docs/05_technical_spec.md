@@ -64,6 +64,7 @@ Current implementation note:
 
 - `xray_inspector_game.dart` renders the scanner, suitcase, object silhouettes, tap feedback, and clear action.
 - `xray_inspector_rules.dart` keeps danger taps, safe tap penalties, missed danger life loss, false clear, clear bonus, perfect clear bonus, combo multiplier, and game-over behavior testable outside Flame.
+- `level_progression_rules.dart` keeps level configs, bag-clear objectives, star thresholds, unlock rules, and best-score/star updates testable outside Flame.
 - `ad_break_rules.dart` keeps interstitial frequency and rewarded-continue eligibility testable outside the Google Mobile Ads SDK.
 
 ### UI Layer
@@ -81,7 +82,7 @@ Responsibilities:
 Responsibilities:
 
 - `AdsService`: initialize ads, load/show banners, interstitials, rewarded ads.
-- `StorageService`: save high score and settings.
+- `StorageService`: save high score, settings, item discovery, and level progression.
 
 ## Game State
 
@@ -90,7 +91,8 @@ States:
 - `menu`
 - `playing`
 - `paused`
-- `gameOver`
+- `levelClear`
+- `levelFailed`
 - `adShowing`
 
 ## Local Storage
@@ -101,8 +103,13 @@ Keys:
 - `sound_enabled`
 - `rounds_since_interstitial`
 - `unlocked_xray_items`
+- `highest_unlocked_level`
+- `level_best_scores`
+- `level_best_stars`
 
 `unlocked_xray_items` stores discovered item IDs as a string list so the item encyclopedia can persist progress locally without a backend.
+
+`level_best_scores` and `level_best_stars` store JSON maps keyed by level number.
 
 ## Ads Configuration
 

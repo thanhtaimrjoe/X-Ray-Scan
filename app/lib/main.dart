@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'game/systems/level_progression_rules.dart';
 import 'game/systems/xray_inspector_rules.dart';
 import 'game/xray_inspector_game.dart';
 import 'services/ads_service.dart';
@@ -39,7 +40,8 @@ enum AppScreen {
   menu,
   playing,
   paused,
-  gameOver,
+  levelClear,
+  levelFailed,
   encyclopediaIndex,
   encyclopediaGroup,
 }
@@ -58,10 +60,22 @@ class _AppShellState extends State<AppShell> {
   AppScreen _screen = AppScreen.menu;
   int _highScore = 0;
   int _lastScore = 0;
-  bool _isNewHighScore = false;
+  int _lastBagsCleared = 0;
+  int _lastBagsToClear = 0;
+  int _lastStarsEarned = 0;
+  int _lastBestStars = 0;
+  bool _canPlayNextLevel = false;
+  bool _didUnlockNextLevel = false;
+  XrayObjectType? _lastUnlockedDanger;
   Set<XrayObjectType> _unlockedItems = {};
   EncyclopediaGroup _selectedGroup = EncyclopediaGroup.danger;
   bool _soundEnabled = true;
+  LevelProgressSnapshot _levelProgress = const LevelProgressSnapshot(
+    highestUnlockedLevel: 1,
+    bestScores: {},
+    bestStars: {},
+  );
+  int _activeLevelNumber = 1;
   XrayInspectorGame? _currentGame;
 
   @override
@@ -78,17 +92,30 @@ class _AppShellState extends State<AppShell> {
     setState(() {
       _storage = storage;
       _highScore = storage.getHighScore();
+      _levelProgress = storage.getLevelProgressSnapshot();
       _unlockedItems = storage.getUnlockedXrayItems();
       _soundEnabled = storage.getSoundEnabled();
     });
   }
 
-  void _startGame() {
+  void _startLevel(int levelNumber) {
     setState(() {
+      _activeLevelNumber = levelNumber;
       _screen = AppScreen.playing;
       _lastScore = 0;
-      _isNewHighScore = false;
+      _lastBagsCleared = 0;
+      _lastBagsToClear =
+          LevelProgressionRules.configForLevel(levelNumber).bagsToClear;
+      _lastStarsEarned = 0;
+      _lastBestStars = 0;
+      _canPlayNextLevel = false;
+      _didUnlockNextLevel = false;
+      _lastUnlockedDanger = null;
     });
+  }
+
+  void _startHighestUnlockedLevel() {
+    _startLevel(_levelProgress.highestUnlockedLevel);
   }
 
   void _pauseGame() {
@@ -113,8 +140,19 @@ class _AppShellState extends State<AppShell> {
     await _storage?.saveSoundEnabled(enabled: newValue);
   }
 
-  Future<void> _finishGame(XrayInspectorSnapshot snapshot) async {
+  Future<void> _finishLevelComplete({
+    required XrayInspectorSnapshot snapshot,
+    required int bagsCleared,
+  }) async {
     final storage = _storage;
+    final config = LevelProgressionRules.configForLevel(_activeLevelNumber);
+    final outcome = LevelProgressionRules.outcomeFor(
+      config: config,
+      bagsCleared: bagsCleared,
+      score: snapshot.score,
+      lives: snapshot.lives,
+    );
+    final update = await storage?.applyLevelOutcome(outcome);
     final newHighScore = snapshot.score > _highScore;
 
     if (newHighScore) {
@@ -129,9 +167,35 @@ class _AppShellState extends State<AppShell> {
     }
 
     setState(() {
+      if (update != null) {
+        _levelProgress = update.updated;
+      }
       _lastScore = snapshot.score;
-      _isNewHighScore = newHighScore;
-      _screen = AppScreen.gameOver;
+      _lastBagsCleared = bagsCleared;
+      _lastBagsToClear = config.bagsToClear;
+      _lastStarsEarned = outcome.starsEarned;
+      _lastBestStars = update?.updated.bestStarsFor(_activeLevelNumber) ?? 0;
+      _canPlayNextLevel = update?.canPlayNext ?? false;
+      _didUnlockNextLevel = update?.didUnlockNextLevel ?? false;
+      _lastUnlockedDanger = config.newlyUnlockedDanger;
+      _screen = AppScreen.levelClear;
+    });
+  }
+
+  Future<void> _finishLevelFailed({
+    required XrayInspectorSnapshot snapshot,
+    required int bagsCleared,
+  }) async {
+    final config = LevelProgressionRules.configForLevel(_activeLevelNumber);
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _lastScore = snapshot.score;
+      _lastBagsCleared = bagsCleared;
+      _lastBagsToClear = config.bagsToClear;
+      _screen = AppScreen.levelFailed;
     });
   }
 
@@ -169,14 +233,15 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     return switch (_screen) {
       AppScreen.menu => MainMenuScreen(
+        highestUnlockedLevel: _levelProgress.highestUnlockedLevel,
         highScore: _highScore,
-        onPlay: _startGame,
+        onPlay: _startHighestUnlockedLevel,
         onOpenDatabase: _showEncyclopediaIndex,
       ),
       AppScreen.playing => GameplayScreen(
-        onGameOver: (snapshot) {
-          _finishGame(snapshot);
-        },
+        levelNumber: _activeLevelNumber,
+        onLevelComplete: _finishLevelComplete,
+        onLevelFailed: _finishLevelFailed,
         onItemDiscovered: (type) {
           _recordDiscovery(type);
         },
@@ -191,11 +256,24 @@ class _AppShellState extends State<AppShell> {
         soundEnabled: _soundEnabled,
         onToggleSound: _toggleSound,
       ),
-      AppScreen.gameOver => GameOverScreen(
+      AppScreen.levelClear => LevelClearScreen(
+        levelNumber: _activeLevelNumber,
         score: _lastScore,
-        highScore: _highScore,
-        isNewHighScore: _isNewHighScore,
-        onRetry: _startGame,
+        starsEarned: _lastStarsEarned,
+        bestStars: _lastBestStars,
+        canPlayNext: _canPlayNextLevel,
+        didUnlockNextLevel: _didUnlockNextLevel,
+        unlockedDanger: _lastUnlockedDanger,
+        onNext: () => _startLevel(_activeLevelNumber + 1),
+        onRetry: () => _startLevel(_activeLevelNumber),
+        onMenu: _showMenu,
+      ),
+      AppScreen.levelFailed => LevelFailedScreen(
+        levelNumber: _activeLevelNumber,
+        score: _lastScore,
+        bagsCleared: _lastBagsCleared,
+        bagsToClear: _lastBagsToClear,
+        onRetry: () => _startLevel(_activeLevelNumber),
         onMenu: _showMenu,
       ),
       AppScreen.encyclopediaIndex => EncyclopediaIndexScreen(
@@ -214,12 +292,14 @@ class _AppShellState extends State<AppShell> {
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({
+    required this.highestUnlockedLevel,
     required this.highScore,
     required this.onPlay,
     required this.onOpenDatabase,
     super.key,
   });
 
+  final int highestUnlockedLevel;
   final int highScore;
   final VoidCallback onPlay;
   final VoidCallback onOpenDatabase;
@@ -247,11 +327,20 @@ class MainMenuScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Best clearance: $highScore',
+                'Level $highestUnlockedLevel unlocked',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: const Color(0xFFB7EFF4),
                   fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Best clearance: $highScore',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: const Color(0xFF8FDDE4),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 26),
@@ -260,7 +349,7 @@ class MainMenuScreen extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onPlay,
                 icon: const Icon(Icons.play_arrow_rounded),
-                label: const Text('SCAN'),
+                label: Text('PLAY LEVEL $highestUnlockedLevel'),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(56),
                   textStyle: const TextStyle(
@@ -301,14 +390,26 @@ class MainMenuScreen extends StatelessWidget {
 
 class GameplayScreen extends StatefulWidget {
   const GameplayScreen({
-    required this.onGameOver,
+    required this.levelNumber,
+    required this.onLevelComplete,
+    required this.onLevelFailed,
     required this.onItemDiscovered,
     required this.onPause,
     required this.onGameCreated,
     super.key,
   });
 
-  final ValueChanged<XrayInspectorSnapshot> onGameOver;
+  final int levelNumber;
+  final Future<void> Function({
+    required XrayInspectorSnapshot snapshot,
+    required int bagsCleared,
+  })
+  onLevelComplete;
+  final Future<void> Function({
+    required XrayInspectorSnapshot snapshot,
+    required int bagsCleared,
+  })
+  onLevelFailed;
   final ValueChanged<XrayObjectType> onItemDiscovered;
   final VoidCallback onPause;
   final ValueChanged<XrayInspectorGame> onGameCreated;
@@ -326,17 +427,32 @@ class _GameplayScreenState extends State<GameplayScreen> {
     lives: 3,
     isGameOver: false,
   );
+  int _bagsToClear = 0;
 
   @override
   void initState() {
     super.initState();
+    final levelConfig = LevelProgressionRules.configForLevel(widget.levelNumber);
+    _bagsToClear = levelConfig.bagsToClear;
     _game = XrayInspectorGame(
+      levelConfig: levelConfig,
       onSnapshotChanged: (snapshot) {
         if (mounted) {
           setState(() => _snapshot = snapshot);
         }
       },
-      onGameFinished: widget.onGameOver,
+      onLevelComplete: ({required snapshot, required bagsCleared}) {
+        return widget.onLevelComplete(
+          snapshot: snapshot,
+          bagsCleared: bagsCleared,
+        );
+      },
+      onLevelFailed: ({required snapshot, required bagsCleared}) {
+        return widget.onLevelFailed(
+          snapshot: snapshot,
+          bagsCleared: bagsCleared,
+        );
+      },
       onItemDiscovered: widget.onItemDiscovered,
     );
     widget.onGameCreated(_game);
@@ -359,7 +475,14 @@ class _GameplayScreenState extends State<GameplayScreen> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Expanded(child: _Hud(snapshot: _snapshot)),
+                  Expanded(
+                    child: _Hud(
+                      snapshot: _snapshot,
+                      levelNumber: widget.levelNumber,
+                      bagsCleared: _game.bagsCleared,
+                      bagsToClear: _bagsToClear,
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   SizedBox(
                     width: 48,
@@ -491,19 +614,29 @@ class PauseScreen extends StatelessWidget {
   }
 }
 
-class GameOverScreen extends StatelessWidget {
-  const GameOverScreen({
+class LevelClearScreen extends StatelessWidget {
+  const LevelClearScreen({
+    required this.levelNumber,
     required this.score,
-    required this.highScore,
-    required this.isNewHighScore,
+    required this.starsEarned,
+    required this.bestStars,
+    required this.canPlayNext,
+    required this.didUnlockNextLevel,
+    required this.unlockedDanger,
+    required this.onNext,
     required this.onRetry,
     required this.onMenu,
     super.key,
   });
 
+  final int levelNumber;
   final int score;
-  final int highScore;
-  final bool isNewHighScore;
+  final int starsEarned;
+  final int bestStars;
+  final bool canPlayNext;
+  final bool didUnlockNextLevel;
+  final XrayObjectType? unlockedDanger;
+  final VoidCallback onNext;
   final VoidCallback onRetry;
   final VoidCallback onMenu;
 
@@ -518,11 +651,115 @@ class GameOverScreen extends StatelessWidget {
             children: [
               const Spacer(),
               Text(
-                'Inspection Closed',
+                'Level $levelNumber Clear',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0,
+                ),
+              ),
+              const SizedBox(height: 18),
+              _StarRow(stars: starsEarned),
+              const SizedBox(height: 8),
+              Text(
+                'Best stars: $bestStars',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: const Color(0xFFB7EFF4),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Score: $score',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              if (didUnlockNextLevel) ...[
+                const SizedBox(height: 12),
+                Text(
+                  'Level ${levelNumber + 1} unlocked',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: const Color(0xFF37FFB5),
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+              if (unlockedDanger != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'New threat profile: ${unlockedDanger!.displayName}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: const Color(0xFFFF3B5C),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 32),
+              if (canPlayNext)
+                FilledButton.icon(
+                  onPressed: onNext,
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                  label: Text('NEXT LEVEL ${levelNumber + 1}'),
+                ),
+              if (canPlayNext) const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.replay_rounded),
+                label: const Text('RETRY'),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: onMenu,
+                icon: const Icon(Icons.home_rounded),
+                label: const Text('MENU'),
+              ),
+              const Spacer(),
+              const Center(child: XrayBannerAd()),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LevelFailedScreen extends StatelessWidget {
+  const LevelFailedScreen({
+    required this.levelNumber,
+    required this.score,
+    required this.bagsCleared,
+    required this.bagsToClear,
+    required this.onRetry,
+    required this.onMenu,
+    super.key,
+  });
+
+  final int levelNumber;
+  final int score;
+  final int bagsCleared;
+  final int bagsToClear;
+  final VoidCallback onRetry;
+  final VoidCallback onMenu;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Spacer(),
+              Text(
+                'Level $levelNumber Failed',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0,
+                  color: const Color(0xFFFF3B5C),
                 ),
               ),
               const SizedBox(height: 22),
@@ -533,9 +770,7 @@ class GameOverScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                isNewHighScore
-                    ? 'New best: $highScore'
-                    : 'Best clearance: $highScore',
+                'Bags cleared: $bagsCleared/$bagsToClear',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
@@ -557,6 +792,29 @@ class GameOverScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _StarRow extends StatelessWidget {
+  const _StarRow({required this.stars});
+
+  final int stars;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 1; i <= 3; i++)
+          Icon(
+            i <= stars ? Icons.star_rounded : Icons.star_outline_rounded,
+            color: i <= stars
+                ? const Color(0xFFFFD166)
+                : Colors.white.withValues(alpha: 0.28),
+            size: 42,
+          ),
+      ],
     );
   }
 }
@@ -953,9 +1211,17 @@ class _AssetHero extends StatelessWidget {
 }
 
 class _Hud extends StatelessWidget {
-  const _Hud({required this.snapshot});
+  const _Hud({
+    required this.snapshot,
+    required this.levelNumber,
+    required this.bagsCleared,
+    required this.bagsToClear,
+  });
 
   final XrayInspectorSnapshot snapshot;
+  final int levelNumber;
+  final int bagsCleared;
+  final int bagsToClear;
 
   @override
   Widget build(BuildContext context) {
@@ -979,6 +1245,10 @@ class _Hud extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Text('L$levelNumber', style: textStyle),
+              const SizedBox(width: 10),
+              Text('Bags $bagsCleared/$bagsToClear', style: textStyle),
+              const SizedBox(width: 10),
               Text('Score ${snapshot.score}', style: textStyle),
               const SizedBox(width: 12),
               Text(

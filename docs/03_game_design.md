@@ -2,7 +2,7 @@
 
 ## Game Mode
 
-Endless score attack.
+Level-based progression is the default MVP journey. The first vertical slice uses a 3-level `Airport Basics` pack with bag-clear objectives, star ratings, and local unlock persistence. Endless score attack remains a future secondary mode.
 
 ## Current Direction: X-Ray Scan
 
@@ -82,10 +82,27 @@ MVP tuning:
 ### Main Menu
 
 - App title.
-- Play button.
+- Play button starts the highest unlocked level.
+- Current/highest unlocked level label.
 - Item database button.
 - High score.
 - Sound toggle.
+- Banner ad area.
+
+### Level Clear
+
+- Level number.
+- Score.
+- Stars earned and best stars for that level.
+- New threat profile message when a level introduces a new danger item.
+- Next, Retry, Menu buttons.
+- Banner ad area.
+
+### Level Failed
+
+- Level number.
+- Score and bag objective progress.
+- Retry and Menu buttons.
 - Banner ad area.
 
 ### Gameplay
