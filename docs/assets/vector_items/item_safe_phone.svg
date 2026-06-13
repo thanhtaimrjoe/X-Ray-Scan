@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <filter id="fineGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="glow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="3.2" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <linearGradient id="xrayFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8DFBFF" stop-opacity="0.38" />
+      <stop offset="100%" stop-color="#38F6FF" stop-opacity="0.16" />
+    </linearGradient>
+  </defs>
+  <rect x="78" y="48" width="84" height="148" rx="18" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <rect x="94" y="74" width="52" height="86" rx="5" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="120" cy="176" r="7" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M108 62 H132 M102 88 H138 M102 112 H138 M102 136 H138" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+</svg>

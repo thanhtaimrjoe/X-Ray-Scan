@@ -63,6 +63,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Created item asset prompt batch 01 for all 11 MVP danger/safe x-ray objects.
 - Added item sheet batch 01 as a reference candidate under `docs/assets/asset_candidates/`.
 - Decided to self-author gameplay item assets as vector/Canvas/SVG-style sources and reserve Gemini primarily for backgrounds.
+- Created the first Codex-authored vector item source set and preview sheet for all 11 MVP objects.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -95,6 +96,8 @@ This file tracks the current project state so future AI assistants and contribut
   - Asset pipeline: `docs/08_asset_pipeline.md`
   - Historical item prompt batch 01: `docs/assets/item_asset_prompt_batch_01.md`
   - Reference item sheet batch 01: `docs/assets/asset_candidates/item_sheet_batch_01.png`
+  - Vector item generator: `tools/generate_item_vector_assets.py`
+  - Vector item preview sheet: `docs/assets/vector_items/item_vector_preview_sheet.png`
 - Core gameplay files:
   - `app/lib/main.dart`
   - `app/lib/game/xray_inspector_game.dart`
@@ -117,11 +120,10 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Build a Codex-authored vector/Canvas item asset source set for the 11 MVP objects.
-2. Render a preview sheet for item shapes and tune readability on a dark scanner background.
-3. Wire approved item source shapes into Flame while keeping fallback behavior.
-4. Generate and review Gemini background candidates for gameplay, main menu, level map, and result screens.
-5. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
+1. Review and tune the Codex-authored vector item preview sheet.
+2. Wire approved item source shapes into Flame while keeping fallback behavior.
+3. Generate and review Gemini background candidates for gameplay, main menu, level map, and result screens.
+4. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
 
 ## Known Gaps
 

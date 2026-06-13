@@ -147,6 +147,12 @@ For item assets specifically, the preferred runtime source is code/vector art. E
 7. Test on a Galaxy S24-class device and capture evidence.
 8. Record the change in `docs/changelog/CHANGELOG.md`.
 
+Current vector item source:
+
+- Generator: `tools/generate_item_vector_assets.py`
+- Review folder: `docs/assets/vector_items/`
+- Preview sheet: `docs/assets/vector_items/item_vector_preview_sheet.png`
+
 ## Prompt Style Guide
 
 Use the same style clause across all generation prompts:

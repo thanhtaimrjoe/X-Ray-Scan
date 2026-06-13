@@ -5,6 +5,51 @@
 
 ---
 
+## [2026-06-14 00:10] - Add vector item source set
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-002, US-010
+**Impact Scope**: Assets, Docs, Gameplay, UX
+
+### Changes
+- Added a Codex-authored generator for the 11 MVP x-ray item vector assets.
+- Generated individual SVG candidates for danger and safe items.
+- Generated SVG and PNG preview sheets for quick visual review.
+- Documented the vector item folder and regeneration workflow.
+- Linked the vector item source set from the asset pipeline and progress tracking.
+
+### Implementation Details
+- File: `tools/generate_item_vector_assets.py`
+- File: `docs/assets/vector_items/README.md`
+- File: `docs/assets/vector_items/item_danger_knife.svg`
+- File: `docs/assets/vector_items/item_danger_scissors.svg`
+- File: `docs/assets/vector_items/item_danger_lighter.svg`
+- File: `docs/assets/vector_items/item_danger_razor.svg`
+- File: `docs/assets/vector_items/item_danger_battery_pack.svg`
+- File: `docs/assets/vector_items/item_safe_phone.svg`
+- File: `docs/assets/vector_items/item_safe_laptop.svg`
+- File: `docs/assets/vector_items/item_safe_bottle.svg`
+- File: `docs/assets/vector_items/item_safe_sandwich.svg`
+- File: `docs/assets/vector_items/item_safe_keys.svg`
+- File: `docs/assets/vector_items/item_safe_headphones.svg`
+- File: `docs/assets/vector_items/item_vector_preview_sheet.svg`
+- File: `docs/assets/vector_items/item_vector_preview_sheet.png`
+- Reason: Gameplay item assets need clean, editable, handover-friendly source instead of repaired AI image outputs.
+- Technical decision: Keep the first batch as review candidates under docs until visual approval, then wire approved shapes into Flame or export runtime PNGs.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `python tools/generate_item_vector_assets.py`
+
+### Notes
+- No runtime app assets were integrated in this change.
+
+---
+
 ## [2026-06-14 00:04] - Pivot item assets to vector-authored workflow
 
 **Owner**: AI Assistant

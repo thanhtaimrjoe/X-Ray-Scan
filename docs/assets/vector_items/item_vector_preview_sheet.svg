@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="870" viewBox="0 0 1024 870">
+<rect width="1024" height="870" fill="#05121A" />
+<defs>
+    <filter id="fineGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="glow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="3.2" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <linearGradient id="xrayFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8DFBFF" stop-opacity="0.38" />
+      <stop offset="100%" stop-color="#38F6FF" stop-opacity="0.16" />
+    </linearGradient>
+  </defs>
+<g transform="translate(0,0)"><path d="M32 124 C66 96 116 64 184 44 C170 84 132 122 84 148 Z" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <rect x="52" y="144" width="82" height="28" rx="9" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="76" cy="158" r="4" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="104" cy="158" r="4" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M74 142 L128 120" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="12" y="279" fill="#B7EFF4" font-size="16" font-family="Arial">danger_knife</text>
+<g transform="translate(256,0)"><circle cx="70" cy="172" r="22" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="145" cy="170" r="22" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M98 148 L184 54" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M122 148 L74 48" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="110" cy="139" r="7" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="268" y="279" fill="#B7EFF4" font-size="16" font-family="Arial">danger_scissors</text>
+<g transform="translate(512,0)"><rect x="86" y="98" width="64" height="96" rx="11" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <rect x="116" y="54" width="50" height="44" rx="9" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <rect x="148" y="92" width="44" height="28" rx="5" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M102 122 H134 M102 144 H134 M102 166 H134" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="151" cy="76" r="7" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="524" y="279" fill="#B7EFF4" font-size="16" font-family="Arial">danger_lighter</text>
+<g transform="translate(768,0)"><rect x="60" y="46" width="112" height="38" rx="9" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <path d="M116 88 L84 194" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M116 88 L138 194" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M76 56 L88 76 M100 56 L112 76 M124 56 L136 76 M148 56 L160 76" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="780" y="279" fill="#B7EFF4" font-size="16" font-family="Arial">danger_razor</text>
+<g transform="translate(0,290)"><rect x="58" y="74" width="118" height="114" rx="14" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <rect x="94" y="52" width="44" height="22" rx="5" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <rect x="78" y="96" width="78" height="72" rx="8" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M98 108 V158 M118 108 V158 M138 108 V158" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="12" y="569" fill="#B7EFF4" font-size="16" font-family="Arial">danger_battery_pack</text>
+<g transform="translate(256,290)"><rect x="78" y="48" width="84" height="148" rx="18" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <rect x="94" y="74" width="52" height="86" rx="5" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="120" cy="176" r="7" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M108 62 H132 M102 88 H138 M102 112 H138 M102 136 H138" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="268" y="569" fill="#B7EFF4" font-size="16" font-family="Arial">safe_phone</text>
+<g transform="translate(512,290)"><rect x="46" y="66" width="128" height="82" rx="6" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <path d="M36 156 H184 L208 188 H58 Z" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <rect x="86" y="170" width="54" height="12" rx="3" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M66 166 H162 M78 176 H172 M76 86 H144 M76 106 H144 M76 126 H144" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="524" y="569" fill="#B7EFF4" font-size="16" font-family="Arial">safe_laptop</text>
+<g transform="translate(768,290)"><rect x="90" y="76" width="58" height="120" rx="27" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <rect x="100" y="46" width="38" height="32" rx="7" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M96 106 H142 M96 126 H142 M96 146 H142 M96 166 H142" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="780" y="569" fill="#B7EFF4" font-size="16" font-family="Arial">safe_bottle</text>
+<g transform="translate(0,580)"><path d="M36 174 H184 L76 72 Z" fill="url(#xrayFill)" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <path d="M58 148 H166 M70 160 C96 144 122 136 148 124" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="96" cy="132" r="4" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="122" cy="138" r="4" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="12" y="859" fill="#B7EFF4" font-size="16" font-family="Arial">safe_sandwich</text>
+<g transform="translate(256,580)"><circle cx="114" cy="72" r="34" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="96" cy="120" r="23" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <circle cx="150" cy="122" r="23" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <path d="M96 140 L62 198 M150 142 L178 198" fill="none" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <path d="M68 182 H90 M160 182 H182 M72 166 H84 M164 166 H176" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="268" y="859" fill="#B7EFF4" font-size="16" font-family="Arial">safe_keys</text>
+<g transform="translate(512,580)"><path d="M46 136 C52 62 174 62 182 136" fill="none" stroke="#8DFBFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <rect x="38" y="124" width="42" height="62" rx="18" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <rect x="148" y="124" width="42" height="62" rx="18" fill="url(#xrayFill)" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <ellipse cx="60" cy="155" rx="12" ry="22" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" />
+  <ellipse cx="169" cy="155" rx="12" ry="22" fill="none" stroke="#38F6FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#fineGlow)" /></g>
+<text x="524" y="859" fill="#B7EFF4" font-size="16" font-family="Arial">safe_headphones</text>
+</svg>
