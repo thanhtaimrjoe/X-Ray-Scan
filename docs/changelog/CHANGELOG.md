@@ -5,6 +5,46 @@
 
 ---
 
+## [2026-06-13 22:11] - Implement approved anime airport UI pass
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-001, US-004, US-005, US-010
+**Impact Scope**: Gameplay, Ads, Docs, UX, Test
+
+### Changes
+- Reworked the main menu around the approved International Terminal scanner concept with Play, Level Map, Item Database, Settings, progress stats, and banner placement.
+- Added a 10-node International Terminal level map with completed/current/locked states, replay selection, best stars, and level launch controls.
+- Changed gameplay from moving suitcase pressure to paused suitcase inspection where the bag waits in the scanner until the player marks threats and presses Clear.
+- Added an in-game Marked counter so players can compare marked threats against the current bag's danger count.
+- Replaced the old two-card encyclopedia entry flow with a tabbed Item Database for Danger Items and Safe Items.
+- Restyled Level Clear and Level Failed screens against the approved references while preserving rewarded continue and banner separation.
+- Updated widget coverage for the new menu, database, and rewarded continue labels.
+- Updated progress tracking to reflect the implemented visual/UI pass.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/test/widget_test.dart`
+- File: `docs/07_tracking/progress.md`
+- Reason: Tai approved the Gemini-generated core screen concepts and asked to implement the new direction.
+- Technical decision: Keep final UI code asset-light by using shared Flutter-painted airport/scanner panels and reusable action buttons, while preserving the approved layouts as the product reference.
+
+### Tests
+- [x] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test`
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- Button visual polish remains a follow-up; the current pass focuses on implementing the approved flow, layout, and gameplay behavior.
+- Physical-device ad flow validation is still pending.
+
+---
+
 ## [2026-06-13 21:50] - Approve level result screen concepts
 
 **Owner**: AI Assistant

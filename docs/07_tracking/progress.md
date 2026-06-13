@@ -55,19 +55,18 @@ This file tracks the current project state so future AI assistants and contribut
 - Approved the tabbed Item Database visual direction and saved the reference at `docs/assets/item_database_visual_reference_approved.jpg`.
 - Approved the Main Menu layout/art direction and saved the reference at `docs/assets/main_menu_visual_reference_approved.jpg`.
 - Approved the Level Clear and Level Failed/rewarded continue result screen concepts and saved references at `docs/assets/level_clear_visual_reference_approved.jpg` and `docs/assets/level_failed_visual_reference_approved.jpg`.
+- Implemented the first approved anime airport UI pass in Flutter, including the restyled main menu, International Terminal level map, paused suitcase gameplay, marked-threat counter, tabbed Item Database, and restyled Level Clear/Failed screens.
+- Updated widget tests for the new menu, tabbed database, and rewarded continue label.
 - Verified:
-  - `flutter test` (34 tests)
+  - `flutter test` (38 tests)
   - `flutter analyze`
   - `flutter build apk --debug`
   - Samsung device install/launch through ADB (`RFCX80NW55E`)
 
 ## In Progress
 
-- Normalize generated button treatments into shared primary/secondary UI components during implementation.
-- Convert approved visual references into Flutter UI: main menu, level map, paused gameplay, result screens, and tabbed item database.
-- Update the playable item database from the old two-card entry flow to the approved tabbed collection flow.
-- Convert the playable loop from moving suitcases to paused suitcase inspection.
-- Level select screen (allow replaying any unlocked level from main menu).
+- Polish shared primary/secondary button styling now that the approved screen flows are implemented.
+- Tune the implemented approved visual references after device playtesting: main menu, level map, paused gameplay, result screens, and tabbed item database.
 - Sound engine integration using `_soundEnabled` flag.
 
 ## Handoff Notes
@@ -109,14 +108,11 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Define shared primary/secondary button components so generated references use one implementation style.
-2. Implement paused-suitcase inspection so bags stop in the scanner until the player marks items and presses Clear.
-3. Implement the International Terminal level map with replayable nodes.
-4. Replace the old two-card item encyclopedia entry with the tabbed Item Database.
-5. Restyle Main Menu and result screens against the approved references.
-6. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
-7. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
-8. Tune object scale, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.
+1. Device playtest the new paused suitcase loop, level map, result screens, and tabbed Item Database.
+2. Polish shared button styling across Play, Clear, Next, Continue, Retry, Map, Database, and Settings.
+3. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
+4. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
+5. Tune object scale, hit radius, clear timing, and database readability based on device playtests.
 
 ## Known Gaps
 

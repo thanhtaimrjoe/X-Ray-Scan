@@ -13,13 +13,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('X-Ray Scan'), findsOneWidget);
-    expect(find.text('PLAY LEVEL 1'), findsOneWidget);
+    expect(find.text('PLAY'), findsOneWidget);
+    expect(find.text('LEVEL MAP'), findsOneWidget);
     expect(find.text('ITEM DATABASE'), findsOneWidget);
-    expect(find.text('Level 1 unlocked'), findsOneWidget);
-    expect(find.text('Best clearance: 120'), findsOneWidget);
+    expect(find.textContaining('Current Level'), findsOneWidget);
+    expect(find.textContaining('Best Clearance'), findsOneWidget);
   });
 
-  testWidgets('item database opens danger and safe groups', (tester) async {
+  testWidgets('item database opens tabbed danger and safe groups', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(const XrayScanApp());
@@ -31,14 +34,15 @@ void main() {
     expect(find.text('Item Database'), findsOneWidget);
     expect(find.text('DANGER ITEMS'), findsOneWidget);
     expect(find.text('SAFE ITEMS'), findsOneWidget);
-    expect(find.text('0/5 discovered'), findsOneWidget);
-    expect(find.text('0/6 discovered'), findsOneWidget);
+    expect(find.text('Progress: 0/5 discovered'), findsOneWidget);
+    expect(find.text('Knife'), findsOneWidget);
+    expect(find.text('???'), findsWidgets);
 
-    await tester.tap(find.text('DANGER ITEMS'));
+    await tester.tap(find.text('SAFE ITEMS'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Danger Database'), findsOneWidget);
-    expect(find.text('0/5 discovered'), findsOneWidget);
+    expect(find.text('Progress: 0/6 discovered'), findsOneWidget);
+    expect(find.text('Phone'), findsOneWidget);
     expect(find.text('???'), findsWidgets);
   });
 
@@ -53,8 +57,8 @@ void main() {
     await tester.pumpWidget(const XrayScanApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('PLAY LEVEL 10'), findsOneWidget);
-    expect(find.text('Level 10 unlocked'), findsOneWidget);
+    expect(find.text('PLAY'), findsOneWidget);
+    expect(find.text('10'), findsWidgets);
   });
 
   testWidgets('LevelFailedScreen shows continue button when ad is available', (
@@ -78,8 +82,8 @@ void main() {
       ),
     );
 
-    expect(find.text('CONTINUE (WATCH AD)'), findsOneWidget);
-    await tester.tap(find.text('CONTINUE (WATCH AD)'));
+    expect(find.text('CONTINUE +1 LIFE'), findsOneWidget);
+    await tester.tap(find.text('CONTINUE +1 LIFE'));
     await tester.pump();
     expect(continuePressed, isTrue);
 
@@ -106,7 +110,7 @@ void main() {
         ),
       );
 
-      expect(find.text('CONTINUE (WATCH AD)'), findsNothing);
+      expect(find.text('CONTINUE +1 LIFE'), findsNothing);
     },
   );
 }

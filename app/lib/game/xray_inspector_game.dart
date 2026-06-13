@@ -8,15 +8,17 @@ import 'systems/xray_inspector_rules.dart';
 
 typedef GameSnapshotChanged = void Function(XrayInspectorSnapshot snapshot);
 
-typedef LevelComplete = Future<void> Function({
-  required XrayInspectorSnapshot snapshot,
-  required int bagsCleared,
-});
+typedef LevelComplete =
+    Future<void> Function({
+      required XrayInspectorSnapshot snapshot,
+      required int bagsCleared,
+    });
 
-typedef LevelFailed = Future<void> Function({
-  required XrayInspectorSnapshot snapshot,
-  required int bagsCleared,
-});
+typedef LevelFailed =
+    Future<void> Function({
+      required XrayInspectorSnapshot snapshot,
+      required int bagsCleared,
+    });
 
 typedef ItemDiscovered = void Function(XrayObjectType type);
 
@@ -103,6 +105,16 @@ class XrayInspectorGame extends FlameGame {
   XrayInspectorSnapshot get snapshot => _rules.snapshot;
   int get bagsCleared => _bagsCleared;
   int get bagsToClear => levelConfig.bagsToClear;
+  int get currentDangerCount {
+    return _bag?.objects.where((object) => object.type.isDangerous).length ?? 0;
+  }
+
+  int get currentMarkedDangerCount {
+    return _bag?.objects
+            .where((object) => object.type.isDangerous && object.found)
+            .length ??
+        0;
+  }
 
   @override
   Future<void> onLoad() async {
@@ -123,26 +135,8 @@ class XrayInspectorGame extends FlameGame {
 
     final bag = _bag;
     if (bag != null) {
-      bag.x += bag.speed * dt;
       for (final object in bag.objects) {
         object.flashAge += dt;
-      }
-      if (bag.x - (_bagSize.width / 2) > size.x + 36) {
-        if (bag.hasDangerRemaining) {
-          _rules.resolveMissedDanger();
-          _screenFlash = 0.25;
-          _pulses.add(
-            XrayPulse(
-              center: _scannerRect.center,
-              color: _danger,
-              label: '-1 LIFE',
-              age: 0,
-            ),
-          );
-          onSnapshotChanged(snapshot);
-          _finishIfNeeded();
-        }
-        _spawnBag();
       }
     }
 
@@ -221,10 +215,6 @@ class XrayInspectorGame extends FlameGame {
       return;
     }
 
-    if (!_bagCanBeCleared(bag)) {
-      return;
-    }
-
     if (bag.hasDangerRemaining) {
       bag.hadMistake = true;
       _rules.resolveFalseClear();
@@ -239,7 +229,10 @@ class XrayInspectorGame extends FlameGame {
       );
       onSnapshotChanged(snapshot);
       _finishIfNeeded();
-      _spawnBag();
+      if (!_rules.isGameOver) {
+        _spawnBag();
+        onSnapshotChanged(snapshot);
+      }
       return;
     }
 
@@ -315,17 +308,7 @@ class XrayInspectorGame extends FlameGame {
     }
     objects.shuffle(_random);
 
-    _bag = XrayBag(
-      objects: objects,
-      x: -_bagSize.width * 0.62,
-      yFactor: 0.52 + ((_random.nextDouble() - 0.5) * 0.08),
-      speed: min(
-        levelConfig.maxBagSpeed,
-        levelConfig.baseBagSpeed +
-            (_elapsed * (levelConfig.maxBagSpeed - levelConfig.baseBagSpeed) /
-                levelConfig.speedRampSeconds),
-      ),
-    );
+    _bag = XrayBag(objects: objects, x: size.x / 2, yFactor: 0.52, speed: 0);
   }
 
   XrayObjectInstance _buildObject(XrayObjectType type, Offset slot) {
@@ -387,12 +370,6 @@ class XrayInspectorGame extends FlameGame {
       width: bagSize.width,
       height: bagSize.height,
     );
-  }
-
-  bool _bagCanBeCleared(XrayBag bag) {
-    final rect = _bagRect(bag);
-    final scanner = _scannerRect;
-    return rect.right >= scanner.left && rect.left <= scanner.right;
   }
 
   List<Offset> get _bagSlots => const [

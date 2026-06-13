@@ -40,15 +40,253 @@ class XrayScanApp extends StatelessWidget {
 
 enum AppScreen {
   menu,
+  levelMap,
   playing,
   paused,
   levelClear,
   levelFailed,
-  encyclopediaIndex,
-  encyclopediaGroup,
+  itemDatabase,
 }
 
 enum EncyclopediaGroup { danger, safe }
+
+class _XrayStyle {
+  const _XrayStyle._();
+
+  static const Color bg = Color(0xFF030912);
+  static const Color panel = Color(0xDD071826);
+  static const Color panelSoft = Color(0xCC0B2033);
+  static const Color cyan = Color(0xFF38F6FF);
+  static const Color cyanSoft = Color(0xFF67E8F9);
+  static const Color success = Color(0xFF37FFB5);
+  static const Color danger = Color(0xFFFF3B5C);
+  static const Color gold = Color(0xFFFFD166);
+  static const Color text = Color(0xFFE5FEFF);
+  static const Color muted = Color(0xFFB7EFF4);
+}
+
+class _GlassPanel extends StatelessWidget {
+  const _GlassPanel({
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+    this.borderColor,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final Color? borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _XrayStyle.panel,
+        border: Border.all(
+          color: borderColor ?? _XrayStyle.cyan.withValues(alpha: 0.5),
+          width: 1.2,
+        ),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.28),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Padding(padding: padding, child: child),
+    );
+  }
+}
+
+class _XrayActionButton extends StatelessWidget {
+  const _XrayActionButton._({
+    required this.onPressed,
+    required this.label,
+    required this.isPrimary,
+    this.icon,
+    this.compact = false,
+  });
+
+  factory _XrayActionButton.primary({
+    required VoidCallback onPressed,
+    required String label,
+    Widget? icon,
+    bool compact = false,
+  }) {
+    return _XrayActionButton._(
+      onPressed: onPressed,
+      label: label,
+      isPrimary: true,
+      icon: icon,
+      compact: compact,
+    );
+  }
+
+  factory _XrayActionButton.secondary({
+    required VoidCallback onPressed,
+    required String label,
+    Widget? icon,
+    bool compact = false,
+  }) {
+    return _XrayActionButton._(
+      onPressed: onPressed,
+      label: label,
+      isPrimary: false,
+      icon: icon,
+      compact: compact,
+    );
+  }
+
+  final VoidCallback onPressed;
+  final String label;
+  final Widget? icon;
+  final bool isPrimary;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground = isPrimary ? Colors.black : _XrayStyle.text;
+    final background = isPrimary ? _XrayStyle.success : _XrayStyle.panelSoft;
+    final border = isPrimary
+        ? _XrayStyle.success.withValues(alpha: 0.8)
+        : _XrayStyle.cyan.withValues(alpha: 0.58);
+    final child = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (icon != null) ...[
+          IconTheme(
+            data: IconThemeData(color: foreground, size: compact ? 18 : 26),
+            child: icon!,
+          ),
+          SizedBox(width: compact ? 6 : 10),
+        ],
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: foreground,
+              fontSize: compact ? 15 : 24,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(8),
+        child: Ink(
+          height: compact ? 42 : 58,
+          decoration: BoxDecoration(
+            color: background,
+            border: Border.all(color: border, width: 1.4),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              if (isPrimary)
+                BoxShadow(
+                  color: _XrayStyle.success.withValues(alpha: 0.24),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+            ],
+          ),
+          child: Center(child: child),
+        ),
+      ),
+    );
+  }
+}
+
+class _IconPanelButton extends StatelessWidget {
+  const _IconPanelButton({
+    required this.icon,
+    required this.onPressed,
+    required this.tooltip,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+  final String tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(8),
+        child: Ink(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            color: _XrayStyle.panel,
+            border: Border.all(color: _XrayStyle.cyan.withValues(alpha: 0.5)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: _XrayStyle.cyanSoft),
+        ),
+      ),
+    );
+  }
+}
+
+class _AirportBackdrop extends StatelessWidget {
+  const _AirportBackdrop({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const _AirportScene(),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.08),
+                _XrayStyle.bg.withValues(alpha: 0.22),
+                _XrayStyle.bg.withValues(alpha: 0.62),
+              ],
+            ),
+          ),
+        ),
+        child,
+      ],
+    );
+  }
+}
+
+class _ScannerGridBackdrop extends StatelessWidget {
+  const _ScannerGridBackdrop({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(color: _XrayStyle.bg),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CustomPaint(painter: _ScannerGridPainter()),
+          child,
+        ],
+      ),
+    );
+  }
+}
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -78,6 +316,7 @@ class _AppShellState extends State<AppShell> {
     bestStars: {},
   );
   int _activeLevelNumber = 1;
+  int _selectedMapLevel = 1;
   XrayInspectorGame? _currentGame;
 
   InterstitialAd? _interstitialAd;
@@ -178,14 +417,19 @@ class _AppShellState extends State<AppShell> {
   }
 
   void _startLevel(int levelNumber) {
+    final clampedLevel = levelNumber.clamp(
+      1,
+      _levelProgress.highestUnlockedLevel,
+    );
     setState(() {
       _adBreakState = _adBreakRules.onLevelAttemptStarted(_adBreakState);
-      _activeLevelNumber = levelNumber;
+      _activeLevelNumber = clampedLevel;
+      _selectedMapLevel = clampedLevel;
       _screen = AppScreen.playing;
       _lastScore = 0;
       _lastBagsCleared = 0;
       _lastBagsToClear = LevelProgressionRules.configForLevel(
-        levelNumber,
+        clampedLevel,
       ).bagsToClear;
       _lastStarsEarned = 0;
       _lastBestStars = 0;
@@ -196,7 +440,7 @@ class _AppShellState extends State<AppShell> {
   }
 
   void _startHighestUnlockedLevel() {
-    _startLevel(_levelProgress.highestUnlockedLevel);
+    _showLevelMap();
   }
 
   void _pauseGame() {
@@ -333,16 +577,26 @@ class _AppShellState extends State<AppShell> {
     });
   }
 
-  void _showEncyclopediaIndex() {
+  void _showLevelMap() {
     setState(() {
-      _screen = AppScreen.encyclopediaIndex;
+      _selectedMapLevel = _levelProgress.highestUnlockedLevel;
+      _screen = AppScreen.levelMap;
     });
   }
 
-  void _showEncyclopediaGroup(EncyclopediaGroup group) {
+  void _selectMapLevel(int levelNumber) {
+    if (levelNumber > _levelProgress.highestUnlockedLevel) {
+      return;
+    }
+    setState(() {
+      _selectedMapLevel = levelNumber;
+    });
+  }
+
+  void _showItemDatabase({EncyclopediaGroup group = EncyclopediaGroup.danger}) {
     setState(() {
       _selectedGroup = group;
-      _screen = AppScreen.encyclopediaGroup;
+      _screen = AppScreen.itemDatabase;
     });
   }
 
@@ -364,7 +618,18 @@ class _AppShellState extends State<AppShell> {
         highestUnlockedLevel: _levelProgress.highestUnlockedLevel,
         highScore: _highScore,
         onPlay: _startHighestUnlockedLevel,
-        onOpenDatabase: _showEncyclopediaIndex,
+        onOpenLevelMap: _showLevelMap,
+        onOpenDatabase: () => _showItemDatabase(),
+      ),
+      AppScreen.levelMap => LevelMapScreen(
+        progress: _levelProgress,
+        selectedLevel: _selectedMapLevel,
+        coins: _highScore,
+        gems: _unlockedItems.length,
+        onSelectLevel: _selectMapLevel,
+        onPlay: () => _startLevel(_selectedMapLevel),
+        onOpenDatabase: () => _showItemDatabase(),
+        onBack: _showMenu,
       ),
       AppScreen.playing => GameplayScreen(
         levelNumber: _activeLevelNumber,
@@ -387,6 +652,8 @@ class _AppShellState extends State<AppShell> {
       AppScreen.levelClear => LevelClearScreen(
         levelNumber: _activeLevelNumber,
         score: _lastScore,
+        bagsCleared: _lastBagsCleared,
+        bagsToClear: _lastBagsToClear,
         starsEarned: _lastStarsEarned,
         bestStars: _lastBestStars,
         canPlayNext: _canPlayNextLevel,
@@ -394,7 +661,7 @@ class _AppShellState extends State<AppShell> {
         unlockedDanger: _lastUnlockedDanger,
         onNext: () => _startLevel(_activeLevelNumber + 1),
         onRetry: () => _startLevel(_activeLevelNumber),
-        onMenu: _showMenu,
+        onMenu: _showLevelMap,
       ),
       AppScreen.levelFailed => LevelFailedScreen(
         levelNumber: _activeLevelNumber,
@@ -402,22 +669,17 @@ class _AppShellState extends State<AppShell> {
         bagsCleared: _lastBagsCleared,
         bagsToClear: _lastBagsToClear,
         onRetry: () => _startLevel(_activeLevelNumber),
-        onMenu: _showMenu,
+        onMenu: _showLevelMap,
         canContinueWithAd: _adBreakRules.canOfferRewardedContinue(
           rewardedAdAvailable: _rewardedAd != null,
           rewardedContinueUsed: _adBreakState.rewardedContinueUsed,
         ),
         onContinueWithAd: _handleRewardedContinue,
       ),
-      AppScreen.encyclopediaIndex => EncyclopediaIndexScreen(
+      AppScreen.itemDatabase => ItemDatabaseScreen(
+        initialGroup: _selectedGroup,
         unlockedItems: _unlockedItems,
-        onSelectGroup: _showEncyclopediaGroup,
         onBack: _showMenu,
-      ),
-      AppScreen.encyclopediaGroup => EncyclopediaGroupScreen(
-        group: _selectedGroup,
-        unlockedItems: _unlockedItems,
-        onBack: _showEncyclopediaIndex,
       ),
     };
   }
@@ -428,6 +690,7 @@ class MainMenuScreen extends StatelessWidget {
     required this.highestUnlockedLevel,
     required this.highScore,
     required this.onPlay,
+    required this.onOpenLevelMap,
     required this.onOpenDatabase,
     super.key,
   });
@@ -435,88 +698,514 @@ class MainMenuScreen extends StatelessWidget {
   final int highestUnlockedLevel;
   final int highScore;
   final VoidCallback onPlay;
+  final VoidCallback onOpenLevelMap;
   final VoidCallback onOpenDatabase;
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = Theme.of(context).textTheme.displaySmall?.copyWith(
-      fontWeight: FontWeight.w900,
-      color: const Color(0xFFE5FEFF),
-      letterSpacing: 0,
-    );
-
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
+      body: _AirportBackdrop(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _IconPanelButton(
+                        icon: Icons.volume_up_rounded,
+                        onPressed: () {},
+                        tooltip: 'Sound',
+                      ),
+                      const SizedBox(width: 10),
+                      _IconPanelButton(
+                        icon: Icons.settings_rounded,
+                        onPressed: () {},
+                        tooltip: 'Settings',
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'X-Ray Scan',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontSize: 46,
+                    fontWeight: FontWeight.w900,
+                    color: _XrayStyle.cyan,
+                    letterSpacing: 0,
+                    shadows: const [
+                      Shadow(color: _XrayStyle.cyan, blurRadius: 18),
+                    ],
+                  ),
+                ),
+                Text(
+                  'World Customs Adventure',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: _XrayStyle.text,
+                    fontWeight: FontWeight.w900,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _GlassPanel(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  child: Column(
+                    children: [
+                      _InfoLine(label: 'Best Clearance', value: '$highScore'),
+                      _InfoLine(
+                        label: 'Current World',
+                        value: 'International Terminal',
+                      ),
+                      _InfoLine(
+                        label: 'Current Level',
+                        value: '$highestUnlockedLevel',
+                      ),
+                    ],
+                  ),
+                ),
+                const Expanded(child: _ScannerHero()),
+                _XrayActionButton.primary(
+                  onPressed: onPlay,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: 'PLAY',
+                ),
+                const SizedBox(height: 12),
+                _XrayActionButton.secondary(
+                  onPressed: onOpenLevelMap,
+                  icon: const Icon(Icons.map_rounded),
+                  label: 'LEVEL MAP',
+                ),
+                const SizedBox(height: 10),
+                _XrayActionButton.secondary(
+                  onPressed: onOpenDatabase,
+                  icon: const Icon(Icons.folder_open_rounded),
+                  label: 'ITEM DATABASE',
+                ),
+                const SizedBox(height: 18),
+                const Center(child: XrayBannerAd()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LevelMapScreen extends StatelessWidget {
+  const LevelMapScreen({
+    required this.progress,
+    required this.selectedLevel,
+    required this.coins,
+    required this.gems,
+    required this.onSelectLevel,
+    required this.onPlay,
+    required this.onOpenDatabase,
+    required this.onBack,
+    super.key,
+  });
+
+  final LevelProgressSnapshot progress;
+  final int selectedLevel;
+  final int coins;
+  final int gems;
+  final ValueChanged<int> onSelectLevel;
+  final VoidCallback onPlay;
+  final VoidCallback onOpenDatabase;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _AirportBackdrop(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                _GlassPanel(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'World:',
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(color: _XrayStyle.muted),
+                            ),
+                            Text(
+                              'International Terminal',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: _XrayStyle.text,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _TopCurrency(icon: Icons.monetization_on, value: coins),
+                      const SizedBox(width: 12),
+                      _TopCurrency(icon: Icons.diamond_rounded, value: gems),
+                      const SizedBox(width: 10),
+                      _IconPanelButton(
+                        icon: Icons.settings_rounded,
+                        onPressed: () {},
+                        tooltip: 'Settings',
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Expanded(
+                  child: _GlassPanel(
+                    padding: EdgeInsets.zero,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Stack(
+                          children: [
+                            CustomPaint(
+                              size: Size(
+                                constraints.maxWidth,
+                                constraints.maxHeight,
+                              ),
+                              painter: _LevelRoutePainter(),
+                            ),
+                            for (
+                              var level = 1;
+                              level <= LevelProgressionRules.maxLevelNumber;
+                              level++
+                            )
+                              _MapNode(
+                                level: level,
+                                position: _mapNodePosition(level),
+                                isSelected: selectedLevel == level,
+                                isCompleted: progress.bestStarsFor(level) > 0,
+                                isUnlocked:
+                                    level <= progress.highestUnlockedLevel,
+                                stars: progress.bestStarsFor(level),
+                                onTap: () => onSelectLevel(level),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _GlassPanel(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Level $selectedLevel',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(color: _XrayStyle.muted),
+                            ),
+                            Text(
+                              _levelTitle(selectedLevel),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0,
+                                  ),
+                            ),
+                            const SizedBox(height: 8),
+                            _StarRow(
+                              stars: progress.bestStarsFor(selectedLevel),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      SizedBox(
+                        width: 144,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _XrayActionButton.primary(
+                              onPressed: onPlay,
+                              label: 'PLAY',
+                            ),
+                            const SizedBox(height: 10),
+                            _XrayActionButton.secondary(
+                              onPressed: onOpenDatabase,
+                              label: 'Database',
+                              compact: true,
+                            ),
+                            const SizedBox(height: 8),
+                            _XrayActionButton.secondary(
+                              onPressed: onBack,
+                              label: 'Back',
+                              compact: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Alignment _mapNodePosition(int level) {
+    return switch (level) {
+      1 => const Alignment(-0.76, -0.78),
+      2 => const Alignment(-0.18, -0.65),
+      3 => const Alignment(0.5, -0.5),
+      4 => const Alignment(0.64, -0.16),
+      5 => const Alignment(0.15, 0.04),
+      6 => const Alignment(-0.28, 0.18),
+      7 => const Alignment(-0.72, 0.34),
+      8 => const Alignment(-0.48, 0.62),
+      9 => const Alignment(-0.02, 0.78),
+      _ => const Alignment(0.62, 0.68),
+    };
+  }
+
+  String _levelTitle(int level) {
+    return switch (level) {
+      1 => 'First Scan',
+      2 => 'Sharp Shapes',
+      3 => 'Mixed Bags',
+      4 => 'Crowded Luggage',
+      5 => 'Razor Alert',
+      6 => 'False Tap Trap',
+      7 => 'Double Threat',
+      8 => 'Battery Warning',
+      9 => 'Speed Check',
+      _ => 'Final Security Gate',
+    };
+  }
+}
+
+class _InfoLine extends StatelessWidget {
+  const _InfoLine({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '$label: ',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: _XrayStyle.muted),
+          ),
+          Flexible(
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: _XrayStyle.text,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScannerHero extends StatelessWidget {
+  const _ScannerHero();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _ScannerHeroPainter(),
+      child: const SizedBox.expand(),
+    );
+  }
+}
+
+class _TopCurrency extends StatelessWidget {
+  const _TopCurrency({required this.icon, required this.value});
+
+  final IconData icon;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: icon == Icons.diamond_rounded
+              ? _XrayStyle.cyan
+              : _XrayStyle.gold,
+          size: 20,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          '$value',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: _XrayStyle.text,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MapNode extends StatelessWidget {
+  const _MapNode({
+    required this.level,
+    required this.position,
+    required this.isSelected,
+    required this.isCompleted,
+    required this.isUnlocked,
+    required this.stars,
+    required this.onTap,
+  });
+
+  final int level;
+  final Alignment position;
+  final bool isSelected;
+  final bool isCompleted;
+  final bool isUnlocked;
+  final int stars;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isFinal = level == LevelProgressionRules.maxLevelNumber;
+    final color = isUnlocked ? _XrayStyle.cyan : Colors.blueGrey;
+    return Align(
+      alignment: position,
+      child: GestureDetector(
+        onTap: onTap,
+        child: SizedBox(
+          width: isFinal ? 86 : 72,
+          height: isFinal ? 100 : 90,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 18),
-              Text(
-                'X-Ray Scan',
-                textAlign: TextAlign.center,
-                style: titleStyle,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Level $highestUnlockedLevel unlocked',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: const Color(0xFFB7EFF4),
-                  fontWeight: FontWeight.w700,
+              if (isCompleted)
+                _MiniStars(stars: stars)
+              else
+                const SizedBox(height: 18),
+              Container(
+                width: isFinal ? 62 : 52,
+                height: isFinal ? 62 : 52,
+                decoration: BoxDecoration(
+                  shape: isFinal ? BoxShape.rectangle : BoxShape.circle,
+                  borderRadius: isFinal ? BorderRadius.circular(8) : null,
+                  color: isUnlocked
+                      ? const Color(0xFF0D4762)
+                      : const Color(0xFF26333D),
+                  border: Border.all(
+                    color: isSelected
+                        ? _XrayStyle.text
+                        : color.withValues(alpha: 0.7),
+                    width: isSelected ? 3 : 2,
+                  ),
+                  boxShadow: [
+                    if (isSelected || isUnlocked)
+                      BoxShadow(
+                        color: color.withValues(alpha: isSelected ? 0.8 : 0.38),
+                        blurRadius: isSelected ? 24 : 14,
+                      ),
+                  ],
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (isCompleted)
+                      const Icon(
+                        Icons.check_rounded,
+                        color: _XrayStyle.success,
+                        size: 34,
+                      )
+                    else
+                      Text(
+                        '$level',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: isUnlocked
+                                  ? _XrayStyle.text
+                                  : Colors.white54,
+                              fontWeight: FontWeight.w900,
+                            ),
+                      ),
+                    if (!isUnlocked)
+                      const Positioned(
+                        right: 4,
+                        bottom: 3,
+                        child: Icon(
+                          Icons.lock_rounded,
+                          color: Colors.white70,
+                          size: 18,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 6),
-              Text(
-                'Best clearance: $highScore',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFF8FDDE4),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 26),
-              const Expanded(child: _AssetHero()),
-              const SizedBox(height: 22),
-              FilledButton.icon(
-                onPressed: onPlay,
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: Text('PLAY LEVEL $highestUnlockedLevel'),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(56),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: onOpenDatabase,
-                icon: const Icon(Icons.folder_open_rounded),
-                label: const Text('ITEM DATABASE'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  textStyle: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
-              const Center(child: XrayBannerAd()),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _MiniStars extends StatelessWidget {
+  const _MiniStars({required this.stars});
+
+  final int stars;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 1; i <= 3; i++)
+          Icon(
+            Icons.star_rounded,
+            size: 16,
+            color: i <= stars ? _XrayStyle.gold : Colors.white24,
+          ),
+      ],
     );
   }
 }
@@ -642,23 +1331,20 @@ class _GameplayScreenState extends State<GameplayScreen> {
               top: false,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
-                child: FilledButton.icon(
-                  onPressed: _game.clearBag,
-                  icon: const Icon(Icons.check_circle_outline_rounded),
-                  label: const Text('CLEAR'),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(54),
-                    backgroundColor: const Color(0xFF0F766E),
-                    foregroundColor: Colors.white,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _MarkedCounter(
+                      marked: _game.currentMarkedDangerCount,
+                      total: _game.currentDangerCount,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    const SizedBox(height: 10),
+                    _XrayActionButton.primary(
+                      onPressed: _game.clearBag,
+                      icon: const Icon(Icons.check_circle_outline_rounded),
+                      label: 'CLEAR',
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -753,6 +1439,8 @@ class LevelClearScreen extends StatelessWidget {
   const LevelClearScreen({
     required this.levelNumber,
     required this.score,
+    required this.bagsCleared,
+    required this.bagsToClear,
     required this.starsEarned,
     required this.bestStars,
     required this.canPlayNext,
@@ -766,6 +1454,8 @@ class LevelClearScreen extends StatelessWidget {
 
   final int levelNumber;
   final int score;
+  final int bagsCleared;
+  final int bagsToClear;
   final int starsEarned;
   final int bestStars;
   final bool canPlayNext;
@@ -778,81 +1468,100 @@ class LevelClearScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              Text(
-                'Level $levelNumber Clear',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0,
-                ),
-              ),
-              const SizedBox(height: 18),
-              _StarRow(stars: starsEarned),
-              const SizedBox(height: 8),
-              Text(
-                'Best stars: $bestStars',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFFB7EFF4),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Score: $score',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              if (didUnlockNextLevel) ...[
-                const SizedBox(height: 12),
-                Text(
-                  'Level ${levelNumber + 1} unlocked',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF37FFB5),
-                    fontWeight: FontWeight.w800,
+      body: _AirportBackdrop(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _GlassPanel(
+                    child: Column(
+                      children: [
+                        Text(
+                          'LEVEL CLEAR',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.displaySmall
+                              ?.copyWith(
+                                color: _XrayStyle.gold,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0,
+                              ),
+                        ),
+                        Text(
+                          'International Terminal - Level $levelNumber',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: _XrayStyle.text,
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                        const SizedBox(height: 18),
+                        _StarRow(stars: starsEarned),
+                        const SizedBox(height: 14),
+                        Text(
+                          'Score: $score\nBest: $bestStars stars',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
+                                color: _XrayStyle.text,
+                                fontWeight: FontWeight.w900,
+                                height: 1.18,
+                              ),
+                        ),
+                        const SizedBox(height: 12),
+                        _ResultStrip(
+                          text: 'Bags Cleared: $bagsCleared/$bagsToClear',
+                        ),
+                        if (unlockedDanger != null || didUnlockNextLevel) ...[
+                          const SizedBox(height: 14),
+                          _RewardPanel(
+                            title: unlockedDanger != null
+                                ? 'New threat profile:'
+                                : 'Progress unlocked:',
+                            value:
+                                unlockedDanger?.displayName ??
+                                'Level ${levelNumber + 1}',
+                            icon: unlockedDanger != null
+                                ? _itemIconFor(unlockedDanger!)
+                                : Icons.lock_open_rounded,
+                          ),
+                        ],
+                        const SizedBox(height: 22),
+                        if (canPlayNext)
+                          _XrayActionButton.primary(
+                            onPressed: onNext,
+                            icon: const Icon(Icons.arrow_forward_rounded),
+                            label: 'NEXT',
+                          ),
+                        if (canPlayNext) const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _XrayActionButton.secondary(
+                                onPressed: onRetry,
+                                label: 'RETRY',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _XrayActionButton.secondary(
+                                onPressed: onMenu,
+                                label: 'MAP',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-              if (unlockedDanger != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'New threat profile: ${unlockedDanger!.displayName}',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: const Color(0xFFFF3B5C),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 32),
-              if (canPlayNext)
-                FilledButton.icon(
-                  onPressed: onNext,
-                  icon: const Icon(Icons.arrow_forward_rounded),
-                  label: Text('NEXT LEVEL ${levelNumber + 1}'),
-                ),
-              if (canPlayNext) const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.replay_rounded),
-                label: const Text('RETRY'),
+                  const SizedBox(height: 18),
+                  const Center(child: XrayBannerAd()),
+                ],
               ),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: onMenu,
-                icon: const Icon(Icons.home_rounded),
-                label: const Text('MENU'),
-              ),
-              const Spacer(),
-              const Center(child: XrayBannerAd()),
-            ],
+            ),
           ),
         ),
       ),
@@ -885,61 +1594,211 @@ class LevelFailedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              Text(
-                'Level $levelNumber Failed',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0,
-                  color: const Color(0xFFFF3B5C),
+      body: _AirportBackdrop(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _GlassPanel(
+                    borderColor: _XrayStyle.danger.withValues(alpha: 0.55),
+                    child: Column(
+                      children: [
+                        Text(
+                          'LEVEL FAILED',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.displaySmall
+                              ?.copyWith(
+                                color: _XrayStyle.gold,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0,
+                              ),
+                        ),
+                        Text(
+                          'International Terminal - Level $levelNumber',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: _XrayStyle.text,
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          '$score',
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(
+                                color: _XrayStyle.text,
+                                fontWeight: FontWeight.w900,
+                              ),
+                        ),
+                        _ResultStrip(
+                          text: 'Bags Cleared: $bagsCleared/$bagsToClear',
+                        ),
+                        const SizedBox(height: 12),
+                        _WarningPanel(),
+                        const SizedBox(height: 18),
+                        if (canContinueWithAd) ...[
+                          _XrayActionButton.primary(
+                            onPressed: onContinueWithAd,
+                            icon: const Icon(Icons.ondemand_video_rounded),
+                            label: 'CONTINUE +1 LIFE',
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Watch ad to keep inspecting',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: _XrayStyle.text),
+                          ),
+                          const SizedBox(height: 14),
+                        ],
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _XrayActionButton.secondary(
+                                onPressed: onRetry,
+                                label: 'RETRY',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _XrayActionButton.secondary(
+                                onPressed: onMenu,
+                                label: 'MAP',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  const Center(child: XrayBannerAd()),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ItemDatabaseScreen extends StatefulWidget {
+  const ItemDatabaseScreen({
+    required this.initialGroup,
+    required this.unlockedItems,
+    required this.onBack,
+    super.key,
+  });
+
+  final EncyclopediaGroup initialGroup;
+  final Set<XrayObjectType> unlockedItems;
+  final VoidCallback onBack;
+
+  @override
+  State<ItemDatabaseScreen> createState() => _ItemDatabaseScreenState();
+}
+
+class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
+  late EncyclopediaGroup _group;
+
+  @override
+  void initState() {
+    super.initState();
+    _group = widget.initialGroup;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final items = _group == EncyclopediaGroup.danger
+        ? dangerXrayObjects
+        : safeXrayObjects;
+    final unlockedCount = items.where(widget.unlockedItems.contains).length;
+
+    return Scaffold(
+      body: _ScannerGridBackdrop(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    _BackButton(onPressed: widget.onBack),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(
+                            'Item Database',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: _XrayStyle.text,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0,
+                                ),
+                          ),
+                          Text(
+                            'Progress: $unlockedCount/${items.length} discovered',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: _XrayStyle.muted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 86),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 22),
-              Text(
-                'Score: $score',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Bags cleared: $bagsCleared/$bagsToClear',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 32),
-              if (canContinueWithAd) ...[
-                FilledButton.icon(
-                  onPressed: onContinueWithAd,
-                  icon: const Icon(Icons.ondemand_video_rounded),
-                  label: const Text('CONTINUE (WATCH AD)'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFD166),
-                    foregroundColor: Colors.black,
+                const SizedBox(height: 18),
+                Expanded(
+                  child: _GlassPanel(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        _DatabaseTabs(
+                          selected: _group,
+                          onChanged: (group) => setState(() => _group = group),
+                        ),
+                        const SizedBox(height: 14),
+                        Expanded(
+                          child: GridView.builder(
+                            itemCount: items.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 14,
+                                  mainAxisSpacing: 14,
+                                  childAspectRatio: 0.66,
+                                ),
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              return _ItemDatabaseTile(
+                                item: item,
+                                isUnlocked: widget.unlockedItems.contains(item),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _group == EncyclopediaGroup.danger
+                              ? 'Find threats during inspection to reveal profiles.'
+                              : 'Clear safe bags to reveal passenger items.',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: _XrayStyle.muted),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 12),
               ],
-              FilledButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.replay_rounded),
-                label: const Text('RETRY'),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: onMenu,
-                icon: const Icon(Icons.home_rounded),
-                label: const Text('MENU'),
-              ),
-              const Spacer(),
-              const Center(child: XrayBannerAd()),
-            ],
+            ),
           ),
         ),
       ),
@@ -968,6 +1827,276 @@ class _StarRow extends StatelessWidget {
       ],
     );
   }
+}
+
+class _MarkedCounter extends StatelessWidget {
+  const _MarkedCounter({required this.marked, required this.total});
+
+  final int marked;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.62),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _XrayStyle.cyan.withValues(alpha: 0.35)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        child: Text(
+          'MARKED: $marked/$total',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: _XrayStyle.text,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResultStrip extends StatelessWidget {
+  const _ResultStrip({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          color: _XrayStyle.text,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+}
+
+class _RewardPanel extends StatelessWidget {
+  const _RewardPanel({
+    required this.title,
+    required this.value,
+    required this.icon,
+  });
+
+  final String title;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _XrayStyle.cyan.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _XrayStyle.cyan.withValues(alpha: 0.68)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: _XrayStyle.text,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: _XrayStyle.cyanSoft,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 62,
+            height: 62,
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.28),
+              border: Border.all(color: _XrayStyle.cyan.withValues(alpha: 0.5)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: _XrayStyle.cyanSoft, size: 36),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WarningPanel extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _XrayStyle.danger.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: _XrayStyle.danger.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Threat left in bag',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: const Color(0xFFFFA7B5),
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Icon(
+            Icons.restaurant_rounded,
+            color: _XrayStyle.danger,
+            size: 44,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DatabaseTabs extends StatelessWidget {
+  const _DatabaseTabs({required this.selected, required this.onChanged});
+
+  final EncyclopediaGroup selected;
+  final ValueChanged<EncyclopediaGroup> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: _XrayStyle.cyan.withValues(alpha: 0.25)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _DatabaseTabButton(
+              label: 'DANGER ITEMS',
+              selected: selected == EncyclopediaGroup.danger,
+              onTap: () => onChanged(EncyclopediaGroup.danger),
+            ),
+          ),
+          Expanded(
+            child: _DatabaseTabButton(
+              label: 'SAFE ITEMS',
+              selected: selected == EncyclopediaGroup.safe,
+              onTap: () => onChanged(EncyclopediaGroup.safe),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DatabaseTabButton extends StatelessWidget {
+  const _DatabaseTabButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 46,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected
+              ? _XrayStyle.cyan.withValues(alpha: 0.16)
+              : Colors.transparent,
+          border: selected
+              ? Border.all(color: _XrayStyle.text.withValues(alpha: 0.75))
+              : null,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: selected ? _XrayStyle.text : Colors.white54,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BackButton extends StatelessWidget {
+  const _BackButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: Ink(
+        height: 48,
+        width: 86,
+        decoration: BoxDecoration(
+          color: _XrayStyle.panelSoft,
+          border: Border.all(color: _XrayStyle.cyan.withValues(alpha: 0.35)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+            SizedBox(width: 6),
+            Text('Back'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+IconData _itemIconFor(XrayObjectType item) {
+  return switch (item) {
+    XrayObjectType.knife => Icons.restaurant_rounded,
+    XrayObjectType.scissors => Icons.content_cut_rounded,
+    XrayObjectType.lighter => Icons.local_fire_department_rounded,
+    XrayObjectType.razor => Icons.rectangle_rounded,
+    XrayObjectType.batteryPack => Icons.battery_charging_full_rounded,
+    XrayObjectType.phone => Icons.phone_iphone_rounded,
+    XrayObjectType.laptop => Icons.laptop_mac_rounded,
+    XrayObjectType.bottle => Icons.water_drop_rounded,
+    XrayObjectType.sandwich => Icons.lunch_dining_rounded,
+    XrayObjectType.keys => Icons.key_rounded,
+    XrayObjectType.headphones => Icons.headphones_rounded,
+  };
 }
 
 class EncyclopediaIndexScreen extends StatelessWidget {
@@ -1240,58 +2369,81 @@ class _ItemDatabaseTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = item.isDangerous
-        ? const Color(0xFFFF3B5C)
-        : const Color(0xFF37FFB5);
-    final iconColor = isUnlocked ? accent : Colors.black;
+    const accent = _XrayStyle.cyanSoft;
+    final iconColor = isUnlocked
+        ? accent
+        : _XrayStyle.cyan.withValues(alpha: 0.22);
     final borderColor = isUnlocked
-        ? accent.withValues(alpha: 0.68)
-        : Colors.white.withValues(alpha: 0.16);
+        ? accent.withValues(alpha: 0.76)
+        : _XrayStyle.cyan.withValues(alpha: 0.18);
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFF061721),
+        color: const Color(0xDD061721),
         border: Border.all(color: borderColor),
         borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          if (isUnlocked)
+            BoxShadow(color: accent.withValues(alpha: 0.18), blurRadius: 14),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              isUnlocked ? 'Unlocked' : 'Locked',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: isUnlocked ? accent : Colors.white38,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
             Expanded(
-              child: Center(
-                child: Icon(
-                  _itemIcon(item),
-                  size: 54,
-                  color: iconColor,
-                  shadows: isUnlocked
-                      ? [
-                          Shadow(
-                            color: accent.withValues(alpha: 0.9),
-                            blurRadius: 18,
-                          ),
-                        ]
-                      : null,
-                ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Center(
+                    child: Icon(
+                      _itemIconFor(item),
+                      size: 66,
+                      color: iconColor,
+                      shadows: isUnlocked
+                          ? [
+                              Shadow(
+                                color: accent.withValues(alpha: 0.85),
+                                blurRadius: 18,
+                              ),
+                            ]
+                          : null,
+                    ),
+                  ),
+                  if (!isUnlocked)
+                    const Icon(
+                      Icons.lock_rounded,
+                      color: Colors.white70,
+                      size: 34,
+                    ),
+                ],
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              isUnlocked ? item.displayName : '???',
-              textAlign: TextAlign.center,
+              item.displayName,
+              textAlign: TextAlign.left,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w900,
-                color: isUnlocked ? Colors.white : Colors.white38,
+                color: isUnlocked ? Colors.white : Colors.white24,
                 letterSpacing: 0,
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              isUnlocked ? item.discoveryNote : 'Unknown profile',
-              textAlign: TextAlign.center,
+              isUnlocked ? item.discoveryNote : '???',
+              textAlign: TextAlign.left,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -1304,61 +2456,244 @@ class _ItemDatabaseTile extends StatelessWidget {
       ),
     );
   }
-
-  IconData _itemIcon(XrayObjectType item) {
-    return switch (item) {
-      XrayObjectType.knife => Icons.restaurant_rounded,
-      XrayObjectType.scissors => Icons.content_cut_rounded,
-      XrayObjectType.lighter => Icons.local_fire_department_rounded,
-      XrayObjectType.razor => Icons.rectangle_rounded,
-      XrayObjectType.batteryPack => Icons.battery_charging_full_rounded,
-      XrayObjectType.phone => Icons.phone_iphone_rounded,
-      XrayObjectType.laptop => Icons.laptop_mac_rounded,
-      XrayObjectType.bottle => Icons.water_drop_rounded,
-      XrayObjectType.sandwich => Icons.lunch_dining_rounded,
-      XrayObjectType.keys => Icons.key_rounded,
-      XrayObjectType.headphones => Icons.headphones_rounded,
-    };
-  }
 }
 
-class _AssetHero extends StatelessWidget {
-  const _AssetHero();
+class _AirportScene extends StatelessWidget {
+  const _AirportScene();
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0x6638F6FF)),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/images/xray_asset_sheet_approved.png',
-              fit: BoxFit.cover,
-              alignment: Alignment.center,
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    const Color(0xFF030912).withValues(alpha: 0.22),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return CustomPaint(painter: _AirportScenePainter());
+  }
+}
+
+class _AirportScenePainter extends CustomPainter {
+  const _AirportScenePainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final bounds = Offset.zero & size;
+    canvas.drawRect(bounds, Paint()..color = const Color(0xFF101927));
+
+    canvas.drawRect(
+      bounds,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF2D2A35), Color(0xFF82644D), Color(0xFF071826)],
+        ).createShader(bounds),
+    );
+
+    final lightPaint = Paint()
+      ..color = const Color(0xFFFFDFA8).withValues(alpha: 0.55)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18);
+    for (final x in [size.width * 0.18, size.width * 0.5, size.width * 0.82]) {
+      canvas.drawOval(
+        Rect.fromCenter(center: Offset(x, 58), width: 74, height: 28),
+        lightPaint,
+      );
+    }
+
+    final windowPaint = Paint()
+      ..color = const Color(0xFF071826).withValues(alpha: 0.72);
+    final glowPaint = Paint()
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.11)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    final windowRect = Rect.fromLTWH(
+      22,
+      size.height * 0.18,
+      size.width - 44,
+      size.height * 0.32,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(windowRect, const Radius.circular(12)),
+      windowPaint,
+    );
+    for (var x = windowRect.left + 42; x < windowRect.right; x += 70) {
+      canvas.drawLine(
+        Offset(x, windowRect.top),
+        Offset(x, windowRect.bottom),
+        glowPaint,
+      );
+    }
+
+    final floorTop = size.height * 0.56;
+    final floorPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          const Color(0xFFB08364).withValues(alpha: 0.36),
+          const Color(0xFF071826).withValues(alpha: 0.82),
+        ],
+      ).createShader(Rect.fromLTWH(0, floorTop, size.width, size.height));
+    canvas.drawRect(
+      Rect.fromLTWH(0, floorTop, size.width, size.height - floorTop),
+      floorPaint,
+    );
+    final linePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.08)
+      ..strokeWidth = 1;
+    for (var y = floorTop; y < size.height; y += 42) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), linePaint);
+    }
+
+    final scannerRect = Rect.fromCenter(
+      center: Offset(size.width * 0.36, size.height * 0.58),
+      width: size.width * 0.42,
+      height: size.height * 0.18,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(scannerRect, const Radius.circular(14)),
+      Paint()..color = const Color(0xFF0E2230).withValues(alpha: 0.78),
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(scannerRect.deflate(8), const Radius.circular(8)),
+      Paint()..color = _XrayStyle.cyan.withValues(alpha: 0.18),
     );
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ScannerHeroPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width * 0.5, size.height * 0.52);
+    final scanner = Rect.fromCenter(
+      center: center.translate(-28, 0),
+      width: size.width * 0.54,
+      height: size.height * 0.36,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(scanner, const Radius.circular(18)),
+      Paint()..color = const Color(0xFF102333).withValues(alpha: 0.9),
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(scanner.deflate(12), const Radius.circular(12)),
+      Paint()
+        ..color = _XrayStyle.cyan.withValues(alpha: 0.18)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+    );
+
+    final belt = Rect.fromLTWH(
+      scanner.left - 48,
+      scanner.bottom - 4,
+      scanner.width + 132,
+      size.height * 0.18,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(belt, const Radius.circular(10)),
+      Paint()..color = const Color(0xFF09131C).withValues(alpha: 0.9),
+    );
+    final beltLine = Paint()
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.18)
+      ..strokeWidth = 2;
+    for (var y = belt.top + 10; y < belt.bottom; y += 14) {
+      canvas.drawLine(Offset(belt.left, y), Offset(belt.right, y), beltLine);
+    }
+
+    final bag = Rect.fromCenter(
+      center: scanner.center.translate(scanner.width * 0.33, 22),
+      width: size.width * 0.34,
+      height: size.height * 0.24,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(bag, const Radius.circular(18)),
+      Paint()
+        ..color = _XrayStyle.cyan.withValues(alpha: 0.18)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12),
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(bag, const Radius.circular(18)),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..color = _XrayStyle.cyanSoft.withValues(alpha: 0.78),
+    );
+    final iconPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..color = _XrayStyle.cyanSoft.withValues(alpha: 0.7);
+    canvas.drawLine(
+      bag.center.translate(-40, -8),
+      bag.center.translate(-8, -8),
+      iconPaint,
+    );
+    canvas.drawCircle(bag.center.translate(26, -8), 12, iconPaint);
+    canvas.drawLine(
+      bag.center.translate(-34, 24),
+      bag.center.translate(36, 24),
+      iconPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ScannerGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.08)
+      ..strokeWidth = 1;
+    const step = 42.0;
+    for (var x = 0.0; x <= size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (var y = 0.0; y <= size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _LevelRoutePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final points = [
+      const Alignment(-0.76, -0.78),
+      const Alignment(-0.18, -0.65),
+      const Alignment(0.5, -0.5),
+      const Alignment(0.64, -0.16),
+      const Alignment(0.15, 0.04),
+      const Alignment(-0.28, 0.18),
+      const Alignment(-0.72, 0.34),
+      const Alignment(-0.48, 0.62),
+      const Alignment(-0.02, 0.78),
+      const Alignment(0.62, 0.68),
+    ].map((alignment) => alignment.alongSize(size)).toList();
+
+    final path = Path()..moveTo(points.first.dx, points.first.dy);
+    for (final point in points.skip(1)) {
+      path.lineTo(point.dx, point.dy);
+    }
+    final glow = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 16
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.18)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+    canvas.drawPath(path, glow);
+    final line = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 7
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.78);
+    canvas.drawPath(path, line);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _Hud extends StatelessWidget {
