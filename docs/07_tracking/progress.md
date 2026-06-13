@@ -50,6 +50,11 @@ This file tracks the current project state so future AI assistants and contribut
 - Expanded `Airport Basics` from the 3-level slice to a full 10-level pack with late-pack danger introductions and broader safe-item clutter.
 - Updated progression tests and persistence coverage so level unlocks clamp and render correctly across the full 10-level pack.
 - Wired interstitial and rewarded ads using Google Mobile Ads SDK to level clear/fail breakpoints, implementing rewarded continues.
+- Approved the anime airport paused-suitcase gameplay visual direction and saved the reference at `docs/assets/gameplay_visual_reference_approved.jpg`.
+- Approved the International Terminal level map visual direction and saved the reference at `docs/assets/level_map_visual_reference_approved.jpg`.
+- Approved the tabbed Item Database visual direction and saved the reference at `docs/assets/item_database_visual_reference_approved.jpg`.
+- Approved the Main Menu layout/art direction and saved the reference at `docs/assets/main_menu_visual_reference_approved.jpg`.
+- Approved the Level Clear and Level Failed/rewarded continue result screen concepts and saved references at `docs/assets/level_clear_visual_reference_approved.jpg` and `docs/assets/level_failed_visual_reference_approved.jpg`.
 - Verified:
   - `flutter test` (34 tests)
   - `flutter analyze`
@@ -58,18 +63,28 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## In Progress
 
+- Normalize generated button treatments into shared primary/secondary UI components during implementation.
+- Convert approved visual references into Flutter UI: main menu, level map, paused gameplay, result screens, and tabbed item database.
+- Update the playable item database from the old two-card entry flow to the approved tabbed collection flow.
+- Convert the playable loop from moving suitcases to paused suitcase inspection.
 - Level select screen (allow replaying any unlocked level from main menu).
 - Sound engine integration using `_soundEnabled` flag.
 
 ## Handoff Notes
 
-- Active branch: `copilot`.
+- Active branch: `main`.
 - Remote repository: `https://github.com/thanhtaimrjoe/X-Ray-Scan.git`.
 - Current product/app name: `X-Ray Scan`, not the original color lane-sort prototype name.
 - Android package/application ID remains `com.auren.tapsortrush`.
 - Do not rename the package or add production AdMob IDs without a release-critical decision and changelog entry.
 - Approved visual benchmark:
   - Figma visual bible: `https://www.figma.com/design/oKUWVtHFIJPNJ2n5vJsBU7`
+  - Gameplay screen reference: `docs/assets/gameplay_visual_reference_approved.jpg`
+  - Level map reference: `docs/assets/level_map_visual_reference_approved.jpg`
+  - Item database reference: `docs/assets/item_database_visual_reference_approved.jpg`
+  - Main menu reference: `docs/assets/main_menu_visual_reference_approved.jpg`
+  - Level clear reference: `docs/assets/level_clear_visual_reference_approved.jpg`
+  - Level failed/rewarded continue reference: `docs/assets/level_failed_visual_reference_approved.jpg`
   - Repo asset: `docs/assets/xray_asset_sheet_approved.png`
   - App asset: `app/assets/images/xray_asset_sheet_approved.png`
 - Core gameplay files:
@@ -94,13 +109,20 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
-2. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
-3. Tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.
+1. Define shared primary/secondary button components so generated references use one implementation style.
+2. Implement paused-suitcase inspection so bags stop in the scanner until the player marks items and presses Clear.
+3. Implement the International Terminal level map with replayable nodes.
+4. Replace the old two-card item encyclopedia entry with the tabbed Item Database.
+5. Restyle Main Menu and result screens against the approved references.
+6. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
+7. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
+8. Tune object scale, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.
 
 ## Known Gaps
 
 - X-ray objects need production-ready in-game assets extracted or redrawn from the approved visual benchmark.
+- The current playable build still uses moving suitcases; the approved next design uses paused suitcase inspection.
+- The current playable item encyclopedia still uses the older two-card entry flow; the approved next design uses direct Danger/Safe tabs.
 - Gameplay can still benefit from additional tuning passes after more physical-device playtests.
 - The game now has a 10-level journey, but it still needs tuning passes to validate pacing and clarity on physical devices.
 - Interstitial and rewarded ads are integrated with Google test IDs, but still need physical-device flow validation.

@@ -105,9 +105,11 @@ As a player, I want a database of dangerous and safe x-ray items so that I can s
 ### Acceptance Criteria
 
 - The encyclopedia entry point is available from the main menu.
-- The first encyclopedia screen shows two choices only: Danger and Safe.
-- Each category database shows all item slots in that category.
+- The item database opens directly into a tabbed collection screen.
+- Danger Items and Safe Items are available as category tabs.
+- Each category tab shows all item slots in that category.
 - Undiscovered items appear as dark locked silhouettes or unknown profiles.
+- Category progress shows discovered count and total count.
 - Correctly detecting a dangerous item unlocks that danger item.
 - Correctly clearing a safe bag unlocks the safe items inside it.
 - Tapping a safe item by mistake does not unlock that safe item.

@@ -5,6 +5,170 @@
 
 ---
 
+## [2026-06-13 21:50] - Approve level result screen concepts
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-004, US-005
+**Impact Scope**: Gameplay, Ads, Docs, Assets, UX
+
+### Changes
+- Saved the approved Level Clear and Level Failed/rewarded continue visual references.
+- Updated game design notes with result screen content, reward panel, warning panel, optional rewarded continue, and ad placement requirements.
+- Recorded a durable decision to use the generated result screens as layout/content references while normalizing final buttons in shared UI components.
+- Updated progress tracking so the approved core screen set can move toward implementation.
+
+### Implementation Details
+- File: `docs/assets/level_clear_visual_reference_approved.jpg`
+- File: `docs/assets/level_failed_visual_reference_approved.jpg`
+- File: `docs/03_game_design.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Tai approved the Level Clear and Level Failed concepts and noted button styling will be adjusted during implementation.
+- Technical decision: Treat result screens as layout/content references and preserve policy-safe ad separation, with shared button styling applied in Flutter.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- Implementation is pending; rewarded continue must remain optional and separated from banner ad placement.
+
+---
+
+## [2026-06-13 21:45] - Approve Main Menu layout direction
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-001, US-010
+**Impact Scope**: Gameplay, Docs, Assets, UX
+
+### Changes
+- Saved the approved Main Menu layout/art visual reference.
+- Updated game design notes with main menu composition, scanner/suitcase hero art, subtitle, and shared button normalization guidance.
+- Recorded a durable decision to use the approved main menu as layout/art reference while implementing final buttons through shared UI components.
+- Updated progress tracking with the Main Menu reference and shared button normalization next step.
+
+### Implementation Details
+- File: `docs/assets/main_menu_visual_reference_approved.jpg`
+- File: `docs/03_game_design.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Tai approved the Gemini-generated Main Menu composition while noting generated button styling should be normalized in code.
+- Technical decision: Treat generated screens as art/layout references and control final button styling through shared primary/secondary components.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- Implementation is pending; button visuals should be consistent across Play, Clear, Next, Continue, Retry, Map, Database, and Settings.
+
+---
+
+## [2026-06-13 21:36] - Approve tabbed Item Database direction
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-010
+**Impact Scope**: Gameplay, Docs, Assets, Collection, UX
+
+### Changes
+- Saved the approved tabbed Item Database visual reference.
+- Updated US-010 to replace the old two-choice encyclopedia entry with a direct tabbed collection screen.
+- Updated game design notes for Danger/Safe tabs, category progress, scrollable item grids, unlocked cards, and locked cards.
+- Recorded a durable decision for the tabbed Item Database flow.
+- Updated progress tracking so implementation replaces the old two-card entry flow.
+
+### Implementation Details
+- File: `docs/assets/item_database_visual_reference_approved.jpg`
+- File: `docs/02_user_stories.md`
+- File: `docs/03_game_design.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Tai approved the Gemini-generated Item Database concept and preferred the faster tabbed collection UX over the current two-card entry flow.
+- Technical decision: Default to Danger Items, keep Safe Items as the second tab, and allow locked cards to show a dim item name with lock/`???` for casual collection clarity.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- Implementation is pending; the current app still uses the old two-card encyclopedia entry flow.
+
+---
+
+## [2026-06-13 21:11] - Approve International Terminal level map direction
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-001, US-004, US-010
+**Impact Scope**: Gameplay, Docs, Assets, Progression, UX
+
+### Changes
+- Saved the approved International Terminal level map visual reference.
+- Updated game design notes with level map node states, final-gate milestone behavior, and selected-level panel requirements.
+- Recorded a durable decision for the 10-node airport terminal progression map.
+- Updated progress tracking so the remaining concept work starts with Level Clear and Level Failed/rewarded continue screens.
+
+### Implementation Details
+- File: `docs/assets/level_map_visual_reference_approved.jpg`
+- File: `docs/03_game_design.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Tai approved the Gemini-generated level map as the World 1 progression reference.
+- Technical decision: Use completed checkmark nodes, bright current node, unlocked future numbered nodes, locked numbered nodes, and a final scanner-gate milestone for level 10.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- Implementation is pending; completed map nodes should remain replayable even when represented by checkmarks.
+
+---
+
+## [2026-06-13 20:58] - Approve anime airport gameplay visual direction
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-002, US-008, US-012
+**Impact Scope**: Gameplay, Docs, Assets, UX
+
+### Changes
+- Saved the approved gameplay visual reference for the anime airport paused-suitcase screen.
+- Updated game design notes to define the target layout: compact HUD, large centered scanner/suitcase, marked counter, and large Clear button.
+- Recorded a durable decision for the paused-suitcase anime airport gameplay direction.
+- Updated progress tracking so the next work focuses on approving the remaining screens and implementing paused-bag inspection.
+
+### Implementation Details
+- File: `docs/assets/gameplay_visual_reference_approved.jpg`
+- File: `docs/03_game_design.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Tai approved the Stitch-generated gameplay screen as the new visual reference for X-Ray Scan.
+- Technical decision: Keep the anime airport environment outside the scanner and detailed cyan x-ray item art inside the scanner so gameplay remains readable and on-theme.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- The playable build still needs implementation work to match this approved paused-suitcase design.
+- Next design targets: level map, level clear, item database, main menu, and level failed/rewarded continue screens.
+
+---
+
 ## [2026-06-13 15:14] - Review ad continue flow before main merge
 
 **Owner**: AI Assistant

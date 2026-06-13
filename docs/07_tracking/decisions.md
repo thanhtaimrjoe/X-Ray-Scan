@@ -211,3 +211,142 @@ Physical playtesting showed that scoring, combo, and speed increases work, but e
 - Use level completion and failure screens as natural ad breakpoints.
 - Tie new danger items and item database reveals to level progression where practical.
 - Keep active gameplay free of ads.
+
+---
+
+## DEC-010 - Approved anime airport paused-suitcase gameplay direction
+
+**Date**: 2026-06-13
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Product, Gameplay, Art Direction, UX
+
+### Decision
+
+Use an anime airport/customs gameplay screen with a large suitcase paused inside a cyan x-ray scanner as the approved gameplay visual direction. The player should inspect the paused bag, mark dangerous items, and press Clear to resolve the bag before the next suitcase enters.
+
+The approved reference image is stored at `docs/assets/gameplay_visual_reference_approved.jpg`.
+
+### Reason
+
+The paused-suitcase layout gives players more time to inspect item shapes, makes the x-ray fantasy clearer, and produces a stronger store-screenshot-quality visual than the current moving-bag prototype. Keeping the airport environment anime-styled while preserving detailed cyan x-ray items inside the scanner creates a clear visual rule: outside scanner is the world, inside scanner is the inspection space.
+
+### Consequences
+
+- Future gameplay UI work should preserve the approved layout: compact top HUD, large centered scanner/suitcase, marked counter above a large Clear button.
+- X-ray items should remain cyan by default and should not reveal danger status before player interaction.
+- Item silhouettes must be large and tappable; early levels should avoid overloading the suitcase with too many small objects.
+- Future screens should follow the same premium anime mobile game style before implementation.
+
+---
+
+## DEC-011 - Approved International Terminal level map direction
+
+**Date**: 2026-06-13
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Product, Progression, UI, Art Direction
+
+### Decision
+
+Use a portrait anime airport terminal level map for World 1, `International Terminal`. The map should show a glowing cyan route through 10 checkpoint nodes, completed checkmark nodes with stars, a bright current node, unlocked future nodes, locked future nodes, and a larger final scanner-gate milestone at level 10.
+
+The approved reference image is stored at `docs/assets/level_map_visual_reference_approved.jpg`.
+
+### Reason
+
+The map gives the game a visible journey similar to casual progression games while staying grounded in the airport/customs fantasy. It makes the 10-level pack feel like a world, gives players clear next goals, and creates a strong store-screenshot asset.
+
+### Consequences
+
+- Main menu Play should lead naturally into the level map or selected level flow.
+- Players should be able to replay completed/unlocked nodes from the map.
+- Completed nodes can show checkmarks, but tapping them must still reveal the original level number/details in the selected-level panel.
+- Future world packs should reuse this map language with new terminal/customs environments.
+
+---
+
+## DEC-012 - Use tabbed item database collection UI
+
+**Date**: 2026-06-13
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Product, Gameplay, Collection, UI
+
+### Decision
+
+Replace the earlier two-choice item encyclopedia entry flow with a direct tabbed Item Database screen. The screen opens directly to Danger Items by default, with Safe Items available as the second tab. Each tab shows category progress and a scrollable grid of unlocked and locked item cards.
+
+The approved reference image is stored at `docs/assets/item_database_visual_reference_approved.jpg`.
+
+### Reason
+
+The tabbed collection UI is faster, more modern, easier to understand, and better aligned with the approved premium x-ray UI direction than the older two-card category entry screen.
+
+### Consequences
+
+- User story US-010 and game design now describe a direct tabbed database.
+- Future implementation should remove or bypass the old two-card encyclopedia index.
+- Locked items may show a dim item name plus lock/`???` so casual players can see collection goals without fully revealing the profile.
+- The grid must remain scrollable as more danger and safe items are added.
+
+---
+
+## DEC-013 - Approved main menu layout and shared button normalization
+
+**Date**: 2026-06-13
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Product, UI, Art Direction
+
+### Decision
+
+Use the approved anime airport night main menu as the layout and art reference. The menu should feature the X-Ray Scan title, `World Customs Adventure` subtitle, scanner and glowing suitcase hero art, current progress/high-score card, Play, Level Map, Item Database, Settings, and a bottom banner ad area.
+
+The approved reference image is stored at `docs/assets/main_menu_visual_reference_approved.jpg`.
+
+Button styling in generated references is not final. Implementation should normalize button colors, borders, radius, icon treatment, and shadows through shared UI components.
+
+### Reason
+
+The generated main menu creates a strong first impression and clearly communicates the scanner fantasy. However, AI-generated button treatments vary between screens, so final button styling should be controlled in code for consistency.
+
+### Consequences
+
+- Future UI implementation should use the reference for composition and art direction, not as a pixel-perfect button style.
+- Create shared button components for primary and secondary actions.
+- Keep primary actions visually dominant, while secondary actions use quieter navy/cyan styling.
+- Maintain safe spacing between primary actions and banner ads.
+
+---
+
+## DEC-014 - Approved level result screen concepts
+
+**Date**: 2026-06-13
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Gameplay, UI, Ads, Progression
+
+### Decision
+
+Use the approved Level Clear and Level Failed/rewarded continue concepts as layout and content references for post-level result screens.
+
+References:
+
+- Level Clear: `docs/assets/level_clear_visual_reference_approved.jpg`
+- Level Failed/rewarded continue: `docs/assets/level_failed_visual_reference_approved.jpg`
+
+Level Clear should emphasize stars, score/best score, bags cleared, new threat profile rewards, Next, Retry, Map, and a bottom banner ad area. Level Failed should emphasize score, bags cleared, missed threats, a `Threat left in bag` warning, optional rewarded continue, Retry, Map, and a bottom banner ad area.
+
+Button styling in generated references is not final and should be normalized with shared UI components during implementation.
+
+### Reason
+
+These screens complete the core gameplay loop around level completion, failure, progression rewards, and rewarded continues while preserving ad placement separation. Treating the images as layout/content references avoids overfitting to inconsistent AI-generated button styles.
+
+### Consequences
+
+- Result screens should keep banner ads separated from primary gameplay/result actions.
+- Rewarded continue must remain optional and visually distinct from Retry/Map.
+- New threat profile rewards should use cyan x-ray profile icons when a level introduces a danger item.
+- Shared button styling should be applied consistently across success, failure, gameplay, map, and menu screens.
