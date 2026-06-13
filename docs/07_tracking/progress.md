@@ -57,6 +57,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Approved the Level Clear and Level Failed/rewarded continue result screen concepts and saved references at `docs/assets/level_clear_visual_reference_approved.jpg` and `docs/assets/level_failed_visual_reference_approved.jpg`.
 - Implemented the first approved anime airport UI pass in Flutter, including the restyled main menu, International Terminal level map, paused suitcase gameplay, marked-threat counter, tabbed Item Database, and restyled Level Clear/Failed screens.
 - Updated widget tests for the new menu, tabbed database, and rewarded continue label.
+- Completed the first Galaxy S24 evidence polish pass by reducing important text truncation, improving Item Database spacing, replacing misleading database icons with custom x-ray silhouettes, and fixing one-star result wording.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -117,8 +118,6 @@ This file tracks the current project state so future AI assistants and contribut
 ## Known Gaps
 
 - X-ray objects need production-ready in-game assets extracted or redrawn from the approved visual benchmark.
-- The current playable build still uses moving suitcases; the approved next design uses paused suitcase inspection.
-- The current playable item encyclopedia still uses the older two-card entry flow; the approved next design uses direct Danger/Safe tabs.
 - Gameplay can still benefit from additional tuning passes after more physical-device playtests.
 - The game now has a 10-level journey, but it still needs tuning passes to validate pacing and clarity on physical devices.
 - Interstitial and rewarded ads are integrated with Google test IDs, but still need physical-device flow validation.

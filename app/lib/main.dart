@@ -205,6 +205,13 @@ class _XrayActionButton extends StatelessWidget {
   }
 }
 
+String _bestStarsLabel(int stars) {
+  if (stars <= 0) {
+    return 'No stars yet';
+  }
+  return '$stars ${stars == 1 ? 'star' : 'stars'}';
+}
+
 class _IconPanelButton extends StatelessWidget {
   const _IconPanelButton({
     required this.icon,
@@ -851,12 +858,13 @@ class LevelMapScreen extends StatelessWidget {
                             ),
                             Text(
                               'International Terminal',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              overflow: TextOverflow.visible,
                               style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
                                     color: _XrayStyle.text,
                                     fontWeight: FontWeight.w900,
+                                    height: 1.08,
                                   ),
                             ),
                           ],
@@ -926,13 +934,14 @@ class LevelMapScreen extends StatelessWidget {
                             ),
                             Text(
                               _levelTitle(selectedLevel),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              overflow: TextOverflow.visible,
                               style: Theme.of(context).textTheme.headlineSmall
                                   ?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 0,
+                                    height: 1.05,
                                   ),
                             ),
                             const SizedBox(height: 8),
@@ -1018,25 +1027,25 @@ class _InfoLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 4,
         children: [
           Text(
-            '$label: ',
+            '$label:',
+            textAlign: TextAlign.center,
             style: Theme.of(
               context,
             ).textTheme.bodyLarge?.copyWith(color: _XrayStyle.muted),
           ),
-          Flexible(
-            child: Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: _XrayStyle.text,
-                fontWeight: FontWeight.w900,
-              ),
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: _XrayStyle.text,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -1502,7 +1511,7 @@ class LevelClearScreen extends StatelessWidget {
                         _StarRow(stars: starsEarned),
                         const SizedBox(height: 14),
                         Text(
-                          'Score: $score\nBest: $bestStars stars',
+                          'Score: $score\nBest: ${_bestStarsLabel(bestStars)}',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(
@@ -1730,28 +1739,34 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
                 Row(
                   children: [
                     _BackButton(onPressed: widget.onBack),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         children: [
-                          Text(
-                            'Item Database',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(
-                                  color: _XrayStyle.text,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0,
-                                ),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              'Item Database',
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    color: _XrayStyle.text,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0,
+                                  ),
+                            ),
                           ),
                           Text(
                             'Progress: $unlockedCount/${items.length} discovered',
+                            textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(color: _XrayStyle.muted),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 86),
+                    const SizedBox(width: 96),
                   ],
                 ),
                 const SizedBox(height: 18),
@@ -1767,13 +1782,14 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
                         const SizedBox(height: 14),
                         Expanded(
                           child: GridView.builder(
+                            padding: const EdgeInsets.only(bottom: 28),
                             itemCount: items.length,
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
-                                  crossAxisSpacing: 14,
-                                  mainAxisSpacing: 14,
-                                  childAspectRatio: 0.66,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio: 0.7,
                                 ),
                             itemBuilder: (context, index) {
                               final item = items[index];
@@ -1791,7 +1807,7 @@ class _ItemDatabaseScreenState extends State<ItemDatabaseScreen> {
                               : 'Clear safe bags to reveal passenger items.',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: _XrayStyle.muted),
+                              ?.copyWith(color: _XrayStyle.muted, height: 1.15),
                         ),
                       ],
                     ),
@@ -1963,10 +1979,10 @@ class _WarningPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Icon(
-            Icons.restaurant_rounded,
+          _XrayItemIcon(
+            item: XrayObjectType.knife,
             color: _XrayStyle.danger,
-            size: 44,
+            size: 48,
           ),
         ],
       ),
@@ -2085,7 +2101,7 @@ class _BackButton extends StatelessWidget {
 
 IconData _itemIconFor(XrayObjectType item) {
   return switch (item) {
-    XrayObjectType.knife => Icons.restaurant_rounded,
+    XrayObjectType.knife => Icons.hardware_rounded,
     XrayObjectType.scissors => Icons.content_cut_rounded,
     XrayObjectType.lighter => Icons.local_fire_department_rounded,
     XrayObjectType.razor => Icons.rectangle_rounded,
@@ -2097,6 +2113,315 @@ IconData _itemIconFor(XrayObjectType item) {
     XrayObjectType.keys => Icons.key_rounded,
     XrayObjectType.headphones => Icons.headphones_rounded,
   };
+}
+
+class _XrayItemIcon extends StatelessWidget {
+  const _XrayItemIcon({
+    required this.item,
+    required this.color,
+    required this.size,
+    this.glow = true,
+  });
+
+  final XrayObjectType item;
+  final Color color;
+  final double size;
+  final bool glow;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size.square(size),
+      painter: _XrayItemIconPainter(item: item, color: color, glow: glow),
+    );
+  }
+}
+
+class _XrayItemIconPainter extends CustomPainter {
+  const _XrayItemIconPainter({
+    required this.item,
+    required this.color,
+    required this.glow,
+  });
+
+  final XrayObjectType item;
+  final Color color;
+  final bool glow;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final stroke = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..strokeWidth = size.shortestSide * 0.07;
+    final fill = Paint()
+      ..color = color.withValues(alpha: 0.22)
+      ..style = PaintingStyle.fill;
+    final glowPaint = Paint()
+      ..color = color.withValues(alpha: glow ? 0.55 : 0)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..strokeWidth = size.shortestSide * 0.09
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+
+    void drawLine(Offset a, Offset b) {
+      if (glow) canvas.drawLine(a, b, glowPaint);
+      canvas.drawLine(a, b, stroke);
+    }
+
+    void drawRect(Rect rect, {bool rounded = true}) {
+      final rrect = RRect.fromRectAndRadius(
+        rect,
+        Radius.circular(rounded ? size.width * 0.06 : 0),
+      );
+      canvas.drawRRect(rrect, fill);
+      if (glow) canvas.drawRRect(rrect, glowPaint);
+      canvas.drawRRect(rrect, stroke);
+    }
+
+    void drawOval(Rect rect) {
+      canvas.drawOval(rect, fill);
+      if (glow) canvas.drawOval(rect, glowPaint);
+      canvas.drawOval(rect, stroke);
+    }
+
+    switch (item) {
+      case XrayObjectType.knife:
+        final blade = Path()
+          ..moveTo(size.width * 0.2, size.height * 0.74)
+          ..quadraticBezierTo(
+            size.width * 0.55,
+            size.height * 0.2,
+            size.width * 0.84,
+            size.height * 0.12,
+          )
+          ..quadraticBezierTo(
+            size.width * 0.76,
+            size.height * 0.42,
+            size.width * 0.4,
+            size.height * 0.68,
+          )
+          ..close();
+        canvas.drawPath(blade, fill);
+        if (glow) canvas.drawPath(blade, glowPaint);
+        canvas.drawPath(blade, stroke);
+        drawLine(
+          Offset(size.width * 0.16, size.height * 0.8),
+          Offset(size.width * 0.38, size.height * 0.67),
+        );
+        break;
+      case XrayObjectType.scissors:
+        drawOval(
+          Rect.fromCircle(
+            center: Offset(size.width * 0.32, size.height * 0.72),
+            radius: size.width * 0.13,
+          ),
+        );
+        drawOval(
+          Rect.fromCircle(
+            center: Offset(size.width * 0.68, size.height * 0.72),
+            radius: size.width * 0.13,
+          ),
+        );
+        drawLine(
+          Offset(size.width * 0.42, size.height * 0.6),
+          Offset(size.width * 0.8, size.height * 0.22),
+        );
+        drawLine(
+          Offset(size.width * 0.58, size.height * 0.6),
+          Offset(size.width * 0.2, size.height * 0.22),
+        );
+        break;
+      case XrayObjectType.lighter:
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.34,
+            size.height * 0.32,
+            size.width * 0.3,
+            size.height * 0.52,
+          ),
+        );
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.42,
+            size.height * 0.18,
+            size.width * 0.3,
+            size.height * 0.18,
+          ),
+        );
+        final flame = Path()
+          ..moveTo(size.width * 0.5, size.height * 0.24)
+          ..quadraticBezierTo(
+            size.width * 0.37,
+            size.height * 0.06,
+            size.width * 0.56,
+            size.height * 0.02,
+          )
+          ..quadraticBezierTo(
+            size.width * 0.72,
+            size.height * 0.16,
+            size.width * 0.5,
+            size.height * 0.24,
+          );
+        canvas.drawPath(flame, fill);
+        canvas.drawPath(flame, stroke);
+        break;
+      case XrayObjectType.razor:
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.24,
+            size.height * 0.18,
+            size.width * 0.52,
+            size.height * 0.16,
+          ),
+        );
+        drawLine(
+          Offset(size.width * 0.5, size.height * 0.34),
+          Offset(size.width * 0.36, size.height * 0.84),
+        );
+        drawLine(
+          Offset(size.width * 0.5, size.height * 0.34),
+          Offset(size.width * 0.64, size.height * 0.84),
+        );
+        break;
+      case XrayObjectType.batteryPack:
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.22,
+            size.height * 0.25,
+            size.width * 0.56,
+            size.height * 0.5,
+          ),
+        );
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.42,
+            size.height * 0.16,
+            size.width * 0.16,
+            size.height * 0.1,
+          ),
+        );
+        drawLine(
+          Offset(size.width * 0.38, size.height * 0.5),
+          Offset(size.width * 0.62, size.height * 0.5),
+        );
+        break;
+      case XrayObjectType.phone:
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.32,
+            size.height * 0.16,
+            size.width * 0.36,
+            size.height * 0.68,
+          ),
+        );
+        drawLine(
+          Offset(size.width * 0.43, size.height * 0.76),
+          Offset(size.width * 0.57, size.height * 0.76),
+        );
+        break;
+      case XrayObjectType.laptop:
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.22,
+            size.height * 0.22,
+            size.width * 0.56,
+            size.height * 0.42,
+          ),
+        );
+        drawLine(
+          Offset(size.width * 0.16, size.height * 0.78),
+          Offset(size.width * 0.84, size.height * 0.78),
+        );
+        break;
+      case XrayObjectType.bottle:
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.38,
+            size.height * 0.28,
+            size.width * 0.24,
+            size.height * 0.56,
+          ),
+        );
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.42,
+            size.height * 0.14,
+            size.width * 0.16,
+            size.height * 0.16,
+          ),
+        );
+        break;
+      case XrayObjectType.sandwich:
+        final triangle = Path()
+          ..moveTo(size.width * 0.18, size.height * 0.72)
+          ..lineTo(size.width * 0.82, size.height * 0.72)
+          ..lineTo(size.width * 0.5, size.height * 0.18)
+          ..close();
+        canvas.drawPath(triangle, fill);
+        if (glow) canvas.drawPath(triangle, glowPaint);
+        canvas.drawPath(triangle, stroke);
+        drawLine(
+          Offset(size.width * 0.3, size.height * 0.58),
+          Offset(size.width * 0.7, size.height * 0.58),
+        );
+        break;
+      case XrayObjectType.keys:
+        drawOval(
+          Rect.fromCircle(
+            center: Offset(size.width * 0.32, size.height * 0.34),
+            radius: size.width * 0.12,
+          ),
+        );
+        drawLine(
+          Offset(size.width * 0.42, size.height * 0.44),
+          Offset(size.width * 0.78, size.height * 0.78),
+        );
+        drawLine(
+          Offset(size.width * 0.66, size.height * 0.66),
+          Offset(size.width * 0.78, size.height * 0.58),
+        );
+        break;
+      case XrayObjectType.headphones:
+        final arc = Path()
+          ..moveTo(size.width * 0.22, size.height * 0.54)
+          ..quadraticBezierTo(
+            size.width * 0.5,
+            size.height * 0.12,
+            size.width * 0.78,
+            size.height * 0.54,
+          );
+        if (glow) canvas.drawPath(arc, glowPaint);
+        canvas.drawPath(arc, stroke);
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.16,
+            size.height * 0.5,
+            size.width * 0.18,
+            size.height * 0.28,
+          ),
+        );
+        drawRect(
+          Rect.fromLTWH(
+            size.width * 0.66,
+            size.height * 0.5,
+            size.width * 0.18,
+            size.height * 0.28,
+          ),
+        );
+        break;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _XrayItemIconPainter oldDelegate) {
+    return oldDelegate.item != item ||
+        oldDelegate.color != color ||
+        oldDelegate.glow != glow;
+  }
 }
 
 class EncyclopediaIndexScreen extends StatelessWidget {
@@ -2405,18 +2730,11 @@ class _ItemDatabaseTile extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   Center(
-                    child: Icon(
-                      _itemIconFor(item),
-                      size: 66,
+                    child: _XrayItemIcon(
+                      item: item,
                       color: iconColor,
-                      shadows: isUnlocked
-                          ? [
-                              Shadow(
-                                color: accent.withValues(alpha: 0.85),
-                                blurRadius: 18,
-                              ),
-                            ]
-                          : null,
+                      size: 74,
+                      glow: isUnlocked,
                     ),
                   ),
                   if (!isUnlocked)

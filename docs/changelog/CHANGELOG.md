@@ -5,6 +5,41 @@
 
 ---
 
+## [2026-06-13 22:30] - Polish S24 evidence issues
+
+**Owner**: AI Assistant
+**Type**: Bugfix
+**Related US**: US-001, US-004, US-010
+**Impact Scope**: Gameplay, Docs, UX
+
+### Changes
+- Reduced main menu and level map text truncation by allowing key labels to wrap instead of ellipsizing important world/level names.
+- Improved Item Database header sizing, grid spacing, bottom scroll padding, and helper text readability on phone screens.
+- Replaced misleading database Material icons with lightweight custom x-ray silhouette painters for current MVP items.
+- Updated the failed warning panel to show a knife-like silhouette instead of the fork/knife restaurant icon.
+- Fixed result wording so one-star best results read `1 star` instead of `1 stars`.
+- Updated progress tracking to remove stale gaps that were completed by the approved UI implementation pass.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `docs/07_tracking/progress.md`
+- Reason: Galaxy S24 evidence showed text truncation, cramped database layout, and misleading item icons.
+- Technical decision: Use Flutter `CustomPainter` silhouettes as an interim asset-light bridge until production item assets are extracted or redrawn.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test`
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- This pass intentionally avoids large background/art changes; background asset polish and real item assets remain follow-ups.
+
+---
+
 ## [2026-06-13 22:11] - Implement approved anime airport UI pass
 
 **Owner**: AI Assistant
