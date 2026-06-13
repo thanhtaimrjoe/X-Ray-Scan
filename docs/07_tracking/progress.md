@@ -53,7 +53,7 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## In Progress
 
-- Prepare the next MVP slice: production-ready item visuals or interstitial/rewarded ad implementation.
+- Prepare the next MVP slice: level-based progression vertical slice.
 
 ## Handoff Notes
 
@@ -82,19 +82,22 @@ This file tracks the current project state so future AI assistants and contribut
 - Current renamed workspace path: `C:\Users\hanak\Documents\X-Ray-Scan`.
 - The old active Codex session folder may remain at `C:\Users\hanak\Documents\Tap-Sort-Rush` until the session releases its Windows file lock.
 - A temporary clone exists at `C:\Users\hanak\Documents\Tap-Sort-Rush-Temp`; it has no known unique changes beyond the pushed pause commit, but verify before deleting.
-- Next agent should continue with production-ready item visuals or interstitial/rewarded ad implementation, then keep using the connected Samsung device for smoke checks when available.
+- Next agent should read `docs/08_level_progression_plan.md` and implement a small level progression vertical slice before expanding content or monetization, then keep using the connected Samsung device for smoke checks when available.
 
 ## Next Steps
 
-1. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
-2. Smoke test revised scoring, combo, and perfect clear feedback on the Samsung device.
-3. Implement interstitial and rewarded ads using Google test ad unit IDs.
-4. Tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.
+1. Implement a 3-level progression vertical slice with level objectives, level clear/fail screens, stars, and persisted unlock progress.
+2. Expand the first level pack toward 10 `Airport Basics` levels if the vertical slice feels good.
+3. Tie item unlock pacing to level progression, especially danger item introductions.
+4. Extract or redraw production-ready individual object assets from the approved x-ray visual benchmark.
+5. Implement interstitial and rewarded ads using Google test ad unit IDs after level clear/fail flow exists.
+6. Tune object scale, suitcase speed, hit radius, clear timing, and encyclopedia readability based on further physical-device playtests.
 
 ## Known Gaps
 
 - X-ray objects need production-ready in-game assets extracted or redrawn from the approved visual benchmark.
 - Gameplay can still benefit from additional tuning passes after more physical-device playtests.
+- The game needs a level-based journey because pure endless score attack lost excitement after several playtest rounds.
 - Interstitial and rewarded ads have rules/tests but are not integrated with the SDK yet.
 - No production AdMob IDs yet.
 - No release signing config yet.

@@ -5,6 +5,37 @@
 
 ---
 
+## [2026-06-13 12:53] - Document level progression direction
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-001, US-004, US-008, US-010
+**Impact Scope**: Gameplay, Docs, Progression, Monetization
+
+### Changes
+- Added a level progression plan based on physical playtest feedback that endless score attack loses excitement after several rounds.
+- Recorded a durable decision to make level-based progression the next product slice.
+- Updated progress tracking so the next AI agent can implement a 3-level vertical slice before expanding content or monetization.
+
+### Implementation Details
+- File: `docs/08_level_progression_plan.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- File: `docs/changelog/CHANGELOG.md`
+- Reason: The product owner wants another AI agent to continue from the current playtest insight without rediscovering the progression gap.
+- Technical decision: Document the next slice as a small, testable level progression layer first, not a full map UI or large content expansion.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked (documentation-only change)
+- [x] Policy/ad placement checked (level clear/fail are natural ad breakpoints; active gameplay remains ad-free)
+
+### Notes
+- Implementation is pending; this change only records the handoff plan.
+
+---
+
 ## [2026-06-13 12:33] - Simplify gameplay HUD feedback
 
 **Owner**: AI Assistant

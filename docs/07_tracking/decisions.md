@@ -186,3 +186,28 @@ The previous names split the project between the original lane-sort prototype an
 - App display title, docs, README, and Dart package name should use X-Ray Scan / `xray_scan`.
 - Android package/application ID remains `com.auren.tapsortrush` for release safety.
 - GitHub/local folder rename can happen separately if repository permissions and workspace constraints allow it.
+
+---
+
+## DEC-009 - Add level-based progression layer
+
+**Date**: 2026-06-13
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Product, Gameplay, Progression, Monetization
+
+### Decision
+
+Move the next product slice from pure endless score attack toward short level-based progression. The x-ray inspection mechanic remains the core gameplay, but the default play flow should give players levels, objectives, level-clear moments, stars, and item unlock pacing.
+
+### Reason
+
+Physical playtesting showed that scoring, combo, and speed increases work, but excitement drops after several rounds because the player only chases a personal score. Casual level games create a stronger sense of journey by giving players short goals, completion feedback, unlocks, and a reason to continue to the next stage.
+
+### Consequences
+
+- Add a level progression rules layer before expanding monetization or content.
+- Preserve endless score attack as a later mode or secondary mode.
+- Use level completion and failure screens as natural ad breakpoints.
+- Tie new danger items and item database reveals to level progression where practical.
+- Keep active gameplay free of ads.
