@@ -5,6 +5,42 @@
 
 ---
 
+## [2026-06-14 00:04] - Pivot item assets to vector-authored workflow
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-002, US-010
+**Impact Scope**: Assets, Docs, Gameplay, UX
+
+### Changes
+- Updated the asset pipeline so gameplay item assets are self-authored as vector/Canvas/SVG-style sources by default.
+- Clarified that Gemini should be used primarily for background and scene art, not final gameplay item objects.
+- Marked the item prompt batch as historical/reference-only.
+- Recorded a durable decision to avoid promoting heavily masked or recolored AI item extractions.
+- Removed the previously extracted masked item candidate PNGs and preview sheet from the active candidate set.
+- Kept the original generated item sheet only as a reference candidate.
+
+### Implementation Details
+- File: `docs/08_asset_pipeline.md`
+- File: `docs/assets/item_asset_prompt_batch_01.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Removed: `docs/assets/asset_candidates/item_*_candidate_01.png`
+- Removed: `docs/assets/asset_candidates/item_sheet_batch_01_cut_preview.png`
+- Reason: The generated item sheet had a baked checkerboard background, and mask/recolor extraction caused broken color and halo artifacts.
+- Technical decision: Preserve AI item sheets as reference only; build runtime item assets from controlled source shapes.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- No runtime app code or app-integrated assets changed in this entry.
+
+---
+
 ## [2026-06-13 23:57] - Tighten item candidate masks
 
 **Owner**: AI Assistant

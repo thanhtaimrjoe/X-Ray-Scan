@@ -376,3 +376,29 @@ The game now has a playable core loop and approved screen direction, but visual 
 - Use lowercase snake_case production filenames.
 - Keep item assets neutral cyan by default so they do not reveal safe/danger state before interaction.
 - Update `app/pubspec.yaml`, tests/build checks, and changelog whenever assets are integrated into the app.
+
+---
+
+## DEC-016 - Self-author gameplay item assets
+
+**Date**: 2026-06-14
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Assets, Gameplay, Technical, Art Direction
+
+### Decision
+
+Use Codex-authored vector/Canvas/SVG-style assets as the preferred production path for gameplay item objects. Use Gemini and similar image generators primarily for larger background scenes and mood/reference art.
+
+AI-generated item sheets may be kept as visual references, but final runtime item assets should not depend on heavy masking, recoloring, checkerboard removal, or glow reconstruction.
+
+### Reason
+
+The first Gemini item sheet had a baked checkerboard background. Masking it introduced color breakage and oversized halos around objects. Gameplay items need to be clean, scalable, easy to tune, and easy to hand off, which is better served by controlled vector/Canvas assets.
+
+### Consequences
+
+- Gemini remains useful for main menu, gameplay, level map, database, and result backgrounds.
+- Item assets should be authored in editable source form before optional PNG export.
+- Existing Gemini item sheet candidates are reference-only and should not be promoted into runtime assets.
+- Future item work should prioritize a reusable item rendering/export pipeline over image repair.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines how X-Ray Scan should create, review, name, store, and integrate visual assets. The current Flutter build can use mock Canvas art, but production polish should move toward consistent anime airport backgrounds and cyan x-ray item assets.
+This document defines how X-Ray Scan should create, review, name, store, and integrate visual assets. The current Flutter build can use mock Canvas art, but production polish should move toward consistent anime airport backgrounds and clean, handover-friendly cyan x-ray item assets.
 
 ## Art Direction
 
@@ -25,6 +25,14 @@ Reference files:
 - `docs/assets/level_failed_visual_reference_approved.jpg`
 - `docs/assets/xray_asset_sheet_approved.png`
 - `app/assets/images/xray_asset_sheet_approved.png`
+
+## Source Strategy
+
+- Use Gemini or other image generators for large illustrated backgrounds and screen mood references.
+- Do not rely on Gemini for final gameplay item assets unless the downloaded file is a true transparent PNG and can be used with simple cropping only.
+- Prefer Codex-authored vector/Canvas/SVG-style item assets for gameplay objects. They are easier to tune, recolor, scale, test, and hand off.
+- If an AI-generated item sheet is used for ideation, keep it as reference under `docs/assets/asset_candidates/`; do not promote masked, recolored, or heavily processed extractions into the runtime app.
+- For item candidates, avoid color repair, alpha masking, aggressive blur, or glow reconstruction. If the source image is not already transparent, use it only as a drawing/reference guide.
 
 ## MVP Asset Inventory
 
@@ -59,13 +67,13 @@ Safe items:
 
 Object requirements:
 
-- Transparent PNG.
-- Square canvas preferred.
+- Source should be editable vector/Canvas code, SVG, or a true transparent PNG.
+- Square export canvas preferred when rasterizing for app use.
 - One object per file.
 - Cyan x-ray visual treatment by default.
 - Shape must be readable at small phone sizes.
 - No red/green danger hints baked into the base item art.
-- Avoid heavy shadows outside the transparent object bounds.
+- Avoid heavy shadows, oversized glow, or halo outside the object bounds.
 
 ### UI and Map Accents
 
@@ -99,6 +107,8 @@ docs/assets/
 
 Do not place temporary generator outputs directly in `app/assets/images/`. First save candidates in `docs/assets/asset_candidates/`, review them, then promote approved files into the app asset folders.
 
+For item assets specifically, the preferred runtime source is code/vector art. Exported PNGs are acceptable only after the vector/source shape is approved.
+
 ## Naming Rules
 
 - Use lowercase snake_case.
@@ -108,11 +118,11 @@ Do not place temporary generator outputs directly in `app/assets/images/`. First
 - Prefer PNG for transparent gameplay objects.
 - Prefer PNG or WebP for backgrounds after size testing.
 
-## Generation Workflow
+## Background Generation Workflow
 
-1. Generate candidate image sets from prompts.
+1. Generate candidate background image sets from prompts.
 2. Save candidates to `docs/assets/asset_candidates/`.
-3. Review for style consistency, readability, safe/danger neutrality, and mobile crop safety.
+3. Review for style consistency, UI-safe empty space, mobile crop safety, and absence of watermarks/text.
 4. Promote approved assets into `app/assets/images/...`.
 5. Add the asset path to `app/pubspec.yaml`.
 6. Wire the asset into Flutter/Flame.
@@ -122,6 +132,20 @@ Do not place temporary generator outputs directly in `app/assets/images/`. First
    - `flutter build apk --debug`
 8. Test on Galaxy S24-class device and capture evidence.
 9. Record the change in `docs/changelog/CHANGELOG.md`.
+
+## Item Asset Workflow
+
+1. Create item silhouettes in code/vector form using the approved item list.
+2. Review them in a single preview sheet on a dark scanner background.
+3. Tune shape, stroke width, internal x-ray details, and glow in source form.
+4. Integrate the approved source into Flame rendering or export approved PNGs into `app/assets/images/items/...`.
+5. Keep mock Canvas fallback until every item has an approved runtime representation.
+6. Run:
+   - `flutter test`
+   - `flutter analyze`
+   - `flutter build apk --debug`
+7. Test on a Galaxy S24-class device and capture evidence.
+8. Record the change in `docs/changelog/CHANGELOG.md`.
 
 ## Prompt Style Guide
 
@@ -179,11 +203,11 @@ Style: [STYLE CLAUSE]
 Do not include readable UI text, buttons, stars, score, logos, or ad banners.
 ```
 
-## Item Prompt Template
+## Historical Item Prompt Template
 
-Use one prompt per object or a carefully separated item sheet that can be cropped.
+Item prompts are kept for reference/ideation only. The preferred production path is now Codex-authored vector/Canvas/SVG-style item assets.
 
-The first ready-to-use prompt batch for MVP item assets is stored at `docs/assets/item_asset_prompt_batch_01.md`.
+The first prompt batch is stored at `docs/assets/item_asset_prompt_batch_01.md`, but it should not be treated as the primary production item workflow.
 
 ```text
 Create a transparent PNG game asset of [OBJECT NAME] as seen through an airport x-ray scanner.
@@ -216,6 +240,7 @@ Before promoting an asset into `app/assets/images/`:
 - [ ] Does not reveal danger/safe state through red/green color.
 - [ ] Has consistent cyan x-ray treatment for scanner/items.
 - [ ] Has transparent background for item/object assets.
+- [ ] Item assets are code/vector-authored or true transparent PNGs; no checkerboard-baked source was mask-repaired.
 - [ ] File size is reasonable for Android APK.
 - [ ] Naming follows lowercase snake_case.
 - [ ] Changelog entry is added when integrated into app code.

@@ -1,6 +1,10 @@
 # Item Asset Prompt Batch 01
 
-Use these prompts in Gemini image generation mode to create the first production candidate set for X-Ray Scan item assets. Generate one object per image where possible. Save outputs first under `docs/assets/asset_candidates/` using the suggested candidate filenames.
+Status: historical/reference only.
+
+Use these prompts only for visual ideation. The preferred production item workflow is now Codex-authored vector/Canvas/SVG-style item assets, with Gemini reserved primarily for background art. Do not promote Gemini item outputs into the runtime app unless the downloaded asset is a true transparent PNG and needs only simple cropping.
+
+Save any experimental outputs first under `docs/assets/asset_candidates/` using the suggested candidate filenames.
 
 Global style clause:
 

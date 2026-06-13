@@ -61,7 +61,8 @@ This file tracks the current project state so future AI assistants and contribut
 - Improved gameplay scanner feel with larger item silhouettes, more forgiving tap hit radius, stronger scanner framing, and success/perfect flash feedback.
 - Defined the staged AI-assisted asset pipeline, including MVP asset inventory, folder structure, naming rules, Gemini prompt templates, and approval checklist.
 - Created item asset prompt batch 01 for all 11 MVP danger/safe x-ray objects.
-- Added item sheet batch 01 and cut it into 11 transparent PNG candidate assets for review under `docs/assets/asset_candidates/`.
+- Added item sheet batch 01 as a reference candidate under `docs/assets/asset_candidates/`.
+- Decided to self-author gameplay item assets as vector/Canvas/SVG-style sources and reserve Gemini primarily for backgrounds.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -92,9 +93,8 @@ This file tracks the current project state so future AI assistants and contribut
   - Repo asset: `docs/assets/xray_asset_sheet_approved.png`
   - App asset: `app/assets/images/xray_asset_sheet_approved.png`
   - Asset pipeline: `docs/08_asset_pipeline.md`
-  - Item prompt batch 01: `docs/assets/item_asset_prompt_batch_01.md`
-  - Item candidate sheet batch 01: `docs/assets/asset_candidates/item_sheet_batch_01.png`
-  - Item cut preview batch 01: `docs/assets/asset_candidates/item_sheet_batch_01_cut_preview.png`
+  - Historical item prompt batch 01: `docs/assets/item_asset_prompt_batch_01.md`
+  - Reference item sheet batch 01: `docs/assets/asset_candidates/item_sheet_batch_01.png`
 - Core gameplay files:
   - `app/lib/main.dart`
   - `app/lib/game/xray_inspector_game.dart`
@@ -117,15 +117,15 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Review item candidate batch 01 and decide which files to approve for runtime integration.
-2. Promote approved item assets into `app/assets/images/items/`.
-3. Wire approved item assets into Flame while keeping Canvas mock fallback.
-4. Generate and review candidate backgrounds for gameplay, main menu, level map, and result screens.
+1. Build a Codex-authored vector/Canvas item asset source set for the 11 MVP objects.
+2. Render a preview sheet for item shapes and tune readability on a dark scanner background.
+3. Wire approved item source shapes into Flame while keeping fallback behavior.
+4. Generate and review Gemini background candidates for gameplay, main menu, level map, and result screens.
 5. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
 
 ## Known Gaps
 
-- X-ray objects need production-ready in-game assets extracted or redrawn from the approved visual benchmark.
+- X-ray objects need production-ready in-game vector/Canvas/SVG-style assets.
 - Gameplay can still benefit from additional tuning passes after more physical-device playtests.
 - The game now has a 10-level journey, but it still needs tuning passes to validate pacing and clarity on physical devices.
 - Interstitial and rewarded ads are integrated with Google test IDs, but still need physical-device flow validation.
