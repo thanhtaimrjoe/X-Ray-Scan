@@ -5,6 +5,47 @@
 
 ---
 
+## [2026-06-13 23:47] - Cut item asset candidate sheet
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-002, US-010
+**Impact Scope**: Assets, Docs, Gameplay, UX
+
+### Changes
+- Added the first generated x-ray item sprite sheet candidate.
+- Cut the sheet into 11 transparent PNG candidate assets for all MVP danger and safe items.
+- Added a review preview image for quickly checking the extracted candidates.
+
+### Implementation Details
+- File: `docs/assets/asset_candidates/item_sheet_batch_01.png`
+- File: `docs/assets/asset_candidates/item_sheet_batch_01_cut_preview.png`
+- File: `docs/assets/asset_candidates/item_danger_knife_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_danger_scissors_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_danger_lighter_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_danger_razor_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_danger_battery_pack_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_phone_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_laptop_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_bottle_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_sandwich_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_keys_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_headphones_candidate_01.png`
+- Reason: Tai generated the first item sheet on mobile, and the assets needed to be separated for review before runtime integration.
+- Technical decision: Keep extracted files in `docs/assets/asset_candidates/` until they are approved and promoted into `app/assets/images/items/`.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- The source sheet had an opaque checkerboard background, so candidates were extracted with a cyan mask and converted to transparent PNGs.
+- No runtime app assets were integrated in this change.
+
+---
+
 ## [2026-06-13 23:16] - Add item asset prompt batch 01
 
 **Owner**: AI Assistant

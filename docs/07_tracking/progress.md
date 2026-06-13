@@ -61,6 +61,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Improved gameplay scanner feel with larger item silhouettes, more forgiving tap hit radius, stronger scanner framing, and success/perfect flash feedback.
 - Defined the staged AI-assisted asset pipeline, including MVP asset inventory, folder structure, naming rules, Gemini prompt templates, and approval checklist.
 - Created item asset prompt batch 01 for all 11 MVP danger/safe x-ray objects.
+- Added item sheet batch 01 and cut it into 11 transparent PNG candidate assets for review under `docs/assets/asset_candidates/`.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -92,6 +93,8 @@ This file tracks the current project state so future AI assistants and contribut
   - App asset: `app/assets/images/xray_asset_sheet_approved.png`
   - Asset pipeline: `docs/08_asset_pipeline.md`
   - Item prompt batch 01: `docs/assets/item_asset_prompt_batch_01.md`
+  - Item candidate sheet batch 01: `docs/assets/asset_candidates/item_sheet_batch_01.png`
+  - Item cut preview batch 01: `docs/assets/asset_candidates/item_sheet_batch_01_cut_preview.png`
 - Core gameplay files:
   - `app/lib/main.dart`
   - `app/lib/game/xray_inspector_game.dart`
@@ -114,8 +117,8 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Generate candidate item images from `docs/assets/item_asset_prompt_batch_01.md`.
-2. Review and promote approved item assets into `app/assets/images/items/`.
+1. Review item candidate batch 01 and decide which files to approve for runtime integration.
+2. Promote approved item assets into `app/assets/images/items/`.
 3. Wire approved item assets into Flame while keeping Canvas mock fallback.
 4. Generate and review candidate backgrounds for gameplay, main menu, level map, and result screens.
 5. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
