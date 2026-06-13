@@ -5,6 +5,45 @@
 
 ---
 
+## [2026-06-13 23:57] - Tighten item candidate masks
+
+**Owner**: AI Assistant
+**Type**: Bugfix
+**Related US**: US-002, US-010
+**Impact Scope**: Assets, Docs, Gameplay, UX
+
+### Changes
+- Recut the 11 extracted item candidate PNGs with tighter cyan masks.
+- Reduced the oversized glow/halo around item silhouettes.
+- Regenerated the item candidate preview sheet for review.
+
+### Implementation Details
+- File: `docs/assets/asset_candidates/item_danger_knife_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_danger_scissors_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_danger_lighter_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_danger_razor_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_danger_battery_pack_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_phone_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_laptop_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_bottle_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_sandwich_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_keys_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_safe_headphones_candidate_01.png`
+- File: `docs/assets/asset_candidates/item_sheet_batch_01_cut_preview.png`
+- Reason: Review showed the first extraction produced an oversized glow around objects because the source sheet had an opaque checkerboard background.
+- Technical decision: Use a stricter cyan threshold and no dilation/hole-fill step for candidate extraction so silhouettes keep a tighter x-ray edge.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- No runtime app assets were integrated in this change.
+
+---
+
 ## [2026-06-13 23:47] - Cut item asset candidate sheet
 
 **Owner**: AI Assistant
