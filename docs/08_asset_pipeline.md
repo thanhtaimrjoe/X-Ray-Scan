@@ -183,6 +183,8 @@ Do not include readable UI text, buttons, stars, score, logos, or ad banners.
 
 Use one prompt per object or a carefully separated item sheet that can be cropped.
 
+The first ready-to-use prompt batch for MVP item assets is stored at `docs/assets/item_asset_prompt_batch_01.md`.
+
 ```text
 Create a transparent PNG game asset of [OBJECT NAME] as seen through an airport x-ray scanner.
 Visual: cyan/teal translucent x-ray silhouette, crisp outline, subtle internal details, readable at small mobile size, centered on transparent background.

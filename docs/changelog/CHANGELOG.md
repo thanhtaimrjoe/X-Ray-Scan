@@ -5,6 +5,37 @@
 
 ---
 
+## [2026-06-13 23:16] - Add item asset prompt batch 01
+
+**Owner**: AI Assistant
+**Type**: Docs
+**Related US**: US-002, US-010
+**Impact Scope**: Docs, Assets, Gameplay, UX
+
+### Changes
+- Added Gemini-ready prompts for all 11 MVP x-ray item assets.
+- Included suggested candidate filenames for danger and safe item outputs.
+- Added review checklist for validating the first item asset batch before promotion.
+- Linked the prompt batch from the asset pipeline and progress tracking.
+
+### Implementation Details
+- File: `docs/assets/item_asset_prompt_batch_01.md`
+- File: `docs/08_asset_pipeline.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Tai is ready to start the real asset pipeline, beginning with production candidate item assets.
+- Technical decision: Keep prompts and candidate filenames in docs so generated outputs can be reviewed before runtime integration.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+
+### Notes
+- This is documentation/prompt work only; no runtime assets were generated or integrated.
+
+---
+
 ## [2026-06-13 23:11] - Define asset pipeline
 
 **Owner**: AI Assistant

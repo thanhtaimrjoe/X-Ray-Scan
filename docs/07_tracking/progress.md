@@ -60,6 +60,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Completed the first Galaxy S24 evidence polish pass by reducing important text truncation, improving Item Database spacing, replacing misleading database icons with custom x-ray silhouettes, and fixing one-star result wording.
 - Improved gameplay scanner feel with larger item silhouettes, more forgiving tap hit radius, stronger scanner framing, and success/perfect flash feedback.
 - Defined the staged AI-assisted asset pipeline, including MVP asset inventory, folder structure, naming rules, Gemini prompt templates, and approval checklist.
+- Created item asset prompt batch 01 for all 11 MVP danger/safe x-ray objects.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -90,6 +91,7 @@ This file tracks the current project state so future AI assistants and contribut
   - Repo asset: `docs/assets/xray_asset_sheet_approved.png`
   - App asset: `app/assets/images/xray_asset_sheet_approved.png`
   - Asset pipeline: `docs/08_asset_pipeline.md`
+  - Item prompt batch 01: `docs/assets/item_asset_prompt_batch_01.md`
 - Core gameplay files:
   - `app/lib/main.dart`
   - `app/lib/game/xray_inspector_game.dart`
@@ -112,7 +114,7 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Generate the first candidate batch for gameplay item assets using `docs/08_asset_pipeline.md`.
+1. Generate candidate item images from `docs/assets/item_asset_prompt_batch_01.md`.
 2. Review and promote approved item assets into `app/assets/images/items/`.
 3. Wire approved item assets into Flame while keeping Canvas mock fallback.
 4. Generate and review candidate backgrounds for gameplay, main menu, level map, and result screens.
