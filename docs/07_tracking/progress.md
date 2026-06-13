@@ -58,6 +58,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Implemented the first approved anime airport UI pass in Flutter, including the restyled main menu, International Terminal level map, paused suitcase gameplay, marked-threat counter, tabbed Item Database, and restyled Level Clear/Failed screens.
 - Updated widget tests for the new menu, tabbed database, and rewarded continue label.
 - Completed the first Galaxy S24 evidence polish pass by reducing important text truncation, improving Item Database spacing, replacing misleading database icons with custom x-ray silhouettes, and fixing one-star result wording.
+- Improved gameplay scanner feel with larger item silhouettes, more forgiving tap hit radius, stronger scanner framing, and success/perfect flash feedback.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`

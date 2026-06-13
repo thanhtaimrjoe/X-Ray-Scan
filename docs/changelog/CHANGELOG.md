@@ -5,6 +5,38 @@
 
 ---
 
+## [2026-06-13 22:53] - Improve gameplay scanner feel
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-002, US-003
+**Impact Scope**: Gameplay, UX
+
+### Changes
+- Enlarged in-bag item silhouettes and increased tap hit radius for more comfortable phone play.
+- Expanded and enriched the scanner frame with inner glass, corner guides, a brighter scan beam, and a conveyor/belt hint.
+- Added success/perfect screen flash feedback in addition to existing mistake feedback.
+- Slightly reduced random object rotation so mock objects stay more readable while real assets are pending.
+
+### Implementation Details
+- File: `app/lib/game/xray_inspector_game.dart`
+- Reason: Galaxy S24 evidence showed the gameplay screen was readable but still felt too wireframe and could use stronger scanner framing and tap comfort.
+- Technical decision: Improve the current Flame/Canvas gameplay surface with lightweight painting changes before introducing real background and object assets.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [ ] Policy/ad placement checked
+- [x] `flutter test`
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- Mock item silhouettes remain temporary and should be replaced by production assets later.
+
+---
+
 ## [2026-06-13 22:30] - Polish S24 evidence issues
 
 **Owner**: AI Assistant

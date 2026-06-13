@@ -99,6 +99,7 @@ class XrayInspectorGame extends FlameGame {
   XrayBag? _bag;
   double _elapsed = 0;
   double _screenFlash = 0;
+  Color _screenFlashColor = _danger;
   bool _finished = false;
   int _bagsCleared = 0;
 
@@ -191,7 +192,7 @@ class XrayInspectorGame extends FlameGame {
       bag.hadMistake = true;
       hit.flashAge = 0;
       _rules.resolveSafeTap();
-      _screenFlash = 0.18;
+      _flashScreen(_danger, 0.18);
       _pulses.add(
         XrayPulse(
           center: center,
@@ -218,7 +219,7 @@ class XrayInspectorGame extends FlameGame {
     if (bag.hasDangerRemaining) {
       bag.hadMistake = true;
       _rules.resolveFalseClear();
-      _screenFlash = 0.28;
+      _flashScreen(_danger, 0.3);
       _pulses.add(
         XrayPulse(
           center: _bagRect(bag).center,
@@ -253,6 +254,7 @@ class XrayInspectorGame extends FlameGame {
         age: 0,
       ),
     );
+    _flashScreen(isPerfect ? _perfect : _success, 0.18);
     if (isPerfect) {
       _pulses.add(
         XrayPulse(
@@ -315,8 +317,8 @@ class XrayInspectorGame extends FlameGame {
     return XrayObjectInstance(
       type: type,
       relativePosition: slot,
-      scale: 0.82 + (_random.nextDouble() * 0.28),
-      rotation: (_random.nextDouble() - 0.5) * 0.7,
+      scale: 0.94 + (_random.nextDouble() * 0.32),
+      rotation: (_random.nextDouble() - 0.5) * 0.58,
     );
   }
 
@@ -346,18 +348,18 @@ class XrayInspectorGame extends FlameGame {
   }
 
   double _hitRadius(XrayObjectInstance object) {
-    return 28 * object.scale * _objectScaleBase;
+    return max(34, 32 * object.scale * _objectScaleBase);
   }
 
   Size get _bagSize {
-    return Size(min(size.x * 0.82, 360), min(size.y * 0.36, 290));
+    return Size(min(size.x * 0.86, 380), min(size.y * 0.4, 320));
   }
 
-  double get _objectScaleBase => min(size.x, size.y) / 390;
+  double get _objectScaleBase => min(size.x, size.y) / 360;
 
   Rect get _scannerRect {
-    final top = size.y * 0.16;
-    final height = size.y * 0.65;
+    final top = size.y * 0.15;
+    final height = size.y * 0.66;
     return Rect.fromLTWH(16, top, size.x - 32, height);
   }
 
@@ -428,6 +430,11 @@ class XrayInspectorGame extends FlameGame {
     );
   }
 
+  void _flashScreen(Color color, double duration) {
+    _screenFlashColor = color;
+    _screenFlash = duration;
+  }
+
   String _formatMultiplier(double multiplier) {
     if (multiplier == multiplier.roundToDouble()) {
       return multiplier.toStringAsFixed(0);
@@ -471,6 +478,17 @@ class XrayInspectorGame extends FlameGame {
   void _paintScanner(Canvas canvas) {
     final scanner = _scannerRect;
     final outer = RRect.fromRectAndRadius(scanner, const Radius.circular(18));
+    final inner = RRect.fromRectAndRadius(
+      scanner.deflate(12),
+      const Radius.circular(14),
+    );
+
+    canvas.drawRRect(
+      outer.inflate(8),
+      Paint()
+        ..color = _cyan.withValues(alpha: 0.12)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18),
+    );
     canvas.drawRRect(
       outer,
       Paint()..color = const Color(0xFF03151C).withValues(alpha: 0.92),
@@ -482,10 +500,28 @@ class XrayInspectorGame extends FlameGame {
         ..strokeWidth = 1.5
         ..color = _cyan.withValues(alpha: 0.48),
     );
+    canvas.drawRRect(
+      inner,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            _cyan.withValues(alpha: 0.07),
+            const Color(0xFF03151C).withValues(alpha: 0.1),
+            _cyan.withValues(alpha: 0.04),
+          ],
+        ).createShader(scanner),
+    );
 
     final beamY =
         scanner.top + scanner.height * (0.34 + sin(_elapsed * 1.4) * 0.22);
-    final beam = Rect.fromLTWH(scanner.left + 8, beamY, scanner.width - 16, 54);
+    final beam = Rect.fromLTWH(
+      scanner.left + 12,
+      beamY,
+      scanner.width - 24,
+      62,
+    );
     canvas.drawRRect(
       RRect.fromRectAndRadius(beam, const Radius.circular(16)),
       Paint()
@@ -497,9 +533,17 @@ class XrayInspectorGame extends FlameGame {
           ],
         ).createShader(beam),
     );
+    canvas.drawLine(
+      Offset(beam.left + 10, beam.center.dy),
+      Offset(beam.right - 10, beam.center.dy),
+      Paint()
+        ..color = _cyanSoft.withValues(alpha: 0.5)
+        ..strokeWidth = 2.2
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+    );
 
     final linePaint = Paint()
-      ..color = _cyan.withValues(alpha: 0.1)
+      ..color = _cyan.withValues(alpha: 0.09)
       ..strokeWidth = 1;
     for (var x = scanner.left + 24; x < scanner.right; x += 38) {
       canvas.drawLine(
@@ -515,6 +559,47 @@ class XrayInspectorGame extends FlameGame {
         linePaint,
       );
     }
+
+    final cornerPaint = Paint()
+      ..color = _cyanSoft.withValues(alpha: 0.72)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1);
+    const corner = 34.0;
+    final guide = scanner.deflate(14);
+    for (final point in [
+      guide.topLeft,
+      guide.topRight,
+      guide.bottomLeft,
+      guide.bottomRight,
+    ]) {
+      final sx = point.dx < guide.center.dx ? 1.0 : -1.0;
+      final sy = point.dy < guide.center.dy ? 1.0 : -1.0;
+      canvas.drawLine(point, point.translate(corner * sx, 0), cornerPaint);
+      canvas.drawLine(point, point.translate(0, corner * sy), cornerPaint);
+    }
+
+    final beltPaint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.28)
+      ..style = PaintingStyle.fill;
+    final belt = RRect.fromRectAndRadius(
+      Rect.fromLTWH(
+        scanner.left + 26,
+        scanner.bottom - 42,
+        scanner.width - 52,
+        24,
+      ),
+      const Radius.circular(10),
+    );
+    canvas.drawRRect(belt, beltPaint);
+    canvas.drawLine(
+      Offset(scanner.left + 38, scanner.bottom - 30),
+      Offset(scanner.right - 38, scanner.bottom - 30),
+      Paint()
+        ..color = _cyan.withValues(alpha: 0.28)
+        ..strokeWidth = 2,
+    );
   }
 
   void _paintBag(Canvas canvas) {
@@ -538,15 +623,19 @@ class XrayInspectorGame extends FlameGame {
     canvas.drawRRect(
       bagRRect,
       Paint()
-        ..color = _cyan.withValues(alpha: 0.09)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10),
+        ..color = _cyan.withValues(alpha: 0.12)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14),
+    );
+    canvas.drawRRect(
+      bagRRect,
+      Paint()..color = const Color(0xFF062330).withValues(alpha: 0.3),
     );
     canvas.drawRRect(
       bagRRect,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 3
-        ..color = _cyan.withValues(alpha: 0.68),
+        ..strokeWidth = 3.4
+        ..color = _cyan.withValues(alpha: 0.78),
     );
     canvas.drawRRect(
       handle,
@@ -591,7 +680,7 @@ class XrayInspectorGame extends FlameGame {
     final stroke = Paint()
       ..color = strokeColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2
+      ..strokeWidth = 2.45
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
     final fill = Paint()
@@ -902,7 +991,10 @@ class XrayInspectorGame extends FlameGame {
 
     canvas.drawRect(
       Offset.zero & Size(size.x, size.y),
-      Paint()..color = _danger.withValues(alpha: min(0.2, _screenFlash * 0.72)),
+      Paint()
+        ..color = _screenFlashColor.withValues(
+          alpha: min(0.2, _screenFlash * 0.72),
+        ),
     );
   }
 }
