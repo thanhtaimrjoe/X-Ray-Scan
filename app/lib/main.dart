@@ -1321,31 +1321,12 @@ class _GameplayScreenState extends State<GameplayScreen> {
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _Hud(
-                      snapshot: _snapshot,
-                      levelNumber: widget.levelNumber,
-                      bagsCleared: _game.bagsCleared,
-                      bagsToClear: _bagsToClear,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(
-                        Icons.pause_circle_outline,
-                        color: Colors.white,
-                        size: 36,
-                      ),
-                      onPressed: widget.onPause,
-                    ),
-                  ),
-                ],
+              child: _Hud(
+                snapshot: _snapshot,
+                levelNumber: widget.levelNumber,
+                bagsCleared: _game.bagsCleared,
+                bagsToClear: _bagsToClear,
+                onPause: widget.onPause,
               ),
             ),
           ),
@@ -3083,51 +3064,209 @@ class _Hud extends StatelessWidget {
     required this.levelNumber,
     required this.bagsCleared,
     required this.bagsToClear,
+    required this.onPause,
   });
 
   final XrayInspectorSnapshot snapshot;
   final int levelNumber;
   final int bagsCleared;
   final int bagsToClear;
+  final VoidCallback onPause;
+
+  String _levelName(int level) {
+    return switch (level) {
+      1 => 'First Scan',
+      2 => 'Sharp Shapes',
+      3 => 'Mixed Bags',
+      4 => 'Crowded Luggage',
+      5 => 'Razor Alert',
+      6 => 'False Tap Trap',
+      7 => 'Double Threat',
+      8 => 'Battery Warning',
+      9 => 'Speed Check',
+      _ => 'Final Security Gate',
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+    final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
       fontWeight: FontWeight.w800,
       color: Colors.white,
-      letterSpacing: 0,
+      fontSize: 12,
+      letterSpacing: 0.5,
     );
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.34),
-        border: Border.all(color: const Color(0x5538F6FF)),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('L$levelNumber', style: textStyle),
-              const SizedBox(width: 10),
-              Text('Bags $bagsCleared/$bagsToClear', style: textStyle),
-              const SizedBox(width: 10),
-              Text('Score ${snapshot.score}', style: textStyle),
-              const SizedBox(width: 12),
-              Text(
-                'Combo ${snapshot.combo} x${_formatMultiplier(snapshot.comboMultiplier)}',
-                style: textStyle,
+    final scoreLabelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+      fontWeight: FontWeight.w600,
+      color: Colors.white38,
+      fontSize: 9,
+      letterSpacing: 1.0,
+    );
+
+    final scoreValueStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.w900,
+      color: Colors.white,
+      fontSize: 16,
+    );
+
+    final comboStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+      fontWeight: FontWeight.w900,
+      color: const Color(0xFFEAB308), // Gold/yellow
+      fontSize: 13,
+    );
+
+    // Format score with comma separator
+    final formattedScore = snapshot.score.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]},',
+    );
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Row 1: Level Name & Pause Button
+        Row(
+          children: [
+            Expanded(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.58),
+                  border: Border.all(color: const Color(0x3338F6FF)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  child: Text(
+                    'Level $levelNumber  |  ${_levelName(levelNumber)}  ($bagsCleared/$bagsToClear)',
+                    style: titleStyle,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ),
-              const SizedBox(width: 12),
-              Text('Lives ${snapshot.lives}', style: textStyle),
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 38,
+              height: 38,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.58),
+                  border: Border.all(color: const Color(0x3338F6FF)),
+                  borderRadius: BorderRadius.circular(19),
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.pause_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  onPressed: onPause,
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
+        const SizedBox(height: 8),
+        // Row 2: Score, Combo, Lives
+        Row(
+          children: [
+            // Score panel
+            Expanded(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.58),
+                  border: Border.all(color: const Color(0x2238F6FF)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('SCORE', style: scoreLabelStyle),
+                      const SizedBox(height: 2),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(formattedScore, style: scoreValueStyle),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+            // Combo panel
+            Expanded(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.58),
+                  border: Border.all(color: const Color(0x2238F6FF)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'Combo x${_formatMultiplier(snapshot.comboMultiplier)}',
+                          style: comboStyle,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: LinearProgressIndicator(
+                          value: (snapshot.combo % 5) / 5.0,
+                          backgroundColor: Colors.white10,
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFFEAB308),
+                          ),
+                          minHeight: 3.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+            // Lives panel
+            Expanded(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.58),
+                  border: Border.all(color: const Color(0x2238F6FF)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(3, (index) {
+                      final isFilled = index < snapshot.lives;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        child: Icon(
+                          isFilled ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          color: isFilled ? const Color(0xFFEF4444) : Colors.white24,
+                          size: 16,
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

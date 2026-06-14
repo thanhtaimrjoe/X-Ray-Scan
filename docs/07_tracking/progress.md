@@ -70,10 +70,13 @@ This file tracks the current project state so future AI assistants and contribut
 - Approved the Scenario AI empty x-ray suitcase asset and integrated it with tunnel-to-inspection animation.
 - Approved the Scenario AI result checkpoint background and integrated it behind Level Clear/Failed cards.
 - Generated and integrated premium, high-fidelity Main Menu and Level Map backgrounds matching approved layout compositions on local and remote branch "antigravity".
+- Upgraded the Gameplay HUD to a premium dual-row layout with distinct panel components (Level details and bags objective with pause action, Score panel with comma separation, Combo panel with golden typography and animated progress bar, and Lives panel with graphic heart icons).
+- Regenerated and integrated high-fidelity conveyor belt and scanner background (`bg_gameplay_scanner.png`) to avoid unrealistic procedural drawing of conveyor components in code, satisfying user visual expectations.
+- Adjusted scanner rendering logic to selectively hide flat procedural vectors when the high-fidelity background is active, while overlaying interactive sci-fi scan grids and animated laser lines.
 - Verified:
-  - `flutter test` (38 tests)
-  - `flutter analyze`
-  - `flutter build apk --debug`
+  - `flutter test` (all 38 tests passed)
+  - `flutter analyze` (no issues found)
+  - `flutter build apk --debug` (built successfully)
   - Samsung device install/launch through ADB (`RFCX80NW55E`)
 
 ## In Progress

@@ -624,12 +624,14 @@ class XrayInspectorGame extends FlameGame {
       const Radius.circular(14),
     );
 
-    canvas.drawRRect(
-      outer.inflate(8),
-      Paint()
-        ..color = _cyan.withValues(alpha: hasBackground ? 0.07 : 0.12)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18),
-    );
+    if (!hasBackground) {
+      canvas.drawRRect(
+        outer.inflate(8),
+        Paint()
+          ..color = _cyan.withValues(alpha: 0.12)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18),
+      );
+    }
     canvas.drawRRect(
       outer,
       Paint()
@@ -637,13 +639,15 @@ class XrayInspectorGame extends FlameGame {
           0xFF03151C,
         ).withValues(alpha: hasBackground ? 0.58 : 0.92),
     );
-    canvas.drawRRect(
-      outer,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5
-        ..color = _cyan.withValues(alpha: hasBackground ? 0.34 : 0.48),
-    );
+    if (!hasBackground) {
+      canvas.drawRRect(
+        outer,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5
+          ..color = _cyan.withValues(alpha: 0.48),
+      );
+    }
     canvas.drawRRect(
       inner,
       Paint()
@@ -704,46 +708,48 @@ class XrayInspectorGame extends FlameGame {
       );
     }
 
-    final cornerPaint = Paint()
-      ..color = _cyanSoft.withValues(alpha: 0.72)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1);
-    const corner = 34.0;
-    final guide = scanner.deflate(14);
-    for (final point in [
-      guide.topLeft,
-      guide.topRight,
-      guide.bottomLeft,
-      guide.bottomRight,
-    ]) {
-      final sx = point.dx < guide.center.dx ? 1.0 : -1.0;
-      final sy = point.dy < guide.center.dy ? 1.0 : -1.0;
-      canvas.drawLine(point, point.translate(corner * sx, 0), cornerPaint);
-      canvas.drawLine(point, point.translate(0, corner * sy), cornerPaint);
-    }
+    if (!hasBackground) {
+      final cornerPaint = Paint()
+        ..color = _cyanSoft.withValues(alpha: 0.72)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1);
+      const corner = 34.0;
+      final guide = scanner.deflate(14);
+      for (final point in [
+        guide.topLeft,
+        guide.topRight,
+        guide.bottomLeft,
+        guide.bottomRight,
+      ]) {
+        final sx = point.dx < guide.center.dx ? 1.0 : -1.0;
+        final sy = point.dy < guide.center.dy ? 1.0 : -1.0;
+        canvas.drawLine(point, point.translate(corner * sx, 0), cornerPaint);
+        canvas.drawLine(point, point.translate(0, corner * sy), cornerPaint);
+      }
 
-    final beltPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.28)
-      ..style = PaintingStyle.fill;
-    final belt = RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        scanner.left + 26,
-        scanner.bottom - 42,
-        scanner.width - 52,
-        24,
-      ),
-      const Radius.circular(10),
-    );
-    canvas.drawRRect(belt, beltPaint);
-    canvas.drawLine(
-      Offset(scanner.left + 38, scanner.bottom - 30),
-      Offset(scanner.right - 38, scanner.bottom - 30),
-      Paint()
-        ..color = _cyan.withValues(alpha: 0.28)
-        ..strokeWidth = 2,
-    );
+      final beltPaint = Paint()
+        ..color = Colors.black.withValues(alpha: 0.28)
+        ..style = PaintingStyle.fill;
+      final belt = RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          scanner.left + 26,
+          scanner.bottom - 42,
+          scanner.width - 52,
+          24,
+        ),
+        const Radius.circular(10),
+      );
+      canvas.drawRRect(belt, beltPaint);
+      canvas.drawLine(
+        Offset(scanner.left + 38, scanner.bottom - 30),
+        Offset(scanner.right - 38, scanner.bottom - 30),
+        Paint()
+          ..color = _cyan.withValues(alpha: 0.28)
+          ..strokeWidth = 2,
+      );
+    }
   }
 
   void _paintBag(Canvas canvas) {

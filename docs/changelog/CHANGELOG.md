@@ -5,6 +5,42 @@
 
 ---
 
+## [2026-06-14 14:05] - Upgrade gameplay HUD and integrate high-fidelity conveyor background
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-004, US-005
+**Impact Scope**: Gameplay, UX, Assets
+
+### Changes
+- Upgraded the gameplay HUD to a premium 2-row layout with distinct panels (Level, Score with comma separation, Combo with progress bar, and lives with graphical heart icons).
+- Integrated high-fidelity conveyor belt and scanner background asset (`bg_gameplay_scanner.png`) to satisfy user's expectations for a realistic look and avoid unrealistic procedural drawing of conveyor belts in code.
+- Refactored the scanner rendering logic in `xray_inspector_game.dart` to hide flat procedural outlines and corner brackets when the high-fidelity background is active, while keeping the sci-fi grid overlay and scanning laser line on top.
+- Fixed cross-alignment typos in the Column widgets of Score and Combo panels (`CrossAxisAlignment.start` instead of `Alignment.start`).
+- Verified zero errors and warnings across all codebase with `flutter analyze` and `flutter test`.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/assets/images/backgrounds/bg_gameplay_scanner.png`
+- File: `docs/assets/asset_candidates/bg_gameplay_scanner_candidate_02.png`
+- Reason: Resolve user's feedback concerning flat procedural graphics by replacing procedural drawings with pre-baked high-fidelity assets, and upgrade the gameplay HUD to a premium visual tier.
+- Technical decision: Wrap procedural lines and conveyor graphics in `if (!hasBackground)` checks inside `_paintScanner` so that they automatically fade out when high-fidelity assets are available.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test` (all 38 tests passed)
+- [x] `flutter analyze` (no issues found)
+- [x] `flutter build apk --debug` (successfully compiled)
+
+### Notes
+- None.
+
+---
+
 ## [2026-06-14 13:45] - Integrate premium Main Menu and Level Map backgrounds
 
 **Owner**: AI Assistant
