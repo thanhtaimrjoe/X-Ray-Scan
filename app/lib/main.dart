@@ -647,23 +647,28 @@ class _AppShellState extends State<AppShell> {
         onOpenDatabase: () => _showItemDatabase(),
         onBack: _showMenu,
       ),
-      AppScreen.playing => GameplayScreen(
-        levelNumber: _activeLevelNumber,
-        onLevelComplete: _finishLevelComplete,
-        onLevelFailed: _finishLevelFailed,
-        onItemDiscovered: (type) {
-          _recordDiscovery(type);
-        },
-        onPause: _pauseGame,
-        onGameCreated: (game) {
-          _currentGame = game;
-        },
-      ),
-      AppScreen.paused => PauseScreen(
-        onResume: _resumeGame,
-        onMenu: _showMenu,
-        soundEnabled: _soundEnabled,
-        onToggleSound: _toggleSound,
+      AppScreen.playing || AppScreen.paused => Stack(
+        children: [
+          GameplayScreen(
+            levelNumber: _activeLevelNumber,
+            onLevelComplete: _finishLevelComplete,
+            onLevelFailed: _finishLevelFailed,
+            onItemDiscovered: (type) {
+              _recordDiscovery(type);
+            },
+            onPause: _pauseGame,
+            onGameCreated: (game) {
+              _currentGame = game;
+            },
+          ),
+          if (_screen == AppScreen.paused)
+            PauseScreen(
+              onResume: _resumeGame,
+              onMenu: _showMenu,
+              soundEnabled: _soundEnabled,
+              onToggleSound: _toggleSound,
+            ),
+        ],
       ),
       AppScreen.levelClear => LevelClearScreen(
         levelNumber: _activeLevelNumber,
@@ -1377,6 +1382,7 @@ class PauseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black.withValues(alpha: 0.72),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -3170,101 +3176,108 @@ class _Hud extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         // Row 2: Score, Combo, Lives
-        Row(
-          children: [
-            // Score panel
-            Expanded(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.58),
-                  border: Border.all(color: const Color(0x2238F6FF)),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('SCORE', style: scoreLabelStyle),
-                      const SizedBox(height: 2),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(formattedScore, style: scoreValueStyle),
-                      ),
-                    ],
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Score panel
+              Expanded(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.58),
+                    border: Border.all(color: const Color(0x2238F6FF)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('SCORE', style: scoreLabelStyle),
+                        const SizedBox(height: 2),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(formattedScore, style: scoreValueStyle),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 6),
-            // Combo panel
-            Expanded(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.58),
-                  border: Border.all(color: const Color(0x2238F6FF)),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          'Combo x${_formatMultiplier(snapshot.comboMultiplier)}',
-                          style: comboStyle,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(2),
-                        child: LinearProgressIndicator(
-                          value: (snapshot.combo % 5) / 5.0,
-                          backgroundColor: Colors.white10,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFFEAB308),
+              const SizedBox(width: 6),
+              // Combo panel
+              Expanded(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.58),
+                    border: Border.all(color: const Color(0x2238F6FF)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'Combo x${_formatMultiplier(snapshot.comboMultiplier)}',
+                            style: comboStyle,
                           ),
-                          minHeight: 3.5,
                         ),
+                        const SizedBox(height: 6),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(2),
+                          child: LinearProgressIndicator(
+                            value: (snapshot.combo % 5) / 5.0,
+                            backgroundColor: Colors.white10,
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Color(0xFFEAB308),
+                            ),
+                            minHeight: 3.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              // Lives panel
+              Expanded(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.58),
+                    border: Border.all(color: const Color(0x2238F6FF)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(3, (index) {
+                          final isFilled = index < snapshot.lives;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: Icon(
+                              isFilled ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                              color: isFilled ? const Color(0xFFEF4444) : Colors.white24,
+                              size: 16,
+                            ),
+                          );
+                        }),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 6),
-            // Lives panel
-            Expanded(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.58),
-                  border: Border.all(color: const Color(0x2238F6FF)),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(3, (index) {
-                      final isFilled = index < snapshot.lives;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: Icon(
-                          isFilled ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                          color: isFilled ? const Color(0xFFEF4444) : Colors.white24,
-                          size: 16,
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );

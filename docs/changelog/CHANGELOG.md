@@ -5,6 +5,38 @@
 
 ---
 
+## [2026-06-14 14:15] - Fit scanner to suitcase, equalize HUD heights, and fix pause-resume state reset
+
+**Owner**: AI Assistant
+**Type**: Feature/Bugfix
+**Related US**: US-004, US-005
+**Impact Scope**: Gameplay, UX, State Management
+
+### Changes
+- Resized and adjusted `_scannerRect` in `xray_inspector_game.dart` to tightly wrap the suitcase size, shrinking the overly large translucent blue glass region to look extremely polished and fit the suitcase perfectly.
+- Aligned the heights of HUD Row 2 Panels (Score, Combo, and Lives) in `main.dart` to be perfectly equal and uniform using `IntrinsicHeight` and `CrossAxisAlignment.stretch` in the Row, with all child elements centered vertically.
+- Solved the pause-resume state reset problem by overlaying `PauseScreen` inside a `Stack` on top of the preserved `GameplayScreen` instead of completely unmounting it, preserving the active `XrayInspectorGame` instance.
+- Dimmed the paused game background with a translucent black background (`Colors.black.withValues(alpha: 0.72)`) behind the Pause card.
+
+### Implementation Details
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/lib/main.dart`
+- Reason: Resolve user requests regarding a tight scanner fit around the suitcase, visual symmetry for the HUD panels, and preserving suitcase state when pausing/resuming.
+- Technical decision: Shift from full-screen state switching to stack overlays for pause screens, allowing game loops and widget states to stay alive.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test` (all 38 tests passed)
+- [x] `flutter analyze` (no issues found)
+
+### Notes
+- None.
+
+---
+
 ## [2026-06-14 14:05] - Upgrade gameplay HUD and integrate high-fidelity conveyor background
 
 **Owner**: AI Assistant

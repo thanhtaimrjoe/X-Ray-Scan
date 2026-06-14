@@ -373,9 +373,15 @@ class XrayInspectorGame extends FlameGame {
   double get _objectScaleBase => min(size.x, size.y) / 360;
 
   Rect get _scannerRect {
-    final top = size.y * 0.15;
-    final height = size.y * 0.66;
-    return Rect.fromLTWH(16, top, size.x - 32, height);
+    final bagSize = _bagSize;
+    final width = bagSize.width * 1.15;
+    final height = bagSize.height * 1.22;
+    final centerY = size.y * 0.47;
+    return Rect.fromCenter(
+      center: Offset(size.x * 0.5, centerY),
+      width: width,
+      height: height,
+    );
   }
 
   Rect _bagRect(XrayBag bag) {
