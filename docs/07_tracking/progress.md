@@ -69,6 +69,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Approved the first Scenario AI/Gemini gameplay scanner background and integrated it behind the Flame scanner overlay.
 - Approved the Scenario AI empty x-ray suitcase asset and integrated it with tunnel-to-inspection animation.
 - Approved the Scenario AI result checkpoint background and integrated it behind Level Clear/Failed cards.
+- Generated and integrated premium, high-fidelity Main Menu and Level Map backgrounds matching approved layout compositions on local and remote branch "antigravity".
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -111,6 +112,10 @@ This file tracks the current project state so future AI assistants and contribut
 - Gameplay background runtime asset: `app/assets/images/backgrounds/bg_gameplay_scanner.png`
 - Result background candidate: `docs/assets/asset_candidates/bg_result_checkpoint_scenario_candidate_01.png`
 - Result background runtime asset: `app/assets/images/backgrounds/bg_result_checkpoint.png`
+- Main Menu background candidate: `docs/assets/asset_candidates/bg_main_menu_candidate_01.png`
+- Main Menu background runtime asset: `app/assets/images/backgrounds/bg_main_menu.png`
+- Level Map background candidate: `docs/assets/asset_candidates/bg_level_map_candidate_01.png`
+- Level Map background runtime asset: `app/assets/images/backgrounds/bg_level_map.png`
 - Suitcase candidate: `docs/assets/asset_candidates/ui_suitcase_xray_empty_scenario_candidate_01.png`
 - Suitcase extraction script: `tools/extract_xray_suitcase_asset.py`
 - Suitcase runtime asset: `app/assets/images/ui/ui_suitcase_xray_empty.png`
@@ -138,7 +143,7 @@ This file tracks the current project state so future AI assistants and contribut
 
 1. Run physical-device review for the integrated gameplay background and tune scanner overlay opacity/framing if needed.
 2. Tune runtime sprite scale/contrast if the items feel too large, too small, or too bright on device.
-3. Generate and review Gemini/Scenario background candidates for main menu, level map, and result screens.
+3. Review and tune Main Menu and Level Map backgrounds on a physical device or emulator.
 4. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
 
 ## Known Gaps

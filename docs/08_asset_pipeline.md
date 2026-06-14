@@ -173,6 +173,18 @@ Current result background:
 - Runtime asset: `app/assets/images/backgrounds/bg_result_checkpoint.png`
 - Generator workflow: Scenario AI edit/inpainting from the approved Level Clear visual reference, removing UI/card/text/button/ad elements.
 
+Current main menu background:
+
+- Source candidate: `docs/assets/asset_candidates/bg_main_menu_candidate_01.png`
+- Runtime asset: `app/assets/images/backgrounds/bg_main_menu.png`
+- Generator workflow: Image generation using the approved main menu composition reference, capturing the cybernetic teal/warm yellow terminal lights at night.
+
+Current level map background:
+
+- Source candidate: `docs/assets/asset_candidates/bg_level_map_candidate_01.png`
+- Runtime asset: `app/assets/images/backgrounds/bg_level_map.png`
+- Generator workflow: Image generation using the approved level map composition reference, capturing the warm golden hour sunset glow over the departures board.
+
 Current suitcase asset:
 
 - Source candidate: `docs/assets/asset_candidates/ui_suitcase_xray_empty_scenario_candidate_01.png`

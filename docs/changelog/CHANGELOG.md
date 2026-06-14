@@ -5,6 +5,43 @@
 
 ---
 
+## [2026-06-14 13:45] - Integrate premium Main Menu and Level Map backgrounds
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-004, US-005
+**Impact Scope**: UX, Gameplay, Assets
+
+### Changes
+- Generated premium, high-fidelity Main Menu and Level Map background assets.
+- Registered background assets in the asset candidates directory and promoted them to the runtime backgrounds directory.
+- Integrated backgrounds into MainMenuScreen and LevelMapScreen by configuring the image asset parameter of _AirportBackdrop.
+- Documented asset details, prompts, and registration in the asset pipeline and progress tracking logs.
+
+### Implementation Details
+- File: `docs/assets/asset_candidates/bg_main_menu_candidate_01.png`
+- File: `app/assets/images/backgrounds/bg_main_menu.png`
+- File: `docs/assets/asset_candidates/bg_level_map_candidate_01.png`
+- File: `app/assets/images/backgrounds/bg_level_map.png`
+- File: `app/lib/main.dart`
+- File: `docs/08_asset_pipeline.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: Meet the visual fidelity benchmarks in the approved main menu and level map designs while preserving the user's preferred modern high-contrast colors and button styles.
+- Technical decision: Pass customizable background images directly to `_AirportBackdrop` within `MainMenuScreen` and `LevelMapScreen`, allowing clean, risk-free asset swaps with automatic canvas fallback.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test`
+- [x] `flutter analyze`
+
+### Notes
+- Requires emulator/device review to ensure text readability and card dimming are optimal on top of the new backgrounds.
+
+---
+
 ## [2026-06-14 13:03] - Integrate token-saving workflows and model strategy
 
 **Owner**: AI Assistant

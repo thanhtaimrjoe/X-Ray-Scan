@@ -702,6 +702,8 @@ class _AppShellState extends State<AppShell> {
 }
 
 class MainMenuScreen extends StatelessWidget {
+  static const _menuBackground = 'assets/images/backgrounds/bg_main_menu.png';
+
   const MainMenuScreen({
     required this.highestUnlockedLevel,
     required this.highScore,
@@ -721,6 +723,7 @@ class MainMenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _AirportBackdrop(
+        imageAsset: _menuBackground,
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(18),
@@ -819,6 +822,8 @@ class MainMenuScreen extends StatelessWidget {
 }
 
 class LevelMapScreen extends StatelessWidget {
+  static const _levelMapBackground = 'assets/images/backgrounds/bg_level_map.png';
+
   const LevelMapScreen({
     required this.progress,
     required this.selectedLevel,
@@ -844,6 +849,7 @@ class LevelMapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _AirportBackdrop(
+        imageAsset: _levelMapBackground,
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(12),
