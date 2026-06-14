@@ -51,6 +51,7 @@ class XrayBag {
   final double yFactor;
   double x;
   double speed;
+  double age = 0;
   bool hadMistake = false;
 
   bool get hasDangerRemaining {
@@ -97,6 +98,8 @@ class XrayInspectorGame extends FlameGame {
   final XrayInspectorRules _rules = XrayInspectorRules();
   final List<XrayPulse> _pulses = [];
   final Map<XrayObjectType, ui.Image> _itemSprites = {};
+  ui.Image? _gameplayBackground;
+  ui.Image? _suitcaseSprite;
 
   XrayBag? _bag;
   double _elapsed = 0;
@@ -122,6 +125,8 @@ class XrayInspectorGame extends FlameGame {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    await _loadGameplayBackground();
+    await _loadSuitcaseSprite();
     await _loadItemSprites();
     _spawnBag();
     onSnapshotChanged(snapshot);
@@ -139,6 +144,7 @@ class XrayInspectorGame extends FlameGame {
 
     final bag = _bag;
     if (bag != null) {
+      bag.age += dt;
       for (final object in bag.objects) {
         object.flashAge += dt;
       }
@@ -169,13 +175,16 @@ class XrayInspectorGame extends FlameGame {
     if (bag == null) {
       return;
     }
+    if (_bagRevealProgress(bag) < 1) {
+      return;
+    }
 
     final hit = _hitTestObject(position, bag);
     if (hit == null || hit.found) {
       return;
     }
 
-    final center = _objectCenter(hit, _bagRect(bag));
+    final center = _objectCenter(hit, _objectAreaRect(_bagRect(bag)));
     if (hit.type.isDangerous) {
       final previousCombo = _rules.combo;
       final points = _rules.pointsForNextDangerTap();
@@ -216,6 +225,9 @@ class XrayInspectorGame extends FlameGame {
 
     final bag = _bag;
     if (bag == null) {
+      return;
+    }
+    if (_bagRevealProgress(bag) < 1) {
       return;
     }
 
@@ -326,7 +338,7 @@ class XrayInspectorGame extends FlameGame {
   }
 
   XrayObjectInstance? _hitTestObject(Offset position, XrayBag bag) {
-    final rect = _bagRect(bag);
+    final rect = _objectAreaRect(_bagRect(bag));
     final candidates = bag.objects.where((object) {
       final center = _objectCenter(object, rect);
       return (position - center).distance <= _hitRadius(object);
@@ -355,7 +367,7 @@ class XrayInspectorGame extends FlameGame {
   }
 
   Size get _bagSize {
-    return Size(min(size.x * 0.86, 380), min(size.y * 0.4, 320));
+    return Size(min(size.x * 0.72, 340), min(size.y * 0.48, 430));
   }
 
   double get _objectScaleBase => min(size.x, size.y) / 360;
@@ -367,14 +379,46 @@ class XrayInspectorGame extends FlameGame {
   }
 
   Rect _bagRect(XrayBag bag) {
+    final target = _targetBagRect(bag);
+    final progress = _bagRevealProgress(bag);
+    final eased = 1 - pow(1 - progress, 3).toDouble();
+    final start = Rect.fromCenter(
+      center: Offset(
+        target.center.dx,
+        _scannerRect.top + _scannerRect.height * 0.32,
+      ),
+      width: target.width * 0.44,
+      height: target.height * 0.44,
+    );
+    return Rect.lerp(start, target, eased)!;
+  }
+
+  Rect _targetBagRect(XrayBag bag) {
     final bagSize = _bagSize;
     final scanner = _scannerRect;
-    final centerY = scanner.top + (scanner.height * bag.yFactor);
+    final centerY = scanner.top + (scanner.height * 0.5);
     return Rect.fromCenter(
       center: Offset(bag.x, centerY),
       width: bagSize.width,
       height: bagSize.height,
     );
+  }
+
+  Rect _objectAreaRect(Rect bagRect) {
+    return Rect.fromLTRB(
+      bagRect.left + bagRect.width * 0.15,
+      bagRect.top + bagRect.height * 0.27,
+      bagRect.right - bagRect.width * 0.15,
+      bagRect.bottom - bagRect.height * 0.18,
+    );
+  }
+
+  double _bagRevealProgress(XrayBag bag) {
+    return (bag.age / 0.68).clamp(0, 1).toDouble();
+  }
+
+  double _itemRevealProgress(XrayBag bag) {
+    return ((bag.age - 0.54) / 0.24).clamp(0, 1).toDouble();
   }
 
   List<Offset> get _bagSlots => const [
@@ -443,6 +487,24 @@ class XrayInspectorGame extends FlameGame {
     }
   }
 
+  Future<void> _loadGameplayBackground() async {
+    try {
+      _gameplayBackground = await images.load(
+        'backgrounds/bg_gameplay_scanner.png',
+      );
+    } catch (_) {
+      _gameplayBackground = null;
+    }
+  }
+
+  Future<void> _loadSuitcaseSprite() async {
+    try {
+      _suitcaseSprite = await images.load('ui/ui_suitcase_xray_empty.png');
+    } catch (_) {
+      _suitcaseSprite = null;
+    }
+  }
+
   String _itemSpritePath(XrayObjectType type) {
     return switch (type) {
       XrayObjectType.knife => 'items/danger/item_danger_knife.png',
@@ -473,7 +535,22 @@ class XrayInspectorGame extends FlameGame {
 
   void _paintBackground(Canvas canvas) {
     final bounds = Offset.zero & Size(size.x, size.y);
-    canvas.drawRect(bounds, Paint()..color = const Color(0xFF030912));
+    final background = _gameplayBackground;
+    if (background != null) {
+      _drawCoverImage(canvas, background, bounds);
+      canvas.drawRect(
+        bounds,
+        Paint()
+          ..shader = const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0x99030912), Color(0x26030912), Color(0x66030912)],
+            stops: [0, 0.48, 1],
+          ).createShader(bounds),
+      );
+    } else {
+      canvas.drawRect(bounds, Paint()..color = const Color(0xFF030912));
+    }
 
     final glowCenter = Offset(size.x * 0.5, size.y * 0.34);
     canvas.drawCircle(
@@ -492,7 +569,7 @@ class XrayInspectorGame extends FlameGame {
     );
 
     final gridPaint = Paint()
-      ..color = _cyan.withValues(alpha: 0.055)
+      ..color = _cyan.withValues(alpha: background == null ? 0.055 : 0.035)
       ..strokeWidth = 1;
     const gridSize = 34.0;
     final xOffset = (_elapsed * 14) % gridSize;
@@ -504,8 +581,43 @@ class XrayInspectorGame extends FlameGame {
     }
   }
 
+  void _drawCoverImage(Canvas canvas, ui.Image image, Rect destination) {
+    final imageSize = Size(image.width.toDouble(), image.height.toDouble());
+    final sourceAspect = imageSize.width / imageSize.height;
+    final destinationAspect = destination.width / destination.height;
+    late final Rect source;
+
+    if (sourceAspect > destinationAspect) {
+      final sourceWidth = imageSize.height * destinationAspect;
+      source = Rect.fromLTWH(
+        (imageSize.width - sourceWidth) / 2,
+        0,
+        sourceWidth,
+        imageSize.height,
+      );
+    } else {
+      final sourceHeight = imageSize.width / destinationAspect;
+      source = Rect.fromLTWH(
+        0,
+        (imageSize.height - sourceHeight) / 2,
+        imageSize.width,
+        sourceHeight,
+      );
+    }
+
+    canvas.drawImageRect(
+      image,
+      source,
+      destination,
+      Paint()
+        ..isAntiAlias = true
+        ..filterQuality = FilterQuality.high,
+    );
+  }
+
   void _paintScanner(Canvas canvas) {
     final scanner = _scannerRect;
+    final hasBackground = _gameplayBackground != null;
     final outer = RRect.fromRectAndRadius(scanner, const Radius.circular(18));
     final inner = RRect.fromRectAndRadius(
       scanner.deflate(12),
@@ -515,19 +627,22 @@ class XrayInspectorGame extends FlameGame {
     canvas.drawRRect(
       outer.inflate(8),
       Paint()
-        ..color = _cyan.withValues(alpha: 0.12)
+        ..color = _cyan.withValues(alpha: hasBackground ? 0.07 : 0.12)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18),
     );
     canvas.drawRRect(
       outer,
-      Paint()..color = const Color(0xFF03151C).withValues(alpha: 0.92),
+      Paint()
+        ..color = const Color(
+          0xFF03151C,
+        ).withValues(alpha: hasBackground ? 0.58 : 0.92),
     );
     canvas.drawRRect(
       outer,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5
-        ..color = _cyan.withValues(alpha: 0.48),
+        ..color = _cyan.withValues(alpha: hasBackground ? 0.34 : 0.48),
     );
     canvas.drawRRect(
       inner,
@@ -638,6 +753,41 @@ class XrayInspectorGame extends FlameGame {
     }
 
     final rect = _bagRect(bag);
+    final reveal = _bagRevealProgress(bag);
+    final itemReveal = _itemRevealProgress(bag);
+    final objectArea = _objectAreaRect(rect);
+    final suitcase = _suitcaseSprite;
+    if (suitcase != null) {
+      canvas.saveLayer(
+        rect.inflate(20),
+        Paint()..color = Colors.white.withValues(alpha: reveal),
+      );
+      _drawContainImage(canvas, suitcase, rect);
+      canvas.restore();
+    } else {
+      _paintFallbackBag(canvas, rect);
+    }
+
+    if (itemReveal <= 0) {
+      return;
+    }
+
+    canvas.save();
+    canvas.clipRRect(
+      RRect.fromRectAndRadius(objectArea, const Radius.circular(20)),
+    );
+    canvas.saveLayer(
+      objectArea,
+      Paint()..color = Colors.white.withValues(alpha: itemReveal),
+    );
+    for (final object in bag.objects) {
+      _paintObject(canvas, object, objectArea);
+    }
+    canvas.restore();
+    canvas.restore();
+  }
+
+  void _paintFallbackBag(Canvas canvas, Rect rect) {
     final bagRRect = RRect.fromRectAndRadius(rect, const Radius.circular(24));
     final handleRect = Rect.fromCenter(
       center: Offset(rect.center.dx, rect.top - 4),
@@ -673,13 +823,36 @@ class XrayInspectorGame extends FlameGame {
         ..strokeWidth = 3
         ..color = _cyanSoft.withValues(alpha: 0.52),
     );
+  }
 
-    canvas.save();
-    canvas.clipRRect(bagRRect);
-    for (final object in bag.objects) {
-      _paintObject(canvas, object, rect);
+  void _drawContainImage(Canvas canvas, ui.Image image, Rect destination) {
+    final imageAspect = image.width / image.height;
+    final destinationAspect = destination.width / destination.height;
+    late final Rect fitted;
+    if (imageAspect > destinationAspect) {
+      final height = destination.width / imageAspect;
+      fitted = Rect.fromCenter(
+        center: destination.center,
+        width: destination.width,
+        height: height,
+      );
+    } else {
+      final width = destination.height * imageAspect;
+      fitted = Rect.fromCenter(
+        center: destination.center,
+        width: width,
+        height: destination.height,
+      );
     }
-    canvas.restore();
+
+    canvas.drawImageRect(
+      image,
+      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+      fitted,
+      Paint()
+        ..isAntiAlias = true
+        ..filterQuality = FilterQuality.high,
+    );
   }
 
   void _paintObject(Canvas canvas, XrayObjectInstance object, Rect bagRect) {

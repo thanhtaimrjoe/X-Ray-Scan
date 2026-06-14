@@ -66,6 +66,8 @@ This file tracks the current project state so future AI assistants and contribut
 - Created the first Codex-authored vector item source set and preview sheet for all 11 MVP objects.
 - Approved a Gemini 3.1 pure-black x-ray item sheet as the runtime sprite source.
 - Added deterministic extraction for 11 transparent item PNGs and integrated them into gameplay and Item Database rendering with Canvas fallback.
+- Approved the first Scenario AI/Gemini gameplay scanner background and integrated it behind the Flame scanner overlay.
+- Approved the Scenario AI empty x-ray suitcase asset and integrated it with tunnel-to-inspection animation.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -104,6 +106,11 @@ This file tracks the current project state so future AI assistants and contribut
 - Runtime item extraction script: `tools/extract_xray_item_sprites.py`
 - Runtime item cut preview: `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_cut_preview.png`
 - Integrated runtime item folders: `app/assets/images/items/danger/` and `app/assets/images/items/safe/`
+- Gameplay background candidate: `docs/assets/asset_candidates/bg_gameplay_scanner_scenario_candidate_01.png`
+- Gameplay background runtime asset: `app/assets/images/backgrounds/bg_gameplay_scanner.png`
+- Suitcase candidate: `docs/assets/asset_candidates/ui_suitcase_xray_empty_scenario_candidate_01.png`
+- Suitcase extraction script: `tools/extract_xray_suitcase_asset.py`
+- Suitcase runtime asset: `app/assets/images/ui/ui_suitcase_xray_empty.png`
 - Core gameplay files:
   - `app/lib/main.dart`
   - `app/lib/game/xray_inspector_game.dart`
@@ -126,9 +133,9 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Run physical-device review for the integrated PNG item sprites inside gameplay and Item Database.
+1. Run physical-device review for the integrated gameplay background and tune scanner overlay opacity/framing if needed.
 2. Tune runtime sprite scale/contrast if the items feel too large, too small, or too bright on device.
-3. Generate and review Gemini background candidates for gameplay, main menu, level map, and result screens.
+3. Generate and review Gemini/Scenario background candidates for main menu, level map, and result screens.
 4. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
 
 ## Known Gaps

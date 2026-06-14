@@ -1478,98 +1478,81 @@ class LevelClearScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _AirportBackdrop(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _GlassPanel(
-                    child: Column(
-                      children: [
-                        Text(
-                          'LEVEL CLEAR',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displaySmall
-                              ?.copyWith(
-                                color: _XrayStyle.gold,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0,
-                              ),
-                        ),
-                        Text(
-                          'International Terminal - Level $levelNumber',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: _XrayStyle.text,
-                                fontWeight: FontWeight.w800,
-                              ),
-                        ),
-                        const SizedBox(height: 18),
-                        _StarRow(stars: starsEarned),
-                        const SizedBox(height: 14),
-                        Text(
-                          'Score: $score\nBest: ${_bestStarsLabel(bestStars)}',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(
-                                color: _XrayStyle.text,
-                                fontWeight: FontWeight.w900,
-                                height: 1.18,
-                              ),
-                        ),
-                        const SizedBox(height: 12),
-                        _ResultStrip(
-                          text: 'Bags Cleared: $bagsCleared/$bagsToClear',
-                        ),
-                        if (unlockedDanger != null || didUnlockNextLevel) ...[
-                          const SizedBox(height: 14),
-                          _RewardPanel(
-                            title: unlockedDanger != null
-                                ? 'New threat profile:'
-                                : 'Progress unlocked:',
-                            value:
-                                unlockedDanger?.displayName ??
-                                'Level ${levelNumber + 1}',
-                            icon: unlockedDanger != null
-                                ? _itemIconFor(unlockedDanger!)
-                                : Icons.lock_open_rounded,
-                          ),
-                        ],
-                        const SizedBox(height: 22),
-                        if (canPlayNext)
-                          _XrayActionButton.primary(
-                            onPressed: onNext,
-                            icon: const Icon(Icons.arrow_forward_rounded),
-                            label: 'NEXT',
-                          ),
-                        if (canPlayNext) const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _XrayActionButton.secondary(
-                                onPressed: onRetry,
-                                label: 'RETRY',
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _XrayActionButton.secondary(
-                                onPressed: onMenu,
-                                label: 'MAP',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+        child: _ResultScreenFrame(
+          card: _GlassPanel(
+            child: Column(
+              children: [
+                Text(
+                  'LEVEL CLEAR',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: _XrayStyle.gold,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
                   ),
-                  const SizedBox(height: 18),
-                  const Center(child: XrayBannerAd()),
+                ),
+                Text(
+                  'International Terminal - Level $levelNumber',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: _XrayStyle.text,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _StarRow(stars: starsEarned),
+                const SizedBox(height: 14),
+                Text(
+                  'Score: $score\nBest: ${_bestStarsLabel(bestStars)}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: _XrayStyle.text,
+                    fontWeight: FontWeight.w900,
+                    height: 1.18,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _ResultStrip(text: 'Bags Cleared: $bagsCleared/$bagsToClear'),
+                if (unlockedDanger != null || didUnlockNextLevel) ...[
+                  const SizedBox(height: 14),
+                  _RewardPanel(
+                    title: unlockedDanger != null
+                        ? 'New threat profile:'
+                        : 'Progress unlocked:',
+                    value:
+                        unlockedDanger?.displayName ??
+                        'Level ${levelNumber + 1}',
+                    icon: unlockedDanger != null
+                        ? _itemIconFor(unlockedDanger!)
+                        : Icons.lock_open_rounded,
+                  ),
                 ],
-              ),
+                const SizedBox(height: 22),
+                if (canPlayNext)
+                  _XrayActionButton.primary(
+                    onPressed: onNext,
+                    icon: const Icon(Icons.arrow_forward_rounded),
+                    label: 'NEXT',
+                  ),
+                if (canPlayNext) const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _XrayActionButton.secondary(
+                        onPressed: onRetry,
+                        label: 'RETRY',
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _XrayActionButton.secondary(
+                        onPressed: onMenu,
+                        label: 'MAP',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -1604,92 +1587,112 @@ class LevelFailedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _AirportBackdrop(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _GlassPanel(
-                    borderColor: _XrayStyle.danger.withValues(alpha: 0.55),
-                    child: Column(
-                      children: [
-                        Text(
-                          'LEVEL FAILED',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displaySmall
-                              ?.copyWith(
-                                color: _XrayStyle.gold,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0,
-                              ),
-                        ),
-                        Text(
-                          'International Terminal - Level $levelNumber',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: _XrayStyle.text,
-                                fontWeight: FontWeight.w800,
-                              ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          '$score',
-                          style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(
-                                color: _XrayStyle.text,
-                                fontWeight: FontWeight.w900,
-                              ),
-                        ),
-                        _ResultStrip(
-                          text: 'Bags Cleared: $bagsCleared/$bagsToClear',
-                        ),
-                        const SizedBox(height: 12),
-                        _WarningPanel(),
-                        const SizedBox(height: 18),
-                        if (canContinueWithAd) ...[
-                          _XrayActionButton.primary(
-                            onPressed: onContinueWithAd,
-                            icon: const Icon(Icons.ondemand_video_rounded),
-                            label: 'CONTINUE +1 LIFE',
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Watch ad to keep inspecting',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: _XrayStyle.text),
-                          ),
-                          const SizedBox(height: 14),
-                        ],
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _XrayActionButton.secondary(
-                                onPressed: onRetry,
-                                label: 'RETRY',
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _XrayActionButton.secondary(
-                                onPressed: onMenu,
-                                label: 'MAP',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+        child: _ResultScreenFrame(
+          card: _GlassPanel(
+            borderColor: _XrayStyle.danger.withValues(alpha: 0.55),
+            child: Column(
+              children: [
+                Text(
+                  'LEVEL FAILED',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: _XrayStyle.gold,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
                   ),
-                  const SizedBox(height: 18),
-                  const Center(child: XrayBannerAd()),
+                ),
+                Text(
+                  'International Terminal - Level $levelNumber',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: _XrayStyle.text,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  '$score',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: _XrayStyle.text,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                _ResultStrip(text: 'Bags Cleared: $bagsCleared/$bagsToClear'),
+                const SizedBox(height: 12),
+                _WarningPanel(),
+                const SizedBox(height: 18),
+                if (canContinueWithAd) ...[
+                  _XrayActionButton.primary(
+                    onPressed: onContinueWithAd,
+                    icon: const Icon(Icons.ondemand_video_rounded),
+                    label: 'CONTINUE +1 LIFE',
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Watch ad to keep inspecting',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: _XrayStyle.text),
+                  ),
+                  const SizedBox(height: 14),
                 ],
-              ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _XrayActionButton.secondary(
+                        onPressed: onRetry,
+                        label: 'RETRY',
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _XrayActionButton.secondary(
+                        onPressed: onMenu,
+                        label: 'MAP',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResultScreenFrame extends StatelessWidget {
+  const _ResultScreenFrame({required this.card});
+
+  final Widget card;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+        child: Column(
+          children: [
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                        maxWidth: 520,
+                      ),
+                      child: Center(child: card),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Center(child: XrayBannerAd()),
+          ],
         ),
       ),
     );

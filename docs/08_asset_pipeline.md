@@ -161,6 +161,19 @@ Current raster item source:
 - Cut preview: `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_cut_preview.png`
 - Runtime folders: `app/assets/images/items/danger/` and `app/assets/images/items/safe/`
 
+Current gameplay background:
+
+- Source candidate: `docs/assets/asset_candidates/bg_gameplay_scanner_scenario_candidate_01.png`
+- Runtime asset: `app/assets/images/backgrounds/bg_gameplay_scanner.png`
+- Generator workflow: Scenario AI using Gemini 3.1 with the approved gameplay reference image.
+
+Current suitcase asset:
+
+- Source candidate: `docs/assets/asset_candidates/ui_suitcase_xray_empty_scenario_candidate_01.png`
+- Extraction script: `tools/extract_xray_suitcase_asset.py`
+- Runtime asset: `app/assets/images/ui/ui_suitcase_xray_empty.png`
+- Generator workflow: Scenario AI using Gemini 3.1, pure black background, empty x-ray suitcase only.
+
 ## Prompt Style Guide
 
 Use the same style clause across all generation prompts:

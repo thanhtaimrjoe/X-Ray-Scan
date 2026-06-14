@@ -5,6 +5,119 @@
 
 ---
 
+## [2026-06-14 12:10] - Center result screens above banner ads
+
+**Owner**: AI Assistant
+**Type**: Bugfix
+**Related US**: US-004, US-005
+**Impact Scope**: UX, Gameplay, Ads
+
+### Changes
+- Reworked the Level Clear and Level Failed screen layout so result cards are centered in the available space above the banner ad.
+- Kept banner ads separated from result actions at the bottom.
+- Preserved scroll fallback for small screens when result content is taller than the available area.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- Reason: New gameplay/result background art made the old top-anchored result cards look pushed upward with excessive empty space below the banner.
+- Technical decision: Add a shared `_ResultScreenFrame` wrapper for clear/fail screens rather than tuning each screen independently.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test`
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- Emulator visual review is still needed after reinstall.
+
+---
+
+## [2026-06-14 11:47] - Integrate x-ray suitcase asset and entry animation
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-008, US-011, US-012
+**Impact Scope**: Gameplay, Assets, Docs, UX
+
+### Changes
+- Added the approved Scenario AI empty x-ray suitcase source candidate.
+- Added a deterministic suitcase extraction script that converts the pure-black source into a transparent runtime PNG.
+- Promoted the suitcase runtime asset into `app/assets/images/ui/`.
+- Replaced the Canvas suitcase body with the runtime suitcase sprite while keeping Canvas fallback behavior.
+- Added suitcase entry animation from the scanner tunnel into the inspection position.
+- Delayed item visibility and player taps until the suitcase reaches the inspection position.
+
+### Implementation Details
+- File: `tools/extract_xray_suitcase_asset.py`
+- File: `docs/assets/asset_candidates/ui_suitcase_xray_empty_scenario_candidate_01.png`
+- File: `app/assets/images/ui/ui_suitcase_xray_empty.png`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/pubspec.yaml`
+- File: `docs/08_asset_pipeline.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: The approved suitcase asset provides realistic x-ray material and avoids code-drawn suitcase art that looked less production-ready.
+- Technical decision: Keep Codex responsible for extraction, alpha cleanup, loading, and animation only; use Scenario/Gemini for the visual suitcase asset.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `python tools/extract_xray_suitcase_asset.py`
+- [x] `python -m py_compile tools/extract_xray_suitcase_asset.py`
+- [x] `flutter test`
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- Emulator review is needed to tune suitcase size, item placement, and animation timing.
+- No ads or monetization behavior changed.
+
+---
+
+## [2026-06-14 10:40] - Integrate Scenario gameplay background
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-008, US-011, US-012
+**Impact Scope**: Gameplay, Assets, Docs, UX
+
+### Changes
+- Added the approved Scenario AI/Gemini gameplay scanner background candidate.
+- Promoted the gameplay scanner background into the app runtime background folder.
+- Updated Flame gameplay rendering to draw the background image behind the scanner overlay.
+- Reduced scanner overlay opacity when the runtime background is available so the illustrated scanner art remains visible.
+- Documented the gameplay background source/runtime paths in the asset pipeline and progress tracking.
+
+### Implementation Details
+- File: `docs/assets/asset_candidates/bg_gameplay_scanner_scenario_candidate_01.png`
+- File: `app/assets/images/backgrounds/bg_gameplay_scanner.png`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/pubspec.yaml`
+- File: `docs/08_asset_pipeline.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: The approved Scenario AI output matches the anime airport scanner direction and gives gameplay a stronger production-quality background.
+- Technical decision: Load the background through Flame's image cache with a fallback to the existing Canvas background if the asset is unavailable.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test`
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- Physical-device/emulator review is needed to tune scanner overlay opacity and HUD readability over the new background.
+- No ads or monetization behavior changed.
+
+---
+
 ## [2026-06-14 10:24] - Integrate Gemini x-ray item sprites
 
 **Owner**: AI Assistant
