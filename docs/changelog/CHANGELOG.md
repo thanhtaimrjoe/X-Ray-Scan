@@ -5,6 +5,73 @@
 
 ---
 
+## [2026-06-14 15:00] - Full alignment of Level Map Screen with Approved Design
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-004, US-005
+**Impact Scope**: Level Map, UX, Assets
+
+### Changes
+- Replaced the background image asset `bg_level_map.png` with a clean, full-screen spacious airport departures hall sunset backdrop that has no baked-in dark container panels or borders, letting the winding neon level route sit directly on top of the physical terminal floor.
+- Upgraded the top currency bar to a stacked two-row layout matching the approved design, where currency category labels ("Coins", "Gems") sit on top, and icons + values render below in a Row.
+- Enhanced the winding path route painting with a magnificent quad-layered glowing neon spline effect (outer glow, inner glow, solid bright core, and a white hot plasma center core).
+- Polished locked level circles with a dark badge, thin gray border, and an overlapping padlock badge in the bottom-right corner.
+- Redesigned the final Level 10 gate to draw a stylized custom metal detector archway sitting on an elliptical glowing neon cyan base ring.
+- Verified that all 38 tests continue to pass and compiled a fresh debug APK.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- File: `app/assets/images/backgrounds/bg_level_map.png`
+- File: `docs/assets/asset_candidates/bg_level_map_candidate_02.png`
+- Reason: Achieve 100% fidelity alignment with the approved design reference and eliminate baked-in card visuals in the level map screen backdrop.
+- Technical decision: Minimize complex procedural layout generation or python drawing scripts; leverage pre-baked clean high-fidelity AI-generated backdrops and lightweight native Flutter Container stacks for stylized 3D gates and locked badges.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test` (all 38 tests passed successfully)
+- [x] `flutter analyze` (zero issues or static warnings)
+
+### Notes
+- Built app-debug.apk and saved candidates for historical record.
+
+## [2026-06-14 14:45] - Premium Level Map Screen layout upgrade
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-004, US-005
+**Impact Scope**: Level Map, UX, Graphics
+
+### Changes
+- Upgraded `LevelMapScreen` to render the level path and level nodes directly on top of the full-screen airport background image, completely removing the central glass card container to match the approved design.
+- Replaced the rigid straight line path painter with a mathematically smooth `CatmullRomSpline` curve passing perfectly through the centers of all level nodes.
+- Refactored level node coordinate alignments to match the exact visual landmarks of the background conveyor belt and terminal features.
+- Upgraded the top currency bar with thin vertical dividers, clean labels ("Coins: ", "Gems: "), and formatted coin counts using thousand-comma separations.
+- Redesigned the final node (Level 10) to draw a highly stylized custom security metal detector gate scanner instead of a generic circular button.
+- Upgraded locked nodes with a beautiful dark overlapping lock badge in the bottom-right corner.
+- Redesigned the bottom level details panel: left-aligned the "Best stars" row directly under the details section, and re-arranged the PLAY, Database, and Back buttons to use a compact, wider side-by-side action row below the primary play button.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- Reason: Achieve parity with the premium visual fidelity of the approved design, where the path curves elegantly over the full-screen airport lobby background without visual clutter or containers.
+- Technical decision: Shift coordinates to a unified static constant `levelPositions` list inside `LevelMapScreen` and feed it into `_LevelRoutePainter` and `_MapNode` to avoid duplicate position logic. Use Flutter's native `CatmullRomSpline` class for perfect mathematical curve interpolation.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test` (all 38 tests passed)
+- [x] `flutter analyze` (no issues found)
+
+### Notes
+- None.
+
+---
+
 ## [2026-06-14 14:30] - Remove procedural scanner container and sweep laser line
 
 **Owner**: AI Assistant

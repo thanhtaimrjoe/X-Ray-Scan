@@ -181,9 +181,9 @@ Current main menu background:
 
 Current level map background:
 
-- Source candidate: `docs/assets/asset_candidates/bg_level_map_candidate_01.png`
+- Source candidate: `docs/assets/asset_candidates/bg_level_map_candidate_02.png`
 - Runtime asset: `app/assets/images/backgrounds/bg_level_map.png`
-- Generator workflow: Image generation using the approved level map composition reference, capturing the warm golden hour sunset glow over the departures board.
+- Generator workflow: Image generation of a clean, full-screen spacious airport terminal departures hall during evening sunset, completely free of any baked-in cards or route lines.
 
 Current suitcase asset:
 

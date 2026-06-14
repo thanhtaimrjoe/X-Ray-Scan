@@ -118,7 +118,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Result background runtime asset: `app/assets/images/backgrounds/bg_result_checkpoint.png`
 - Main Menu background candidate: `docs/assets/asset_candidates/bg_main_menu_candidate_01.png`
 - Main Menu background runtime asset: `app/assets/images/backgrounds/bg_main_menu.png`
-- Level Map background candidate: `docs/assets/asset_candidates/bg_level_map_candidate_01.png`
+- Level Map background candidate: `docs/assets/asset_candidates/bg_level_map_candidate_02.png`
 - Level Map background runtime asset: `app/assets/images/backgrounds/bg_level_map.png`
 - Suitcase candidate: `docs/assets/asset_candidates/ui_suitcase_xray_empty_scenario_candidate_01.png`
 - Suitcase extraction script: `tools/extract_xray_suitcase_asset.py`

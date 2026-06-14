@@ -829,6 +829,19 @@ class MainMenuScreen extends StatelessWidget {
 class LevelMapScreen extends StatelessWidget {
   static const _levelMapBackground = 'assets/images/backgrounds/bg_level_map.png';
 
+  static const List<Alignment> levelPositions = [
+    Alignment(-0.68, -0.80),
+    Alignment(-0.08, -0.78),
+    Alignment(0.52, -0.70),
+    Alignment(0.66, -0.38),
+    Alignment(0.35, -0.15),
+    Alignment(-0.12, 0.04),
+    Alignment(-0.66, 0.18),
+    Alignment(-0.46, 0.48),
+    Alignment(0.02, 0.62),
+    Alignment(0.60, 0.74),
+  ];
+
   const LevelMapScreen({
     required this.progress,
     required this.selectedLevel,
@@ -878,8 +891,8 @@ class LevelMapScreen extends StatelessWidget {
                             ),
                             Text(
                               'International Terminal',
-                              maxLines: 2,
-                              overflow: TextOverflow.visible,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
                                     color: _XrayStyle.text,
@@ -890,10 +903,19 @@ class LevelMapScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      _TopCurrency(icon: Icons.monetization_on, value: coins),
-                      const SizedBox(width: 12),
-                      _TopCurrency(icon: Icons.diamond_rounded, value: gems),
-                      const SizedBox(width: 10),
+                      const _VerticalDivider(),
+                      _TopCurrency(
+                        icon: Icons.monetization_on,
+                        value: coins,
+                        label: 'Coins',
+                      ),
+                      const _VerticalDivider(),
+                      _TopCurrency(
+                        icon: Icons.diamond_rounded,
+                        value: gems,
+                        label: 'Gems',
+                      ),
+                      const _VerticalDivider(),
                       _IconPanelButton(
                         icon: Icons.settings_rounded,
                         onPressed: () {},
@@ -902,10 +924,10 @@ class LevelMapScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 Expanded(
-                  child: _GlassPanel(
-                    padding: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         return Stack(
@@ -915,7 +937,9 @@ class LevelMapScreen extends StatelessWidget {
                                 constraints.maxWidth,
                                 constraints.maxHeight,
                               ),
-                              painter: _LevelRoutePainter(),
+                              painter: _LevelRoutePainter(
+                                alignments: levelPositions,
+                              ),
                             ),
                             for (
                               var level = 1;
@@ -965,15 +989,36 @@ class LevelMapScreen extends StatelessWidget {
                                   ),
                             ),
                             const SizedBox(height: 8),
-                            _StarRow(
-                              stars: progress.bestStarsFor(selectedLevel),
+                            Text(
+                              'Best stars',
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(color: _XrayStyle.muted),
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                for (var i = 1; i <= 3; i++)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 4),
+                                    child: Icon(
+                                      i <= progress.bestStarsFor(selectedLevel)
+                                          ? Icons.star_rounded
+                                          : Icons.star_outline_rounded,
+                                      color: i <= progress.bestStarsFor(selectedLevel)
+                                          ? _XrayStyle.gold
+                                          : Colors.white.withValues(alpha: 0.18),
+                                      size: 28,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 12),
                       SizedBox(
-                        width: 144,
+                        width: 172,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -981,17 +1026,25 @@ class LevelMapScreen extends StatelessWidget {
                               onPressed: onPlay,
                               label: 'PLAY',
                             ),
-                            const SizedBox(height: 10),
-                            _XrayActionButton.secondary(
-                              onPressed: onOpenDatabase,
-                              label: 'Database',
-                              compact: true,
-                            ),
                             const SizedBox(height: 8),
-                            _XrayActionButton.secondary(
-                              onPressed: onBack,
-                              label: 'Back',
-                              compact: true,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _XrayActionButton.secondary(
+                                    onPressed: onOpenDatabase,
+                                    label: 'Database',
+                                    compact: true,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: _XrayActionButton.secondary(
+                                    onPressed: onBack,
+                                    label: 'Back',
+                                    compact: true,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -1008,18 +1061,10 @@ class LevelMapScreen extends StatelessWidget {
   }
 
   Alignment _mapNodePosition(int level) {
-    return switch (level) {
-      1 => const Alignment(-0.76, -0.78),
-      2 => const Alignment(-0.18, -0.65),
-      3 => const Alignment(0.5, -0.5),
-      4 => const Alignment(0.64, -0.16),
-      5 => const Alignment(0.15, 0.04),
-      6 => const Alignment(-0.28, 0.18),
-      7 => const Alignment(-0.72, 0.34),
-      8 => const Alignment(-0.48, 0.62),
-      9 => const Alignment(-0.02, 0.78),
-      _ => const Alignment(0.62, 0.68),
-    };
+    if (level < 1 || level > levelPositions.length) {
+      return Alignment.center;
+    }
+    return levelPositions[level - 1];
   }
 
   String _levelTitle(int level) {
@@ -1035,6 +1080,20 @@ class LevelMapScreen extends StatelessWidget {
       9 => 'Speed Check',
       _ => 'Final Security Gate',
     };
+  }
+}
+
+class _VerticalDivider extends StatelessWidget {
+  const _VerticalDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 22,
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      color: Colors.white.withValues(alpha: 0.15),
+    );
   }
 }
 
@@ -1087,32 +1146,205 @@ class _ScannerHero extends StatelessWidget {
 }
 
 class _TopCurrency extends StatelessWidget {
-  const _TopCurrency({required this.icon, required this.value});
+  const _TopCurrency({
+    required this.icon,
+    required this.value,
+    this.label,
+  });
 
   final IconData icon;
   final int value;
+  final String? label;
+
+  String _formatNumber(int val) {
+    final str = val.toString();
+    final regExp = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    return str.replaceAllMapped(regExp, (Match m) => '${m[1]},');
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final displayValue = icon == Icons.monetization_on
+        ? _formatNumber(value)
+        : '$value';
+        
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          color: icon == Icons.diamond_rounded
-              ? _XrayStyle.cyan
-              : _XrayStyle.gold,
-          size: 20,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          '$value',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: _XrayStyle.text,
-            fontWeight: FontWeight.w900,
+        if (label != null)
+          Text(
+            label!,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: _XrayStyle.muted,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              height: 1.1,
+            ),
           ),
+        const SizedBox(height: 2),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: icon == Icons.diamond_rounded
+                  ? _XrayStyle.cyan
+                  : _XrayStyle.gold,
+              size: 16,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              displayValue,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: _XrayStyle.text,
+                fontWeight: FontWeight.w900,
+                fontSize: 14,
+                height: 1.1,
+              ),
+            ),
+          ],
         ),
       ],
+    );
+  }
+}
+
+class _SecurityGateNode extends StatelessWidget {
+  const _SecurityGateNode({
+    required this.isUnlocked,
+    required this.isSelected,
+    required this.isCompleted,
+  });
+
+  final bool isUnlocked;
+  final bool isSelected;
+  final bool isCompleted;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isUnlocked ? _XrayStyle.cyan : Colors.blueGrey;
+    return Center(
+      child: SizedBox(
+        width: 58,
+        height: 64,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Glowing neon elliptical base platform at the bottom
+            Positioned(
+              bottom: 1,
+              left: 2,
+              right: 2,
+              height: 14,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isUnlocked
+                      ? _XrayStyle.cyan.withValues(alpha: 0.24)
+                      : const Color(0xFF26333D).withValues(alpha: 0.3),
+                  border: Border.all(
+                    color: isSelected
+                        ? Colors.white
+                        : (isCompleted ? _XrayStyle.cyan : color.withValues(alpha: 0.6)),
+                    width: isSelected ? 2.2 : 1.6,
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.elliptical(27, 7)),
+                  boxShadow: [
+                    if (isSelected || isUnlocked)
+                      BoxShadow(
+                        color: color.withValues(alpha: isSelected ? 0.8 : 0.3),
+                        blurRadius: isSelected ? 12 : 6,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            // Left Pillar of the metal detector
+            Positioned(
+              left: 12,
+              top: 4,
+              bottom: 8,
+              width: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.88),
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
+            ),
+            // Right Pillar of the metal detector
+            Positioned(
+              right: 12,
+              top: 4,
+              bottom: 8,
+              width: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.88),
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
+            ),
+            // Top Arch Bar of the metal detector
+            Positioned(
+              left: 12,
+              right: 12,
+              top: 0,
+              height: 7,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
+                ),
+                child: isUnlocked
+                    ? Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: isCompleted ? _XrayStyle.success : _XrayStyle.danger,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+            ),
+            // Middle Content: Lock badge or Number or Check hanging inside the arch
+            Align(
+              alignment: const Alignment(0, -0.1),
+              child: isCompleted
+                  ? const Icon(
+                      Icons.check_rounded,
+                      color: _XrayStyle.cyan,
+                      size: 20,
+                    )
+                  : (!isUnlocked
+                      ? Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF1E293B),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.lock_rounded,
+                            color: Colors.white70,
+                            size: 11,
+                          ),
+                        )
+                      : Text(
+                          '10',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: _XrayStyle.text,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                        )),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -1154,62 +1386,86 @@ class _MapNode extends StatelessWidget {
                 _MiniStars(stars: stars)
               else
                 const SizedBox(height: 18),
-              Container(
-                width: isFinal ? 62 : 52,
-                height: isFinal ? 62 : 52,
-                decoration: BoxDecoration(
-                  shape: isFinal ? BoxShape.rectangle : BoxShape.circle,
-                  borderRadius: isFinal ? BorderRadius.circular(8) : null,
-                  color: isUnlocked
-                      ? const Color(0xFF0D4762)
-                      : const Color(0xFF26333D),
-                  border: Border.all(
-                    color: isSelected
-                        ? _XrayStyle.text
-                        : color.withValues(alpha: 0.7),
-                    width: isSelected ? 3 : 2,
-                  ),
-                  boxShadow: [
-                    if (isSelected || isUnlocked)
-                      BoxShadow(
-                        color: color.withValues(alpha: isSelected ? 0.8 : 0.38),
-                        blurRadius: isSelected ? 24 : 14,
-                      ),
-                  ],
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (isCompleted)
-                      const Icon(
-                        Icons.check_rounded,
-                        color: _XrayStyle.success,
-                        size: 34,
-                      )
-                    else
-                      Text(
-                        '$level',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              color: isUnlocked
-                                  ? _XrayStyle.text
-                                  : Colors.white54,
-                              fontWeight: FontWeight.w900,
-                            ),
-                      ),
-                    if (!isUnlocked)
-                      const Positioned(
-                        right: 4,
-                        bottom: 3,
-                        child: Icon(
-                          Icons.lock_rounded,
-                          color: Colors.white70,
-                          size: 18,
+              if (isFinal)
+                _SecurityGateNode(
+                  isUnlocked: isUnlocked,
+                  isSelected: isSelected,
+                  isCompleted: isCompleted,
+                )
+              else
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isUnlocked
+                        ? const Color(0xFF0D4762).withValues(alpha: 0.72)
+                        : const Color(0xFF26333D).withValues(alpha: 0.72),
+                    border: Border.all(
+                      color: isSelected
+                          ? Colors.white
+                          : (isCompleted ? _XrayStyle.cyan : color.withValues(alpha: 0.7)),
+                      width: isSelected ? 3 : 2,
+                    ),
+                    boxShadow: [
+                      if (isSelected || isUnlocked)
+                        BoxShadow(
+                          color: color.withValues(alpha: isSelected ? 0.8 : 0.38),
+                          blurRadius: isSelected ? 24 : 14,
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      if (isCompleted)
+                        const Icon(
+                          Icons.check_rounded,
+                          color: _XrayStyle.cyan,
+                          size: 34,
+                        )
+                      else
+                        Text(
+                          '$level',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
+                                color: isUnlocked
+                                    ? _XrayStyle.text
+                                    : Colors.white54,
+                                fontWeight: FontWeight.w900,
+                              ),
+                        ),
+                      if (!isUnlocked)
+                        Positioned(
+                          right: -3,
+                          bottom: -3,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1E293B),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.blueGrey.withValues(alpha: 0.6),
+                                width: 1.5,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.4),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.lock_rounded,
+                              color: Colors.white70,
+                              size: 11,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -3024,44 +3280,71 @@ class _ScannerGridPainter extends CustomPainter {
 }
 
 class _LevelRoutePainter extends CustomPainter {
+  _LevelRoutePainter({required this.alignments});
+
+  final List<Alignment> alignments;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final points = [
-      const Alignment(-0.76, -0.78),
-      const Alignment(-0.18, -0.65),
-      const Alignment(0.5, -0.5),
-      const Alignment(0.64, -0.16),
-      const Alignment(0.15, 0.04),
-      const Alignment(-0.28, 0.18),
-      const Alignment(-0.72, 0.34),
-      const Alignment(-0.48, 0.62),
-      const Alignment(-0.02, 0.78),
-      const Alignment(0.62, 0.68),
-    ].map((alignment) => alignment.alongSize(size)).toList();
+    final points = alignments.map((alignment) => alignment.alongSize(size)).toList();
+    if (points.isEmpty) return;
 
-    final path = Path()..moveTo(points.first.dx, points.first.dy);
-    for (final point in points.skip(1)) {
-      path.lineTo(point.dx, point.dy);
+    final path = Path();
+    if (points.length > 1) {
+      // Use CatmullRomSpline for a beautifully smooth curve passing exactly through the level node centers!
+      final controlPoints = [points.first, ...points, points.last];
+      final spline = CatmullRomSpline(controlPoints);
+      final start = spline.transform(0);
+      path.moveTo(start.dx, start.dy);
+      
+      const samples = 80;
+      for (var i = 1; i <= samples; i++) {
+        final p = spline.transform(i / samples);
+        path.lineTo(p.dx, p.dy);
+      }
+    } else {
+      path.moveTo(points.first.dx, points.first.dy);
     }
-    final glow = Paint()
+
+    final glowOuter = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 16
+      ..strokeWidth = 26
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.18)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
-    canvas.drawPath(path, glow);
-    final line = Paint()
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.12)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
+    canvas.drawPath(path, glowOuter);
+
+    final glowInner = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 14
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.38)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+    canvas.drawPath(path, glowInner);
+
+    final solidLine = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 7
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.78);
-    canvas.drawPath(path, line);
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.85);
+    canvas.drawPath(path, solidLine);
+
+    final whiteCore = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..color = Colors.white.withValues(alpha: 0.95);
+    canvas.drawPath(path, whiteCore);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _LevelRoutePainter oldDelegate) {
+    return oldDelegate.alignments != alignments;
+  }
 }
 
 class _Hud extends StatelessWidget {
