@@ -827,7 +827,8 @@ class MainMenuScreen extends StatelessWidget {
 }
 
 class LevelMapScreen extends StatelessWidget {
-  static const _levelMapBackground = 'assets/images/backgrounds/bg_level_map.png';
+  static const _levelMapBackground =
+      'assets/images/backgrounds/bg_level_map.png';
 
   static const List<Alignment> levelPositions = [
     Alignment(-0.68, -0.58),
@@ -874,19 +875,28 @@ class LevelMapScreen extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final size = Size(constraints.maxWidth, constraints.maxHeight);
-            final points = levelPositions.map((alignment) => alignment.alongSize(size)).toList();
+            final mapRect = Rect.fromLTRB(
+              0,
+              topPadding + 100,
+              size.width,
+              size.height - bottomPadding - 188,
+            );
+            final points = levelPositions
+                .map(
+                  (alignment) =>
+                      mapRect.topLeft + alignment.alongSize(mapRect.size),
+                )
+                .toList();
 
             return Stack(
               children: [
                 // 1. Full-screen custom paint for the neon line
                 Positioned.fill(
                   child: CustomPaint(
-                    painter: _LevelRoutePainter(
-                      points: points,
-                    ),
+                    painter: _LevelRoutePainter(points: points),
                   ),
                 ),
-                
+
                 // 2. Full-screen level nodes
                 for (
                   var level = 1;
@@ -1007,12 +1017,21 @@ class LevelMapScreen extends StatelessWidget {
                                     Padding(
                                       padding: const EdgeInsets.only(right: 4),
                                       child: Icon(
-                                        i <= progress.bestStarsFor(selectedLevel)
+                                        i <=
+                                                progress.bestStarsFor(
+                                                  selectedLevel,
+                                                )
                                             ? Icons.star_rounded
                                             : Icons.star_outline_rounded,
-                                        color: i <= progress.bestStarsFor(selectedLevel)
+                                        color:
+                                            i <=
+                                                progress.bestStarsFor(
+                                                  selectedLevel,
+                                                )
                                             ? _XrayStyle.gold
-                                            : Colors.white.withValues(alpha: 0.18),
+                                            : Colors.white.withValues(
+                                                alpha: 0.18,
+                                              ),
                                         size: 28,
                                       ),
                                     ),
@@ -1146,11 +1165,7 @@ class _ScannerHero extends StatelessWidget {
 }
 
 class _TopCurrency extends StatelessWidget {
-  const _TopCurrency({
-    required this.icon,
-    required this.value,
-    this.label,
-  });
+  const _TopCurrency({required this.icon, required this.value, this.label});
 
   final IconData icon;
   final int value;
@@ -1167,7 +1182,7 @@ class _TopCurrency extends StatelessWidget {
     final displayValue = icon == Icons.monetization_on
         ? _formatNumber(value)
         : '$value';
-        
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -1245,10 +1260,14 @@ class _SecurityGateNode extends StatelessWidget {
                   border: Border.all(
                     color: isSelected
                         ? Colors.white
-                        : (isCompleted ? _XrayStyle.cyan : color.withValues(alpha: 0.6)),
+                        : (isCompleted
+                              ? _XrayStyle.cyan
+                              : color.withValues(alpha: 0.6)),
                     width: isSelected ? 3.0 : 1.8,
                   ),
-                  borderRadius: const BorderRadius.all(Radius.elliptical(36, 10)),
+                  borderRadius: const BorderRadius.all(
+                    Radius.elliptical(36, 10),
+                  ),
                   boxShadow: [
                     if (isSelected || isUnlocked)
                       BoxShadow(
@@ -1308,7 +1327,9 @@ class _SecurityGateNode extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(3)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(3),
+                  ),
                   boxShadow: [
                     if (isUnlocked)
                       BoxShadow(
@@ -1324,7 +1345,9 @@ class _SecurityGateNode extends StatelessWidget {
                           width: 5,
                           height: 5,
                           decoration: BoxDecoration(
-                            color: isCompleted ? _XrayStyle.success : _XrayStyle.danger,
+                            color: isCompleted
+                                ? _XrayStyle.success
+                                : _XrayStyle.danger,
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -1342,33 +1365,34 @@ class _SecurityGateNode extends StatelessWidget {
                       size: 24,
                     )
                   : (!isUnlocked
-                      ? Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF151D24),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 4,
-                                offset: Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.lock_rounded,
-                            color: Color(0xFF9EABB8),
-                            size: 11,
-                          ),
-                        )
-                      : Text(
-                          '10',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: _XrayStyle.text,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 13,
-                              ),
-                        )),
+                        ? Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF151D24),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.lock_rounded,
+                              color: Color(0xFF9EABB8),
+                              size: 11,
+                            ),
+                          )
+                        : Text(
+                            '10',
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
+                                  color: _XrayStyle.text,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 13,
+                                ),
+                          )),
             ),
           ],
         ),
@@ -1438,12 +1462,16 @@ class _MapNode extends StatelessWidget {
                     ],
                   ),
                   border: Border.all(
-                    color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.95),
+                    color: isSelected
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.95),
                     width: isSelected ? 3.2 : 2.2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: _XrayStyle.cyan.withValues(alpha: isSelected ? 0.95 : 0.72),
+                      color: _XrayStyle.cyan.withValues(
+                        alpha: isSelected ? 0.95 : 0.72,
+                      ),
                       blurRadius: isSelected ? 24 : 14,
                       spreadRadius: isSelected ? 2 : 0.5,
                     ),
@@ -1474,16 +1502,15 @@ class _MapNode extends StatelessWidget {
               Container(
                 width: 54,
                 height: 54,
-                padding: const EdgeInsets.all(2.5), // Beautiful concentric thickness
+                padding: const EdgeInsets.all(
+                  2.5,
+                ), // Beautiful concentric thickness
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      Colors.white,
-                      Color(0xFF00F2FE),
-                    ],
+                    colors: [Colors.white, Color(0xFF00F2FE)],
                   ),
                   border: Border.all(
                     color: Colors.white,
@@ -1509,17 +1536,18 @@ class _MapNode extends StatelessWidget {
                   child: Center(
                     child: Text(
                       '$level',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 22,
-                        shadows: [
-                          const Shadow(
-                            color: _XrayStyle.cyan,
-                            blurRadius: 6,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 22,
+                            shadows: [
+                              const Shadow(
+                                color: _XrayStyle.cyan,
+                                blurRadius: 6,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
                     ),
                   ),
                 ),
@@ -1538,10 +1566,7 @@ class _MapNode extends StatelessWidget {
                       gradient: const LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF3B4A5A),
-                          Color(0xFF1E2833),
-                        ],
+                        colors: [Color(0xFF3B4A5A), Color(0xFF1E2833)],
                       ),
                       border: Border.all(
                         color: Colors.blueGrey.withValues(alpha: 0.42),
@@ -1558,11 +1583,12 @@ class _MapNode extends StatelessWidget {
                     child: Center(
                       child: Text(
                         '$level',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.22),
-                          fontWeight: FontWeight.w900,
-                          fontSize: 20,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: Colors.white.withValues(alpha: 0.22),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 20,
+                            ),
                       ),
                     ),
                   ),
@@ -3439,7 +3465,7 @@ class _LevelRoutePainter extends CustomPainter {
 
     // Paint a magnificent, ultra-premium 3D neon glowing tube path using a vector stack.
     // This is 100% robust on all devices/engines (Skia, Impeller, iOS, Android) and avoids MaskFilter.blur crashes.
-    
+
     // 1. Ambient outer soft glows (increasing density, decreasing widths)
     final glow1 = Paint()
       ..style = PaintingStyle.stroke
@@ -3587,7 +3613,10 @@ class _Hud extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
                   child: Text(
                     'Level $levelNumber  |  ${_levelName(levelNumber)}  ($bagsCleared/$bagsToClear)',
                     style: titleStyle,
@@ -3634,7 +3663,10 @@ class _Hud extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 10,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -3661,7 +3693,10 @@ class _Hud extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 10,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -3701,7 +3736,10 @@ class _Hud extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 10,
+                    ),
                     child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -3710,8 +3748,12 @@ class _Hud extends StatelessWidget {
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 2),
                             child: Icon(
-                              isFilled ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                              color: isFilled ? const Color(0xFFEF4444) : Colors.white24,
+                              isFilled
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              color: isFilled
+                                  ? const Color(0xFFEF4444)
+                                  : Colors.white24,
                               size: 16,
                             ),
                           );

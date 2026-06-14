@@ -5,6 +5,37 @@
 
 ---
 
+## [2026-06-14 16:59] - Keep level map nodes clear of bottom card
+
+**Owner**: AI Assistant
+**Type**: Bugfix
+**Related US**: US-004, US-005
+**Impact Scope**: Level Map, UX
+
+### Changes
+- Reserved a dedicated level-map viewport between the top currency bar and bottom action card.
+- Recomputed neon route and node positions inside that viewport so selectable nodes do not sit underneath the bottom card.
+- Removed trailing whitespace reported by `git diff --check`.
+
+### Implementation Details
+- File: `app/lib/main.dart`
+- Reason: Review evidence showed the selected level node could be partially covered by the bottom action card.
+- Technical decision: Keep the existing approved background and node styling, but constrain route geometry to the visible interaction area.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test` (38 tests)
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- This is a layout-only fix and does not change level progression or ad behavior.
+
+---
+
 ## [2026-06-14 15:30] - High-fidelity 3D Glassmorphic Nodes and Neon Vector Route Glow
 
 **Owner**: AI Assistant
