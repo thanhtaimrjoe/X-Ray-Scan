@@ -622,38 +622,41 @@ class XrayInspectorGame extends FlameGame {
   }
 
   void _paintScanner(Canvas canvas) {
-    final scanner = _scannerRect;
     final hasBackground = _gameplayBackground != null;
+    if (hasBackground) {
+      // Completely remove the procedural x-ray scanning container overlay
+      // and the sweeping laser scan bar to allow the high-fidelity pre-baked
+      // 3D background scan tunnel to shine clean and premium.
+      return;
+    }
+
+    final scanner = _scannerRect;
     final outer = RRect.fromRectAndRadius(scanner, const Radius.circular(18));
     final inner = RRect.fromRectAndRadius(
       scanner.deflate(12),
       const Radius.circular(14),
     );
 
-    if (!hasBackground) {
-      canvas.drawRRect(
-        outer.inflate(8),
-        Paint()
-          ..color = _cyan.withValues(alpha: 0.12)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18),
-      );
-    }
+    canvas.drawRRect(
+      outer.inflate(8),
+      Paint()
+        ..color = _cyan.withValues(alpha: 0.12)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18),
+    );
     canvas.drawRRect(
       outer,
       Paint()
         ..color = const Color(
           0xFF03151C,
-        ).withValues(alpha: hasBackground ? 0.58 : 0.92),
+        ).withValues(alpha: 0.92),
     );
-    if (!hasBackground) {
-      canvas.drawRRect(
-        outer,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.5
-          ..color = _cyan.withValues(alpha: 0.48),
-      );
-    }
+    canvas.drawRRect(
+      outer,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5
+        ..color = _cyan.withValues(alpha: 0.48),
+    );
     canvas.drawRRect(
       inner,
       Paint()
@@ -714,48 +717,46 @@ class XrayInspectorGame extends FlameGame {
       );
     }
 
-    if (!hasBackground) {
-      final cornerPaint = Paint()
-        ..color = _cyanSoft.withValues(alpha: 0.72)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1);
-      const corner = 34.0;
-      final guide = scanner.deflate(14);
-      for (final point in [
-        guide.topLeft,
-        guide.topRight,
-        guide.bottomLeft,
-        guide.bottomRight,
-      ]) {
-        final sx = point.dx < guide.center.dx ? 1.0 : -1.0;
-        final sy = point.dy < guide.center.dy ? 1.0 : -1.0;
-        canvas.drawLine(point, point.translate(corner * sx, 0), cornerPaint);
-        canvas.drawLine(point, point.translate(0, corner * sy), cornerPaint);
-      }
-
-      final beltPaint = Paint()
-        ..color = Colors.black.withValues(alpha: 0.28)
-        ..style = PaintingStyle.fill;
-      final belt = RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          scanner.left + 26,
-          scanner.bottom - 42,
-          scanner.width - 52,
-          24,
-        ),
-        const Radius.circular(10),
-      );
-      canvas.drawRRect(belt, beltPaint);
-      canvas.drawLine(
-        Offset(scanner.left + 38, scanner.bottom - 30),
-        Offset(scanner.right - 38, scanner.bottom - 30),
-        Paint()
-          ..color = _cyan.withValues(alpha: 0.28)
-          ..strokeWidth = 2,
-      );
+    final cornerPaint = Paint()
+      ..color = _cyanSoft.withValues(alpha: 0.72)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1);
+    const corner = 34.0;
+    final guide = scanner.deflate(14);
+    for (final point in [
+      guide.topLeft,
+      guide.topRight,
+      guide.bottomLeft,
+      guide.bottomRight,
+    ]) {
+      final sx = point.dx < guide.center.dx ? 1.0 : -1.0;
+      final sy = point.dy < guide.center.dy ? 1.0 : -1.0;
+      canvas.drawLine(point, point.translate(corner * sx, 0), cornerPaint);
+      canvas.drawLine(point, point.translate(0, corner * sy), cornerPaint);
     }
+
+    final beltPaint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.28)
+      ..style = PaintingStyle.fill;
+    final belt = RRect.fromRectAndRadius(
+      Rect.fromLTWH(
+        scanner.left + 26,
+        scanner.bottom - 42,
+        scanner.width - 52,
+        24,
+      ),
+      const Radius.circular(10),
+    );
+    canvas.drawRRect(belt, beltPaint);
+    canvas.drawLine(
+      Offset(scanner.left + 38, scanner.bottom - 30),
+      Offset(scanner.right - 38, scanner.bottom - 30),
+      Paint()
+        ..color = _cyan.withValues(alpha: 0.28)
+        ..strokeWidth = 2,
+    );
   }
 
   void _paintBag(Canvas canvas) {

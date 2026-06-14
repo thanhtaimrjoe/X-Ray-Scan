@@ -5,6 +5,36 @@
 
 ---
 
+## [2026-06-14 14:30] - Remove procedural scanner container and sweep laser line
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-004, US-005
+**Impact Scope**: Gameplay, UX, Graphics
+
+### Changes
+- Refactored `_paintScanner` in `xray_inspector_game.dart` to completely bypass procedural drawing (the dark cyan glass container, scanner grid lines, and moving laser beam sweeps) when a high-fidelity gameplay background asset is active.
+- Preserved standard procedural drawing as a clean, risk-free canvas-level fallback in cases where the asset background fails to load or during test suites.
+- Cleaned up visual noise, allowing the high-fidelity AI-generated scanner archway conveyor belt artwork and premium translucent suitcase item sprites to stand out with perfect contrast.
+
+### Implementation Details
+- File: `app/lib/game/xray_inspector_game.dart`
+- Reason: Address user feedback to remove the large scan region and horizontal sweep scan lines entirely to avoid visual clutter and cartoonish contrast over premium background artwork.
+- Technical decision: Use early return in `_paintScanner` when `_gameplayBackground != null` to safely hide procedural overlays while maintaining the positioning logic that relies on `_scannerRect`.
+
+### Tests
+- [ ] Unit tests added/updated
+- [x] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test` (all 38 tests passed)
+- [x] `flutter analyze` (no issues found)
+
+### Notes
+- None.
+
+---
+
 ## [2026-06-14 14:15] - Fit scanner to suitcase, equalize HUD heights, and fix pause-resume state reset
 
 **Owner**: AI Assistant
