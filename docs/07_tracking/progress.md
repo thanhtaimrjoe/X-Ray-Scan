@@ -8,7 +8,7 @@ This file tracks the current project state so future AI assistants and contribut
 
 **Phase**: X-Ray Scan playable MVP
 **Status**: In progress
-**Last updated**: 2026-06-13
+**Last updated**: 2026-06-14
 
 ## Completed
 
@@ -64,6 +64,8 @@ This file tracks the current project state so future AI assistants and contribut
 - Added item sheet batch 01 as a reference candidate under `docs/assets/asset_candidates/`.
 - Decided to self-author gameplay item assets as vector/Canvas/SVG-style sources and reserve Gemini primarily for backgrounds.
 - Created the first Codex-authored vector item source set and preview sheet for all 11 MVP objects.
+- Approved a Gemini 3.1 pure-black x-ray item sheet as the runtime sprite source.
+- Added deterministic extraction for 11 transparent item PNGs and integrated them into gameplay and Item Database rendering with Canvas fallback.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -95,9 +97,13 @@ This file tracks the current project state so future AI assistants and contribut
   - App asset: `app/assets/images/xray_asset_sheet_approved.png`
   - Asset pipeline: `docs/08_asset_pipeline.md`
   - Historical item prompt batch 01: `docs/assets/item_asset_prompt_batch_01.md`
-  - Reference item sheet batch 01: `docs/assets/asset_candidates/item_sheet_batch_01.png`
-  - Vector item generator: `tools/generate_item_vector_assets.py`
-  - Vector item preview sheet: `docs/assets/vector_items/item_vector_preview_sheet.png`
+- Reference item sheet batch 01: `docs/assets/asset_candidates/item_sheet_batch_01.png`
+- Vector item generator: `tools/generate_item_vector_assets.py`
+- Vector item preview sheet: `docs/assets/vector_items/item_vector_preview_sheet.png`
+- Approved runtime item source sheet: `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_approved.png`
+- Runtime item extraction script: `tools/extract_xray_item_sprites.py`
+- Runtime item cut preview: `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_cut_preview.png`
+- Integrated runtime item folders: `app/assets/images/items/danger/` and `app/assets/images/items/safe/`
 - Core gameplay files:
   - `app/lib/main.dart`
   - `app/lib/game/xray_inspector_game.dart`
@@ -120,14 +126,14 @@ This file tracks the current project state so future AI assistants and contribut
 
 ## Next Steps
 
-1. Review and tune the Codex-authored vector item preview sheet.
-2. Wire approved item source shapes into Flame while keeping fallback behavior.
+1. Run physical-device review for the integrated PNG item sprites inside gameplay and Item Database.
+2. Tune runtime sprite scale/contrast if the items feel too large, too small, or too bright on device.
 3. Generate and review Gemini background candidates for gameplay, main menu, level map, and result screens.
 4. Validate interstitial and rewarded test-ad flows on a physical device or emulator.
 
 ## Known Gaps
 
-- X-ray objects need production-ready in-game vector/Canvas/SVG-style assets.
+- X-ray objects now have first-pass runtime PNG sprites, but still need physical-device readability tuning.
 - Gameplay can still benefit from additional tuning passes after more physical-device playtests.
 - The game now has a 10-level journey, but it still needs tuning passes to validate pacing and clarity on physical devices.
 - Interstitial and rewarded ads are integrated with Google test IDs, but still need physical-device flow validation.

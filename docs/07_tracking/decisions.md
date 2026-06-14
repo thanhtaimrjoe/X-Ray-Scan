@@ -382,7 +382,7 @@ The game now has a playable core loop and approved screen direction, but visual 
 ## DEC-016 - Self-author gameplay item assets
 
 **Date**: 2026-06-14
-**Status**: Accepted
+**Status**: Superseded by DEC-017
 **Owner**: Tai, AI Assistant
 **Scope**: Assets, Gameplay, Technical, Art Direction
 
@@ -402,3 +402,29 @@ The first Gemini item sheet had a baked checkerboard background. Masking it intr
 - Item assets should be authored in editable source form before optional PNG export.
 - Existing Gemini item sheet candidates are reference-only and should not be promoted into runtime assets.
 - Future item work should prioritize a reusable item rendering/export pipeline over image repair.
+
+---
+
+## DEC-017 - Use Gemini black-background item sheets for runtime sprites
+
+**Date**: 2026-06-14
+**Status**: Accepted
+**Owner**: Tai, AI Assistant
+**Scope**: Assets, Gameplay, Technical, Art Direction
+
+### Decision
+
+Use Gemini 3.1 generated x-ray item sheets as the primary runtime item source when the sheet uses a pure solid black background, no checkerboard pattern, no grid lines, and enough spacing for deterministic object extraction.
+
+The approved source sheet is stored at `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_approved.png`, and transparent item PNGs are generated with `tools/extract_xray_item_sprites.py`.
+
+### Reason
+
+The Codex-authored vector pass was clean and editable, but it did not reach the semi-realistic x-ray material quality needed for the game. Gemini 3.1 produced more convincing item silhouettes and internal detail once the prompt avoided fake transparent checkerboards and requested a pure black background.
+
+### Consequences
+
+- Runtime gameplay item assets are PNG masters under `app/assets/images/items/danger/` and `app/assets/images/items/safe/`.
+- The extraction script must remain deterministic and regenerate all item sprites from the approved source sheet.
+- The Canvas/vector item rendering remains as a fallback if runtime images fail to load.
+- Future item regenerations should prefer pure black sheets over checkerboard or transparent-background prompts.

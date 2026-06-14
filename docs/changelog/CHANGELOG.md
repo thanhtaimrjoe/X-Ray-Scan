@@ -5,6 +5,62 @@
 
 ---
 
+## [2026-06-14 10:24] - Integrate Gemini x-ray item sprites
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-002, US-008, US-010
+**Impact Scope**: Gameplay, Assets, Docs, UX
+
+### Changes
+- Added the approved Gemini 3.1 pure-black x-ray item sheet as the runtime sprite source.
+- Added a deterministic extraction script that cuts 11 item sprites into transparent square PNGs.
+- Promoted the 5 danger and 6 safe item PNGs into `app/assets/images/items/...`.
+- Wired Flame gameplay rendering to preload and draw item PNG sprites with Canvas shape fallback.
+- Updated Item Database/profile icon rendering to use the same item sprite assets with fallback.
+- Updated the asset pipeline, decision log, and progress tracking for the new raster item workflow.
+
+### Implementation Details
+- File: `tools/extract_xray_item_sprites.py`
+- File: `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_approved.png`
+- File: `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_cut_preview.png`
+- File: `app/assets/images/items/danger/item_danger_knife.png`
+- File: `app/assets/images/items/danger/item_danger_scissors.png`
+- File: `app/assets/images/items/danger/item_danger_lighter.png`
+- File: `app/assets/images/items/danger/item_danger_razor.png`
+- File: `app/assets/images/items/danger/item_danger_battery_pack.png`
+- File: `app/assets/images/items/safe/item_safe_phone.png`
+- File: `app/assets/images/items/safe/item_safe_laptop.png`
+- File: `app/assets/images/items/safe/item_safe_bottle.png`
+- File: `app/assets/images/items/safe/item_safe_sandwich.png`
+- File: `app/assets/images/items/safe/item_safe_keys.png`
+- File: `app/assets/images/items/safe/item_safe_headphones.png`
+- File: `app/lib/game/xray_inspector_game.dart`
+- File: `app/lib/main.dart`
+- File: `app/pubspec.yaml`
+- File: `docs/08_asset_pipeline.md`
+- File: `docs/07_tracking/decisions.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: The vector-authored item pass was controllable but did not meet the desired x-ray material quality, while the pure-black Gemini sheet produced stronger game-ready item visuals.
+- Technical decision: Keep the approved black sheet as the source of truth and regenerate runtime transparent PNGs through script instead of manually repairing checkerboard or masked outputs.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `python tools/extract_xray_item_sprites.py`
+- [x] `python -m py_compile tools/extract_xray_item_sprites.py`
+- [x] `flutter test`
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- Physical-device review is still needed to tune sprite scale, contrast, and readability inside the scanner.
+- No ads or monetization behavior changed.
+
+---
+
 ## [2026-06-14 00:10] - Add vector item source set
 
 **Owner**: AI Assistant

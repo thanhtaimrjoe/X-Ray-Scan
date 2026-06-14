@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +96,7 @@ class XrayInspectorGame extends FlameGame {
   final Random _random;
   final XrayInspectorRules _rules = XrayInspectorRules();
   final List<XrayPulse> _pulses = [];
+  final Map<XrayObjectType, ui.Image> _itemSprites = {};
 
   XrayBag? _bag;
   double _elapsed = 0;
@@ -120,6 +122,7 @@ class XrayInspectorGame extends FlameGame {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    await _loadItemSprites();
     _spawnBag();
     onSnapshotChanged(snapshot);
   }
@@ -430,6 +433,32 @@ class XrayInspectorGame extends FlameGame {
     );
   }
 
+  Future<void> _loadItemSprites() async {
+    for (final type in XrayObjectType.values) {
+      try {
+        _itemSprites[type] = await images.load(_itemSpritePath(type));
+      } catch (_) {
+        // Keep the Canvas fallback available if an asset is missing.
+      }
+    }
+  }
+
+  String _itemSpritePath(XrayObjectType type) {
+    return switch (type) {
+      XrayObjectType.knife => 'items/danger/item_danger_knife.png',
+      XrayObjectType.scissors => 'items/danger/item_danger_scissors.png',
+      XrayObjectType.lighter => 'items/danger/item_danger_lighter.png',
+      XrayObjectType.razor => 'items/danger/item_danger_razor.png',
+      XrayObjectType.batteryPack => 'items/danger/item_danger_battery_pack.png',
+      XrayObjectType.phone => 'items/safe/item_safe_phone.png',
+      XrayObjectType.laptop => 'items/safe/item_safe_laptop.png',
+      XrayObjectType.bottle => 'items/safe/item_safe_bottle.png',
+      XrayObjectType.sandwich => 'items/safe/item_safe_sandwich.png',
+      XrayObjectType.keys => 'items/safe/item_safe_keys.png',
+      XrayObjectType.headphones => 'items/safe/item_safe_headphones.png',
+    };
+  }
+
   void _flashScreen(Color color, double duration) {
     _screenFlashColor = color;
     _screenFlash = duration;
@@ -690,8 +719,13 @@ class XrayInspectorGame extends FlameGame {
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.rotate(object.rotation);
-    canvas.scale(scale);
-    _drawObjectShape(canvas, object.type, fill, stroke);
+    final sprite = _itemSprites[object.type];
+    if (sprite != null) {
+      _drawObjectSprite(canvas, object, sprite, alpha, flash);
+    } else {
+      canvas.scale(scale);
+      _drawObjectShape(canvas, object.type, fill, stroke);
+    }
     canvas.restore();
 
     if (object.found) {
@@ -720,6 +754,40 @@ class XrayInspectorGame extends FlameGame {
           ..strokeCap = StrokeCap.round,
       );
     }
+  }
+
+  void _drawObjectSprite(
+    Canvas canvas,
+    XrayObjectInstance object,
+    ui.Image sprite,
+    double alpha,
+    double flash,
+  ) {
+    final side = _hitRadius(object) * 2.18;
+    final source = Rect.fromLTWH(
+      0,
+      0,
+      sprite.width.toDouble(),
+      sprite.height.toDouble(),
+    );
+    final destination = Rect.fromCenter(
+      center: Offset.zero,
+      width: side,
+      height: side,
+    );
+    final tint = Color.lerp(Colors.white, _danger, flash)!;
+    canvas.drawImageRect(
+      sprite,
+      source,
+      destination,
+      Paint()
+        ..isAntiAlias = true
+        ..filterQuality = FilterQuality.high
+        ..colorFilter = ColorFilter.mode(
+          tint.withValues(alpha: alpha),
+          BlendMode.modulate,
+        ),
+    );
   }
 
   void _drawObjectShape(

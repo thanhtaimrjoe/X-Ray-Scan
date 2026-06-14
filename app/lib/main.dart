@@ -2115,6 +2115,27 @@ IconData _itemIconFor(XrayObjectType item) {
   };
 }
 
+String _itemAssetPathFor(XrayObjectType item) {
+  return switch (item) {
+    XrayObjectType.knife => 'assets/images/items/danger/item_danger_knife.png',
+    XrayObjectType.scissors =>
+      'assets/images/items/danger/item_danger_scissors.png',
+    XrayObjectType.lighter =>
+      'assets/images/items/danger/item_danger_lighter.png',
+    XrayObjectType.razor => 'assets/images/items/danger/item_danger_razor.png',
+    XrayObjectType.batteryPack =>
+      'assets/images/items/danger/item_danger_battery_pack.png',
+    XrayObjectType.phone => 'assets/images/items/safe/item_safe_phone.png',
+    XrayObjectType.laptop => 'assets/images/items/safe/item_safe_laptop.png',
+    XrayObjectType.bottle => 'assets/images/items/safe/item_safe_bottle.png',
+    XrayObjectType.sandwich =>
+      'assets/images/items/safe/item_safe_sandwich.png',
+    XrayObjectType.keys => 'assets/images/items/safe/item_safe_keys.png',
+    XrayObjectType.headphones =>
+      'assets/images/items/safe/item_safe_headphones.png',
+  };
+}
+
 class _XrayItemIcon extends StatelessWidget {
   const _XrayItemIcon({
     required this.item,
@@ -2130,9 +2151,25 @@ class _XrayItemIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
+    final shouldUseSprite = color.r <= color.g && color.r <= color.b;
+    final fallback = CustomPaint(
       size: Size.square(size),
       painter: _XrayItemIconPainter(item: item, color: color, glow: glow),
+    );
+    if (!shouldUseSprite) {
+      return fallback;
+    }
+
+    return SizedBox.square(
+      dimension: size,
+      child: Opacity(
+        opacity: glow ? 1 : 0.34,
+        child: Image.asset(
+          _itemAssetPathFor(item),
+          fit: BoxFit.contain,
+          errorBuilder: (_, _, _) => fallback,
+        ),
+      ),
     );
   }
 }

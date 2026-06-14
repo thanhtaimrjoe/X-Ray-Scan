@@ -29,10 +29,10 @@ Reference files:
 ## Source Strategy
 
 - Use Gemini or other image generators for large illustrated backgrounds and screen mood references.
-- Do not rely on Gemini for final gameplay item assets unless the downloaded file is a true transparent PNG and can be used with simple cropping only.
-- Prefer Codex-authored vector/Canvas/SVG-style item assets for gameplay objects. They are easier to tune, recolor, scale, test, and hand off.
-- If an AI-generated item sheet is used for ideation, keep it as reference under `docs/assets/asset_candidates/`; do not promote masked, recolored, or heavily processed extractions into the runtime app.
-- For item candidates, avoid color repair, alpha masking, aggressive blur, or glow reconstruction. If the source image is not already transparent, use it only as a drawing/reference guide.
+- Gemini 3.1 is acceptable for gameplay item sheets when the source uses a pure solid black background, no checkerboard pattern, no grid lines, and enough item spacing for deterministic extraction.
+- Keep the approved source sheet under `docs/assets/asset_candidates/`, then generate one transparent PNG per item with `tools/extract_xray_item_sprites.py`.
+- Prefer PNG masters for item sprites. Runtime WebP can be generated later from approved PNGs if APK size requires it.
+- Avoid manual color repair, aggressive blur, or glow reconstruction. If extraction damages the source art, regenerate the sheet instead of repairing heavily.
 
 ## MVP Asset Inventory
 
@@ -67,7 +67,7 @@ Safe items:
 
 Object requirements:
 
-- Source should be editable vector/Canvas code, SVG, or a true transparent PNG.
+- Source should be editable vector/Canvas code, SVG, a true transparent PNG, or an approved pure-black AI sheet that can be deterministically extracted.
 - Square export canvas preferred when rasterizing for app use.
 - One object per file.
 - Cyan x-ray visual treatment by default.
@@ -135,23 +135,31 @@ For item assets specifically, the preferred runtime source is code/vector art. E
 
 ## Item Asset Workflow
 
-1. Create item silhouettes in code/vector form using the approved item list.
-2. Review them in a single preview sheet on a dark scanner background.
-3. Tune shape, stroke width, internal x-ray details, and glow in source form.
-4. Integrate the approved source into Flame rendering or export approved PNGs into `app/assets/images/items/...`.
-5. Keep mock Canvas fallback until every item has an approved runtime representation.
-6. Run:
+1. Generate an item sheet using the approved item list on a pure solid black background.
+2. Save the approved sheet to `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_approved.png`.
+3. Run `python tools/extract_xray_item_sprites.py` to export transparent PNG sprites and a cut preview sheet.
+4. Review the cut preview for crop safety, alpha edges, and item readability.
+5. Integrate the generated PNGs into Flame rendering under `app/assets/images/items/...`.
+6. Keep mock Canvas fallback until every item image loads reliably.
+7. Run:
    - `flutter test`
    - `flutter analyze`
    - `flutter build apk --debug`
-7. Test on a Galaxy S24-class device and capture evidence.
-8. Record the change in `docs/changelog/CHANGELOG.md`.
+8. Test on a Galaxy S24-class device and capture evidence.
+9. Record the change in `docs/changelog/CHANGELOG.md`.
 
 Current vector item source:
 
 - Generator: `tools/generate_item_vector_assets.py`
 - Review folder: `docs/assets/vector_items/`
 - Preview sheet: `docs/assets/vector_items/item_vector_preview_sheet.png`
+
+Current raster item source:
+
+- Source sheet: `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_approved.png`
+- Extraction script: `tools/extract_xray_item_sprites.py`
+- Cut preview: `docs/assets/asset_candidates/item_sheet_gemini31_black_bg_cut_preview.png`
+- Runtime folders: `app/assets/images/items/danger/` and `app/assets/images/items/safe/`
 
 ## Prompt Style Guide
 
@@ -246,7 +254,7 @@ Before promoting an asset into `app/assets/images/`:
 - [ ] Does not reveal danger/safe state through red/green color.
 - [ ] Has consistent cyan x-ray treatment for scanner/items.
 - [ ] Has transparent background for item/object assets.
-- [ ] Item assets are code/vector-authored or true transparent PNGs; no checkerboard-baked source was mask-repaired.
+- [ ] Item assets are code/vector-authored, true transparent PNGs, or extracted from an approved pure-black source sheet without checkerboard/grid artifacts.
 - [ ] File size is reasonable for Android APK.
 - [ ] Naming follows lowercase snake_case.
 - [ ] Changelog entry is added when integrated into app code.
