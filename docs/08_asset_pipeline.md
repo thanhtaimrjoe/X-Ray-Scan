@@ -167,6 +167,12 @@ Current gameplay background:
 - Runtime asset: `app/assets/images/backgrounds/bg_gameplay_scanner.png`
 - Generator workflow: Scenario AI using Gemini 3.1 with the approved gameplay reference image.
 
+Current result background:
+
+- Source candidate: `docs/assets/asset_candidates/bg_result_checkpoint_scenario_candidate_01.png`
+- Runtime asset: `app/assets/images/backgrounds/bg_result_checkpoint.png`
+- Generator workflow: Scenario AI edit/inpainting from the approved Level Clear visual reference, removing UI/card/text/button/ad elements.
+
 Current suitcase asset:
 
 - Source candidate: `docs/assets/asset_candidates/ui_suitcase_xray_empty_scenario_candidate_01.png`

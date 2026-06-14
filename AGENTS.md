@@ -1,4 +1,4 @@
-﻿# AGENTS.md - AI Development Guidelines
+# AGENTS.md - AI Development Guidelines
 
 **Project**: X-Ray Scan
 **Created**: 2026-06-12
@@ -46,6 +46,8 @@ Before implementation, read the relevant documents below. For gameplay, ads, rel
 | Decision Log | `docs/07_tracking/decisions.md` | Product and technical decisions |
 | Progress | `docs/07_tracking/progress.md` | Current project status and next steps |
 | Changelog | `docs/changelog/CHANGELOG.md` | Historical record of changes |
+| Token Workflows | `workflows/README.md` | Token-efficient development guidelines |
+| Model Strategy | `workflows/sub-agent-model-strategy.md` | Model selection rules by task complexity |
 
 ---
 
@@ -213,6 +215,11 @@ Before implementation, read the relevant documents below. For gameplay, ads, rel
 - Git commit messages: `type: description`.
 - Commit types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `release`.
 
+### 6. Token-Efficient Operations
+
+- **Isolate & Grep:** Never do a full project file scan if you only need localized edits. Use `grep_search` to find your target files.
+- **Model Tiers:** Follow `workflows/sub-agent-model-strategy.md`. Use Lightweight models for searching/compiling, Balanced for code generation, and Reasoning only for complex math/policy decisions.
+
 ---
 
 ## Do Not
@@ -224,6 +231,7 @@ Before implementation, read the relevant documents below. For gameplay, ads, rel
 5. Do not target children without a dedicated policy review.
 6. Do not commit secrets, signing keys, or local credentials.
 7. Do not make package-name changes casually.
+8. Do not run excessive full-file reads or use premium reasoning models for simple code/formatting tasks (violates token budget).
 
 ---
 
@@ -231,25 +239,28 @@ Before implementation, read the relevant documents below. For gameplay, ads, rel
 
 ```text
 X-Ray-Scan/
-â”œâ”€â”€ README.md
-â”œâ”€â”€ AGENTS.md
-â”œâ”€â”€ app/
-â”‚   â”œâ”€â”€ android/
-â”‚   â”œâ”€â”€ lib/
-â”‚   â”œâ”€â”€ test/
-â”‚   â””â”€â”€ pubspec.yaml
-â””â”€â”€ docs/
-    â”œâ”€â”€ 01_game_concept.md
-    â”œâ”€â”€ 02_user_stories.md
-    â”œâ”€â”€ 03_game_design.md
-    â”œâ”€â”€ 04_monetization_ads.md
-    â”œâ”€â”€ 05_technical_spec.md
-    â”œâ”€â”€ 06_release_checklist.md
-    â”œâ”€â”€ 07_tracking/
-    â”‚   â”œâ”€â”€ decisions.md
-    â”‚   â””â”€â”€ progress.md
-    â””â”€â”€ changelog/
-        â””â”€â”€ CHANGELOG.md
+├── README.md
+├── AGENTS.md
+├── app/
+│   ├── android/
+│   ├── lib/
+│   ├── test/
+│   └── pubspec.yaml
+├── docs/
+│   ├── 01_game_concept.md
+│   ├── 02_user_stories.md
+│   ├── 03_game_design.md
+│   ├── 04_monetization_ads.md
+│   ├── 05_technical_spec.md
+│   ├── 06_release_checklist.md
+│   ├── 07_tracking/
+│   │   ├── decisions.md
+│   │   └── progress.md
+│   └── changelog/
+│       └── CHANGELOG.md
+└── workflows/
+    ├── README.md
+    └── sub-agent-model-strategy.md
 ```
 
 ---
@@ -258,6 +269,7 @@ X-Ray-Scan/
 
 - [ ] Acceptance criteria checked.
 - [ ] Relevant specs followed or updated.
+- [ ] Followed Token-Efficient Operations strategy (workflows/README.md).
 - [ ] Unit tests added/updated when behavior changed.
 - [ ] `flutter test` run when code changed.
 - [ ] `flutter analyze` run for meaningful Dart changes.

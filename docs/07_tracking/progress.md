@@ -68,6 +68,7 @@ This file tracks the current project state so future AI assistants and contribut
 - Added deterministic extraction for 11 transparent item PNGs and integrated them into gameplay and Item Database rendering with Canvas fallback.
 - Approved the first Scenario AI/Gemini gameplay scanner background and integrated it behind the Flame scanner overlay.
 - Approved the Scenario AI empty x-ray suitcase asset and integrated it with tunnel-to-inspection animation.
+- Approved the Scenario AI result checkpoint background and integrated it behind Level Clear/Failed cards.
 - Verified:
   - `flutter test` (38 tests)
   - `flutter analyze`
@@ -108,6 +109,8 @@ This file tracks the current project state so future AI assistants and contribut
 - Integrated runtime item folders: `app/assets/images/items/danger/` and `app/assets/images/items/safe/`
 - Gameplay background candidate: `docs/assets/asset_candidates/bg_gameplay_scanner_scenario_candidate_01.png`
 - Gameplay background runtime asset: `app/assets/images/backgrounds/bg_gameplay_scanner.png`
+- Result background candidate: `docs/assets/asset_candidates/bg_result_checkpoint_scenario_candidate_01.png`
+- Result background runtime asset: `app/assets/images/backgrounds/bg_result_checkpoint.png`
 - Suitcase candidate: `docs/assets/asset_candidates/ui_suitcase_xray_empty_scenario_candidate_01.png`
 - Suitcase extraction script: `tools/extract_xray_suitcase_asset.py`
 - Suitcase runtime asset: `app/assets/images/ui/ui_suitcase_xray_empty.png`

@@ -246,16 +246,25 @@ class _IconPanelButton extends StatelessWidget {
 }
 
 class _AirportBackdrop extends StatelessWidget {
-  const _AirportBackdrop({required this.child});
+  const _AirportBackdrop({required this.child, this.imageAsset});
 
   final Widget child;
+  final String? imageAsset;
 
   @override
   Widget build(BuildContext context) {
+    final imageAsset = this.imageAsset;
     return Stack(
       fit: StackFit.expand,
       children: [
-        const _AirportScene(),
+        if (imageAsset == null)
+          const _AirportScene()
+        else
+          Image.asset(
+            imageAsset,
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) => const _AirportScene(),
+          ),
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -1445,6 +1454,9 @@ class PauseScreen extends StatelessWidget {
 }
 
 class LevelClearScreen extends StatelessWidget {
+  static const _resultBackground =
+      'assets/images/backgrounds/bg_result_checkpoint.png';
+
   const LevelClearScreen({
     required this.levelNumber,
     required this.score,
@@ -1478,6 +1490,7 @@ class LevelClearScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _AirportBackdrop(
+        imageAsset: _resultBackground,
         child: _ResultScreenFrame(
           card: _GlassPanel(
             child: Column(
@@ -1562,6 +1575,9 @@ class LevelClearScreen extends StatelessWidget {
 }
 
 class LevelFailedScreen extends StatelessWidget {
+  static const _resultBackground =
+      'assets/images/backgrounds/bg_result_checkpoint.png';
+
   const LevelFailedScreen({
     required this.levelNumber,
     required this.score,
@@ -1587,6 +1603,7 @@ class LevelFailedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _AirportBackdrop(
+        imageAsset: _resultBackground,
         child: _ResultScreenFrame(
           card: _GlassPanel(
             borderColor: _XrayStyle.danger.withValues(alpha: 0.55),

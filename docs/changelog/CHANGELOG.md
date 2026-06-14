@@ -5,6 +5,72 @@
 
 ---
 
+## [2026-06-14 13:03] - Integrate token-saving workflows and model strategy
+
+**Owner**: AI Assistant
+**Type**: Chore
+**Related US**: N/A
+**Impact Scope**: Docs, Workflows, Dev Operations
+
+### Changes
+- Integrated token-efficient development workflows based on multi-agent tier orchestration (Extract -> Analyze -> Format).
+- Created `workflows/README.md` defining the token-efficient pipeline for game development (Flutter & Flame).
+- Created `workflows/sub-agent-model-strategy.md` mapping game tasks to Lightweight, Balanced, and Reasoning tiers.
+- Updated `AGENTS.md` to make token-efficient operations mandatory for all AI developer agents.
+
+### Implementation Details
+- File: `workflows/README.md`
+- File: `workflows/sub-agent-model-strategy.md`
+- File: `AGENTS.md`
+- Reason: Avoid high token costs during parallel/subagent coding phases by enforcing proper model/tier selection.
+- Technical decision: Standardize on capability tiers (Lightweight, Balanced, Reasoning) to keep guidelines vendor and version-agnostic.
+
+### Tests
+- [x] Verified markdown layout and references
+- [x] Verified git status and file creations
+
+### Notes
+- Future AI developer agents working in the `copilot` or other branches must strictly follow these rules to respect token budgets.
+
+---
+
+## [2026-06-14 12:50] - Integrate result checkpoint background
+
+**Owner**: AI Assistant
+**Type**: Feature
+**Related US**: US-004, US-005
+**Impact Scope**: UX, Gameplay, Assets, Ads
+
+### Changes
+- Added the approved Scenario AI result checkpoint background candidate.
+- Promoted the result checkpoint background into the app runtime background folder.
+- Updated Level Clear and Level Failed screens to use the result-specific checkpoint background.
+- Kept the existing generated airport scene as the fallback if the runtime image cannot load.
+
+### Implementation Details
+- File: `docs/assets/asset_candidates/bg_result_checkpoint_scenario_candidate_01.png`
+- File: `app/assets/images/backgrounds/bg_result_checkpoint.png`
+- File: `app/lib/main.dart`
+- File: `docs/08_asset_pipeline.md`
+- File: `docs/07_tracking/progress.md`
+- Reason: The edited approved reference preserves the correct scanner/result composition without baked UI, card, text, buttons, ad placeholder, or watermark.
+- Technical decision: Reuse `_AirportBackdrop` with an optional image asset so result screens can use a dedicated background while other screens keep their current backdrop.
+
+### Tests
+- [ ] Unit tests added/updated
+- [ ] Manual playtest completed
+- [x] Error handling checked
+- [x] Policy/ad placement checked
+- [x] `flutter test`
+- [x] `flutter analyze`
+- [x] `flutter build apk --debug`
+
+### Notes
+- Emulator review is still needed to tune card dimming/contrast over the new background.
+- No ads or monetization behavior changed.
+
+---
+
 ## [2026-06-14 12:10] - Center result screens above banner ads
 
 **Owner**: AI Assistant
