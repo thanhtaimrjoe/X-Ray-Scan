@@ -4,13 +4,15 @@ import 'package:xray_scan/game/systems/xray_inspector_rules.dart';
 
 void main() {
   group('LevelProgressionRules', () {
-    test('level catalog exposes the full 10-level airport basics pack', () {
-      expect(levelCatalog.length, 10);
-      expect(LevelProgressionRules.maxLevelNumber, 10);
+    test('level catalog exposes the full 30-level multi-world packs', () {
+      expect(levelCatalog.length, 30);
+      expect(LevelProgressionRules.maxLevelNumber, 30);
       expect(LevelProgressionRules.configForLevel(1).bagsToClear, 3);
       expect(LevelProgressionRules.configForLevel(2).bagsToClear, 4);
       expect(LevelProgressionRules.configForLevel(3).bagsToClear, 5);
       expect(LevelProgressionRules.configForLevel(10).bagsToClear, 10);
+      expect(LevelProgressionRules.configForLevel(20).bagsToClear, 11);
+      expect(LevelProgressionRules.configForLevel(30).bagsToClear, 12);
     });
 
     test('level 1 uses knife-only danger pool and easy safe pool', () {

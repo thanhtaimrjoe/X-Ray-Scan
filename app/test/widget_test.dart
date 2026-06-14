@@ -58,7 +58,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('PLAY'), findsOneWidget);
-    expect(find.text('10'), findsWidgets);
+    expect(find.text('Level 10'), findsWidgets);
   });
 
   testWidgets('LevelFailedScreen shows continue button when ad is available', (

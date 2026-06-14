@@ -74,10 +74,13 @@ This file tracks the current project state so future AI assistants and contribut
 - Regenerated and integrated high-fidelity conveyor belt and scanner background (`bg_gameplay_scanner.png`) to avoid unrealistic procedural drawing of conveyor components in code, and resized the scanner overlay (`_scannerRect`) to tightly wrap the suitcase bounds for a highly polished, realistic fit.
 - Fixed the pause-resume state reset bug by rendering PauseScreen as a semi-transparent dimmed overlay using a Stack on top of the preserved GameplayScreen, preserving active suitcase state and progress when returning from pause.
 - Adjusted scanner rendering logic to selectively hide flat procedural vectors when the high-fidelity background is active, while overlaying interactive sci-fi scan grids and animated laser lines.
+- Expanded the game progression configuration from a single-world 10-level map to a **3-World, 30-Level progression layer** (10 levels per World: USA - Liberty Terminal, Japan - Sakura Gateway, and Egypt - Giza Customs).
+- Fully implemented the premium **Horizontal-Swipe Card Carousel Level Map Screen** using `PageView.builder` with 3D scale/fade transitions, world conveyor background cross-fading, and floating glassmorphic level cards with padlock/frosted overlays.
+- Polished the **Main Menu Screen** to be fully overflow-proof on all resolutions by wrapping its layout in a scrollable `ConstrainedBox` with `IntrinsicHeight`.
 - Verified:
-  - `flutter test` (all 38 tests passed)
-  - `flutter analyze` (no issues found)
-  - `flutter build apk --debug` (built successfully)
+  - `flutter test` (all 38 widget & unit tests 100% green)
+  - `flutter analyze` (clean static analyzer with zero errors)
+  - `flutter build apk --debug` (assembled and built successfully)
   - Samsung device install/launch through ADB (`RFCX80NW55E`)
 
 ## In Progress

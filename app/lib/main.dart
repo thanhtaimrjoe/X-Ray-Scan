@@ -1,3 +1,4 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -109,7 +110,7 @@ class _XrayActionButton extends StatelessWidget {
   });
 
   factory _XrayActionButton.primary({
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
     required String label,
     Widget? icon,
     bool compact = false,
@@ -124,7 +125,7 @@ class _XrayActionButton extends StatelessWidget {
   }
 
   factory _XrayActionButton.secondary({
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
     required String label,
     Widget? icon,
     bool compact = false,
@@ -138,7 +139,7 @@ class _XrayActionButton extends StatelessWidget {
     );
   }
 
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String label;
   final Widget? icon;
   final bool isPrimary;
@@ -146,11 +147,18 @@ class _XrayActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = isPrimary ? Colors.black : _XrayStyle.text;
-    final background = isPrimary ? _XrayStyle.success : _XrayStyle.panelSoft;
-    final border = isPrimary
-        ? _XrayStyle.success.withValues(alpha: 0.8)
-        : _XrayStyle.cyan.withValues(alpha: 0.58);
+    final isDisabled = onPressed == null;
+    final foreground = isDisabled
+        ? Colors.white.withValues(alpha: 0.28)
+        : (isPrimary ? Colors.black : _XrayStyle.text);
+    final background = isDisabled
+        ? Colors.white.withValues(alpha: 0.05)
+        : (isPrimary ? _XrayStyle.success : _XrayStyle.panelSoft);
+    final border = isDisabled
+        ? Colors.white.withValues(alpha: 0.15)
+        : (isPrimary
+            ? _XrayStyle.success.withValues(alpha: 0.8)
+            : _XrayStyle.cyan.withValues(alpha: 0.58));
     final child = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -190,7 +198,7 @@ class _XrayActionButton extends StatelessWidget {
             border: Border.all(color: border, width: 1.4),
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
-              if (isPrimary)
+              if (isPrimary && !isDisabled)
                 BoxShadow(
                   color: _XrayStyle.success.withValues(alpha: 0.24),
                   blurRadius: 18,
@@ -217,14 +225,17 @@ class _IconPanelButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     required this.tooltip,
+    this.color,
   });
 
   final IconData icon;
   final VoidCallback onPressed;
   final String tooltip;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = color ?? _XrayStyle.cyan;
     return Tooltip(
       message: tooltip,
       child: InkWell(
@@ -235,10 +246,10 @@ class _IconPanelButton extends StatelessWidget {
           height: 46,
           decoration: BoxDecoration(
             color: _XrayStyle.panel,
-            border: Border.all(color: _XrayStyle.cyan.withValues(alpha: 0.5)),
+            border: Border.all(color: activeColor.withValues(alpha: 0.5)),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: _XrayStyle.cyanSoft),
+          child: Icon(icon, color: activeColor),
         ),
       ),
     );
@@ -601,11 +612,8 @@ class _AppShellState extends State<AppShell> {
   }
 
   void _selectMapLevel(int levelNumber) {
-    if (levelNumber > _levelProgress.highestUnlockedLevel) {
-      return;
-    }
     setState(() {
-      _selectedMapLevel = levelNumber;
+      _selectedMapLevel = levelNumber.clamp(1, 30);
     });
   }
 
@@ -636,6 +644,8 @@ class _AppShellState extends State<AppShell> {
         onPlay: _startHighestUnlockedLevel,
         onOpenLevelMap: _showLevelMap,
         onOpenDatabase: () => _showItemDatabase(),
+        soundEnabled: _soundEnabled,
+        onToggleSound: _toggleSound,
       ),
       AppScreen.levelMap => LevelMapScreen(
         progress: _levelProgress,
@@ -646,6 +656,8 @@ class _AppShellState extends State<AppShell> {
         onPlay: () => _startLevel(_selectedMapLevel),
         onOpenDatabase: () => _showItemDatabase(),
         onBack: _showMenu,
+        soundEnabled: _soundEnabled,
+        onToggleSound: _toggleSound,
       ),
       AppScreen.playing || AppScreen.paused => Stack(
         children: [
@@ -715,6 +727,8 @@ class MainMenuScreen extends StatelessWidget {
     required this.onPlay,
     required this.onOpenLevelMap,
     required this.onOpenDatabase,
+    required this.soundEnabled,
+    required this.onToggleSound,
     super.key,
   });
 
@@ -723,33 +737,53 @@ class MainMenuScreen extends StatelessWidget {
   final VoidCallback onPlay;
   final VoidCallback onOpenLevelMap;
   final VoidCallback onOpenDatabase;
+  final bool soundEnabled;
+  final VoidCallback onToggleSound;
 
   @override
   Widget build(BuildContext context) {
+    final currentWorldName = highestUnlockedLevel <= 10
+        ? 'USA - Liberty Terminal'
+        : highestUnlockedLevel <= 20
+            ? 'Japan - Sakura Gateway'
+            : 'Egypt - Giza Customs';
+
     return Scaffold(
       body: _AirportBackdrop(
         imageAsset: _menuBackground,
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Align(
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.sizeOf(context).height -
+                    MediaQuery.paddingOf(context).vertical,
+              ),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Align(
                   alignment: Alignment.centerRight,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       _IconPanelButton(
-                        icon: Icons.volume_up_rounded,
-                        onPressed: () {},
+                        icon: soundEnabled
+                            ? Icons.volume_up_rounded
+                            : Icons.volume_off_rounded,
+                        onPressed: onToggleSound,
                         tooltip: 'Sound',
+                        color: soundEnabled ? _XrayStyle.cyan : Colors.blueGrey,
                       ),
                       const SizedBox(width: 10),
                       _IconPanelButton(
-                        icon: Icons.settings_rounded,
+                        icon: Icons.verified_user_rounded,
                         onPressed: () {},
-                        tooltip: 'Settings',
+                        tooltip: 'Secure Terminal',
+                        color: _XrayStyle.gold,
                       ),
                     ],
                   ),
@@ -788,22 +822,22 @@ class MainMenuScreen extends StatelessWidget {
                       _InfoLine(label: 'Best Clearance', value: '$highScore'),
                       _InfoLine(
                         label: 'Current World',
-                        value: 'International Terminal',
+                        value: currentWorldName,
                       ),
                       _InfoLine(
                         label: 'Current Level',
-                        value: '$highestUnlockedLevel',
+                        value: 'Level $highestUnlockedLevel',
                       ),
                     ],
                   ),
                 ),
-                const Expanded(child: _ScannerHero()),
+                const Expanded(child: SizedBox.expand()),
                 _XrayActionButton.primary(
                   onPressed: onPlay,
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: 'PLAY',
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 _XrayActionButton.secondary(
                   onPressed: onOpenLevelMap,
                   icon: const Icon(Icons.map_rounded),
@@ -815,6 +849,24 @@ class MainMenuScreen extends StatelessWidget {
                   icon: const Icon(Icons.folder_open_rounded),
                   label: 'ITEM DATABASE',
                 ),
+                const SizedBox(height: 10),
+                _XrayActionButton.secondary(
+                  onPressed: () {
+                    showGeneralDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      barrierLabel: 'Dismiss Settings',
+                      barrierColor: Colors.black.withValues(alpha: 0.55),
+                      transitionDuration: const Duration(milliseconds: 300),
+                      pageBuilder: (context, _, __) => _SettingsDialog(
+                        soundEnabled: soundEnabled,
+                        onToggleSound: onToggleSound,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.settings_rounded),
+                  label: 'SETTINGS',
+                ),
                 const SizedBox(height: 18),
                 const Center(child: XrayBannerAd()),
               ],
@@ -822,27 +874,228 @@ class MainMenuScreen extends StatelessWidget {
           ),
         ),
       ),
+    ),
+    ),
+    ),
     );
   }
 }
 
-class LevelMapScreen extends StatelessWidget {
-  static const _levelMapBackground =
-      'assets/images/backgrounds/bg_level_map.png';
+class _SettingsDialog extends StatefulWidget {
+  const _SettingsDialog({
+    required this.soundEnabled,
+    required this.onToggleSound,
+  });
 
-  static const List<Alignment> levelPositions = [
-    Alignment(-0.68, -0.58),
-    Alignment(-0.08, -0.56),
-    Alignment(0.52, -0.52),
-    Alignment(0.66, -0.26),
-    Alignment(0.35, -0.06),
-    Alignment(-0.12, 0.08),
-    Alignment(-0.66, 0.24),
-    Alignment(-0.46, 0.46),
-    Alignment(0.02, 0.54),
-    Alignment(0.60, 0.56),
-  ];
+  final bool soundEnabled;
+  final VoidCallback onToggleSound;
 
+  @override
+  State<_SettingsDialog> createState() => _SettingsDialogState();
+}
+
+class _SettingsDialogState extends State<_SettingsDialog> {
+  late bool _soundOn;
+  bool _musicOn = true;
+  bool _vibrationOn = true;
+  String _selectedLanguage = 'English';
+
+  @override
+  void initState() {
+    super.initState();
+    _soundOn = widget.soundEnabled;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Material(
+        color: Colors.transparent,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 12),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.85,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF102333).withValues(alpha: 0.82),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: _XrayStyle.cyan.withValues(alpha: 0.4),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: _XrayStyle.cyan.withValues(alpha: 0.15),
+                    blurRadius: 24,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.settings_rounded,
+                        color: _XrayStyle.cyan,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'SETTINGS',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(color: Colors.white24, height: 24),
+                  _buildToggleRow(
+                    label: 'Sound FX',
+                    subtitle: 'Play in-game scanning alerts',
+                    value: _soundOn,
+                    onChanged: (val) {
+                      setState(() {
+                        _soundOn = val;
+                      });
+                      widget.onToggleSound();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildToggleRow(
+                    label: 'Background Music',
+                    subtitle: 'Futuristic ambient tunes',
+                    value: _musicOn,
+                    onChanged: (val) {
+                      setState(() {
+                        _musicOn = val;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildToggleRow(
+                    label: 'Haptic Feedback',
+                    subtitle: 'Vibrate on scan error',
+                    value: _vibrationOn,
+                    onChanged: (val) {
+                      setState(() {
+                        _vibrationOn = val;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Language',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Select interface language',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: _XrayStyle.muted,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Theme(
+                        data: Theme.of(context).copyWith(
+                          canvasColor: const Color(0xFF102333),
+                        ),
+                        child: DropdownButton<String>(
+                          value: _selectedLanguage,
+                          dropdownColor: const Color(0xFF142C44),
+                          underline: const SizedBox(),
+                          style: const TextStyle(
+                            color: _XrayStyle.cyan,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          icon: const Icon(Icons.arrow_drop_down_rounded, color: _XrayStyle.cyan),
+                          items: ['English', 'Tiếng Việt'].map((lang) {
+                            return DropdownMenuItem<String>(
+                              value: lang,
+                              child: Text(lang),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() {
+                                _selectedLanguage = val;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(color: Colors.white24, height: 32),
+                  _XrayActionButton.primary(
+                    onPressed: () => Navigator.of(context).pop(),
+                    label: 'CLOSE',
+                    compact: true,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildToggleRow({
+    required String label,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: _XrayStyle.muted,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Switch.adaptive(
+          value: value,
+          activeColor: _XrayStyle.cyan,
+          activeTrackColor: _XrayStyle.cyan.withValues(alpha: 0.38),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+class LevelMapScreen extends StatefulWidget {
   const LevelMapScreen({
     required this.progress,
     required this.selectedLevel,
@@ -852,6 +1105,8 @@ class LevelMapScreen extends StatelessWidget {
     required this.onPlay,
     required this.onOpenDatabase,
     required this.onBack,
+    required this.soundEnabled,
+    required this.onToggleSound,
     super.key,
   });
 
@@ -863,231 +1118,330 @@ class LevelMapScreen extends StatelessWidget {
   final VoidCallback onPlay;
   final VoidCallback onOpenDatabase;
   final VoidCallback onBack;
+  final bool soundEnabled;
+  final VoidCallback onToggleSound;
+
+  @override
+  State<LevelMapScreen> createState() => _LevelMapScreenState();
+}
+
+class _LevelMapScreenState extends State<LevelMapScreen> {
+  late PageController _pageController;
+  late int _activePageIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _activePageIndex = widget.selectedLevel - 1;
+    _pageController = PageController(
+      initialPage: _activePageIndex,
+      viewportFraction: 0.82,
+    );
+  }
+
+  @override
+  void didUpdateWidget(LevelMapScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedLevel != oldWidget.selectedLevel) {
+      final targetPage = widget.selectedLevel - 1;
+      if (targetPage != _activePageIndex) {
+        setState(() {
+          _activePageIndex = targetPage;
+        });
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            targetPage,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
+          );
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Color _getWorldColor(int worldIndex) {
+    return switch (worldIndex) {
+      0 => _XrayStyle.cyan,
+      1 => const Color(0xFFFF3B5C),
+      _ => const Color(0xFF10B981),
+    };
+  }
+
+  String _getWorldTitle(int worldIndex) {
+    return switch (worldIndex) {
+      0 => 'USA - Liberty Terminal',
+      1 => 'Japan - Sakura Gateway',
+      _ => 'Egypt - Giza Customs',
+    };
+  }
+
+  String _getWorldBadge(int worldIndex) {
+    return switch (worldIndex) {
+      0 => '🇺🇸 USA',
+      1 => '🇯🇵 JAPAN',
+      _ => '🇪🇬 EGYPT',
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final worldIndex = _activePageIndex ~/ 10;
+    final worldColor = _getWorldColor(worldIndex);
+
+    final bgAsset = switch (worldIndex) {
+      0 => 'assets/images/backgrounds/bg_level_map_world1.png',
+      1 => 'assets/images/backgrounds/bg_level_map_world2.png',
+      _ => 'assets/images/backgrounds/bg_level_map_world3.png',
+    };
 
     return Scaffold(
-      body: _AirportBackdrop(
-        imageAsset: _levelMapBackground,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final size = Size(constraints.maxWidth, constraints.maxHeight);
-            final mapRect = Rect.fromLTRB(
-              0,
-              topPadding + 100,
-              size.width,
-              size.height - bottomPadding - 188,
-            );
-            final points = levelPositions
-                .map(
-                  (alignment) =>
-                      mapRect.topLeft + alignment.alongSize(mapRect.size),
-                )
-                .toList();
-
-            return Stack(
-              children: [
-                // 1. Full-screen custom paint for the neon line
-                Positioned.fill(
-                  child: CustomPaint(
-                    painter: _LevelRoutePainter(points: points),
+      body: Container(
+        color: _XrayStyle.bg,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 650),
+                switchInCurve: Curves.easeInOut,
+                switchOutCurve: Curves.easeInOut,
+                child: Image.asset(
+                  bgAsset,
+                  key: ValueKey<String>(bgAsset),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(color: _XrayStyle.bg),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.45),
+                      Colors.black.withValues(alpha: 0.22),
+                      _XrayStyle.bg.withValues(alpha: 0.65),
+                    ],
                   ),
                 ),
+              ),
+            ),
+            Positioned(
+              top: topPadding + 90,
+              bottom: bottomPadding + 10,
+              left: 0,
+              right: 0,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: 30,
+                onPageChanged: (index) {
+                  setState(() {
+                    _activePageIndex = index;
+                  });
+                  widget.onSelectLevel(index + 1);
+                },
+                itemBuilder: (context, index) {
+                  final level = index + 1;
+                  final isUnlocked = level <= widget.progress.highestUnlockedLevel;
+                  final bestStars = widget.progress.bestStarsFor(level);
+                  final bestScore = widget.progress.bestScoreFor(level);
+                  final currentWorldIndex = index ~/ 10;
+                  final color = _getWorldColor(currentWorldIndex);
 
-                // 2. Full-screen level nodes
-                for (
-                  var level = 1;
-                  level <= LevelProgressionRules.maxLevelNumber;
-                  level++
-                )
-                  _MapNode(
-                    level: level,
-                    centerOffset: points[level - 1],
-                    isSelected: selectedLevel == level,
-                    isCompleted: progress.bestStarsFor(level) > 0,
-                    isUnlocked: level <= progress.highestUnlockedLevel,
-                    stars: progress.bestStarsFor(level),
-                    onTap: () => onSelectLevel(level),
-                  ),
+                  return AnimatedBuilder(
+                    animation: _pageController,
+                    builder: (context, child) {
+                      double pageOffset = 0.0;
+                      if (_pageController.position.haveDimensions) {
+                        pageOffset = _pageController.page! - index;
+                      } else {
+                        pageOffset = (_activePageIndex - index).toDouble();
+                      }
 
-                // 3. Top Currency Header Overlay
-                Positioned(
-                  top: topPadding + 12,
-                  left: 12,
-                  right: 12,
-                  child: _GlassPanel(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'World:',
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(color: _XrayStyle.muted),
-                              ),
-                              Text(
-                                'International Terminal',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      color: _XrayStyle.text,
-                                      fontWeight: FontWeight.w900,
-                                      height: 1.08,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const _VerticalDivider(),
-                        _TopCurrency(
-                          icon: Icons.monetization_on,
-                          value: coins,
-                          label: 'Coins',
-                        ),
-                        const _VerticalDivider(),
-                        _TopCurrency(
-                          icon: Icons.diamond_rounded,
-                          value: gems,
-                          label: 'Gems',
-                        ),
-                        const _VerticalDivider(),
-                        _IconPanelButton(
-                          icon: Icons.settings_rounded,
-                          onPressed: () {},
-                          tooltip: 'Settings',
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                      double percent = pageOffset.clamp(-1.0, 1.0);
+                      double scale = 1.0 - (percent.abs() * 0.12);
+                      double opacity = 1.0 - (percent.abs() * 0.45);
 
-                // 4. Bottom Action Card Overlay
-                Positioned(
-                  bottom: bottomPadding + 12,
-                  left: 12,
-                  right: 12,
-                  child: _GlassPanel(
-                    padding: const EdgeInsets.all(14),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Level $selectedLevel',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(color: _XrayStyle.muted),
-                              ),
-                              Text(
-                                _levelTitle(selectedLevel),
-                                maxLines: 2,
-                                overflow: TextOverflow.visible,
-                                style: Theme.of(context).textTheme.headlineSmall
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 0,
-                                      height: 1.05,
-                                    ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Best stars',
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(color: _XrayStyle.muted),
-                              ),
-                              const SizedBox(height: 2),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  for (var i = 1; i <= 3; i++)
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 4),
-                                      child: Icon(
-                                        i <=
-                                                progress.bestStarsFor(
-                                                  selectedLevel,
-                                                )
-                                            ? Icons.star_rounded
-                                            : Icons.star_outline_rounded,
-                                        color:
-                                            i <=
-                                                progress.bestStarsFor(
-                                                  selectedLevel,
-                                                )
-                                            ? _XrayStyle.gold
-                                            : Colors.white.withValues(
-                                                alpha: 0.18,
-                                              ),
-                                        size: 28,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
+                      return Opacity(
+                        opacity: opacity,
+                        child: Transform.scale(
+                          scale: scale,
+                          child: child,
                         ),
-                        const SizedBox(width: 12),
-                        SizedBox(
-                          width: 172,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _XrayActionButton.primary(
-                                onPressed: onPlay,
-                                label: 'PLAY',
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _XrayActionButton.secondary(
-                                      onPressed: onOpenDatabase,
-                                      label: 'Database',
-                                      compact: true,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: _XrayActionButton.secondary(
-                                      onPressed: onBack,
-                                      label: 'Back',
-                                      compact: true,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      );
+                    },
+                    child: _LevelCard(
+                      level: level,
+                      isUnlocked: isUnlocked,
+                      bestStars: bestStars,
+                      bestScore: bestScore,
+                      worldColor: color,
+                      worldBadge: _getWorldBadge(currentWorldIndex),
+                      worldTitle: _getWorldTitle(currentWorldIndex),
+                      onPlay: widget.onPlay,
+                      onOpenDatabase: widget.onOpenDatabase,
                     ),
+                  );
+                },
+              ),
+            ),
+            if (_activePageIndex > 0)
+              Positioned(
+                left: 10,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: _CarouselArrowButton(
+                    icon: Icons.chevron_left_rounded,
+                    color: worldColor,
+                    onPressed: () {
+                      _pageController.previousPage(
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeOutCubic,
+                      );
+                    },
                   ),
                 ),
-              ],
-            );
-          },
+              ),
+            if (_activePageIndex < 29)
+              Positioned(
+                right: 10,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: _CarouselArrowButton(
+                    icon: Icons.chevron_right_rounded,
+                    color: worldColor,
+                    onPressed: () {
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeOutCubic,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            Positioned(
+              top: topPadding + 12,
+              left: 12,
+              right: 12,
+              child: _GlassPanel(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                child: Row(
+                  children: [
+                    _IconPanelButton(
+                      icon: Icons.arrow_back_rounded,
+                      onPressed: widget.onBack,
+                      tooltip: 'Back to Menu',
+                      color: worldColor,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'WORLD ${worldIndex + 1}/3',
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: worldColor.withValues(alpha: 0.8),
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.1,
+                                ),
+                          ),
+                          Text(
+                            _getWorldTitle(worldIndex),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: _XrayStyle.text,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.08,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const _VerticalDivider(),
+                    _TopCurrency(
+                      icon: Icons.monetization_on,
+                      value: widget.coins,
+                      label: 'Coins',
+                    ),
+                    const _VerticalDivider(),
+                    _TopCurrency(
+                      icon: Icons.diamond_rounded,
+                      value: widget.gems,
+                      label: 'Items',
+                    ),
+                    const _VerticalDivider(),
+                    _IconPanelButton(
+                      icon: Icons.settings_rounded,
+                      onPressed: () {
+                        showGeneralDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          barrierLabel: 'Dismiss Settings',
+                          barrierColor: Colors.black.withValues(alpha: 0.55),
+                          transitionDuration: const Duration(milliseconds: 300),
+                          pageBuilder: (context, _, __) => _SettingsDialog(
+                            soundEnabled: widget.soundEnabled,
+                            onToggleSound: widget.onToggleSound,
+                          ),
+                        );
+                      },
+                      tooltip: 'Settings',
+                      color: worldColor,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+}
 
-  String _levelTitle(int level) {
-    return switch (level) {
+class _LevelCard extends StatelessWidget {
+  const _LevelCard({
+    required this.level,
+    required this.isUnlocked,
+    required this.bestStars,
+    required this.bestScore,
+    required this.worldColor,
+    required this.worldBadge,
+    required this.worldTitle,
+    required this.onPlay,
+    required this.onOpenDatabase,
+  });
+
+  final int level;
+  final bool isUnlocked;
+  final int bestStars;
+  final int bestScore;
+  final Color worldColor;
+  final String worldBadge;
+  final String worldTitle;
+  final VoidCallback onPlay;
+  final VoidCallback onOpenDatabase;
+
+  String _levelTitle(int l) {
+    return switch (l) {
       1 => 'First Scan',
       2 => 'Sharp Shapes',
       3 => 'Mixed Bags',
@@ -1097,8 +1451,288 @@ class LevelMapScreen extends StatelessWidget {
       7 => 'Double Threat',
       8 => 'Battery Warning',
       9 => 'Speed Check',
-      _ => 'Final Security Gate',
+      10 => 'Airport Security Gate',
+      11 => 'Heavy Freight',
+      12 => 'Stacked Pallets',
+      13 => 'Lithium Hazard',
+      14 => 'Fast Conveyor',
+      15 => 'Sealed Crates',
+      16 => 'Double Duty',
+      17 => 'Chemical Cargo',
+      18 => 'Overload Shift',
+      19 => 'Velocity Check',
+      20 => 'Cargo Terminal Gate',
+      21 => 'Contraband Search',
+      22 => 'Dense Packaging',
+      23 => 'Hidden Compartments',
+      24 => 'Express Pipeline',
+      25 => 'Counterfeit Block',
+      26 => 'Dual Conveyors',
+      27 => 'Toxic Transit',
+      28 => 'Customs Siege',
+      29 => 'Extreme Sort',
+      _ => 'Customs Fortress Gate',
     };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.transparent,
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 14.0, sigmaY: 14.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF102333).withValues(alpha: 0.72),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isUnlocked ? worldColor.withValues(alpha: 0.5) : Colors.white24,
+                width: isUnlocked ? 2.0 : 1.2,
+              ),
+              boxShadow: isUnlocked
+                  ? [
+                      BoxShadow(
+                        color: worldColor.withValues(alpha: 0.18),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : [],
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: isUnlocked
+                              ? worldColor.withValues(alpha: 0.15)
+                              : Colors.white.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isUnlocked ? worldColor.withValues(alpha: 0.3) : Colors.white10,
+                          ),
+                        ),
+                        child: Text(
+                          worldBadge,
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: isUnlocked ? worldColor : Colors.white54,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.1,
+                              ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'LEVEL $level',
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            color: isUnlocked ? Colors.white : Colors.white38,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 28,
+                            letterSpacing: 1.2,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _levelTitle(level),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: isUnlocked ? worldColor : Colors.white54,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                    ),
+                    const Spacer(),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'CLEARANCE STARS',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: Colors.white38,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.1,
+                                ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              for (var i = 1; i <= 3; i++)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                                  child: Icon(
+                                    i <= bestStars ? Icons.star_rounded : Icons.star_outline_rounded,
+                                    color: i <= bestStars ? _XrayStyle.gold : Colors.white12,
+                                    size: 46,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.24),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.05),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'HIGH SCORE',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: Colors.white38,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          Text(
+                            bestScore > 0
+                                ? bestScore.toString().replaceAllMapped(
+                                      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+                                      (Match m) => '${m[1]},',
+                                    )
+                                : '0',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: isUnlocked ? Colors.white : Colors.white38,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _XrayActionButton.primary(
+                          onPressed: isUnlocked ? onPlay : null,
+                          label: 'PLAY',
+                        ),
+                        const SizedBox(height: 10),
+                        _XrayActionButton.secondary(
+                          onPressed: isUnlocked ? onOpenDatabase : null,
+                          label: 'Database Info',
+                          compact: true,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                if (!isUnlocked)
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+                        child: Container(
+                          color: Colors.black.withValues(alpha: 0.58),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 68,
+                                height: 68,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.black.withValues(alpha: 0.4),
+                                  border: Border.all(
+                                    color: _XrayStyle.gold.withValues(alpha: 0.8),
+                                    width: 2,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: _XrayStyle.gold.withValues(alpha: 0.25),
+                                      blurRadius: 18,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.lock_outline_rounded,
+                                  color: _XrayStyle.gold,
+                                  size: 34,
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Text(
+                                'LEVEL LOCKED',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      color: _XrayStyle.gold,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1.2,
+                                    ),
+                              ),
+                              const SizedBox(height: 6),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                child: Text(
+                                  'Complete previous level\nto gain authorization.',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: Colors.white54,
+                                        height: 1.3,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CarouselArrowButton extends StatelessWidget {
+  const _CarouselArrowButton({
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final Color color;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.black.withValues(alpha: 0.42),
+        border: Border.all(
+          color: color.withValues(alpha: 0.4),
+          width: 1.5,
+        ),
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: color, size: 28),
+        onPressed: onPressed,
+      ),
+    );
   }
 }
 
@@ -1142,24 +1776,12 @@ class _InfoLine extends StatelessWidget {
             value,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: _XrayStyle.text,
-              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ScannerHero extends StatelessWidget {
-  const _ScannerHero();
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _ScannerHeroPainter(),
-      child: const SizedBox.expand(),
     );
   }
 }
@@ -1220,432 +1842,6 @@ class _TopCurrency extends StatelessWidget {
             ),
           ],
         ),
-      ],
-    );
-  }
-}
-
-class _SecurityGateNode extends StatelessWidget {
-  const _SecurityGateNode({
-    required this.isUnlocked,
-    required this.isSelected,
-    required this.isCompleted,
-  });
-
-  final bool isUnlocked;
-  final bool isSelected;
-  final bool isCompleted;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isUnlocked ? _XrayStyle.cyan : Colors.blueGrey;
-    return Center(
-      child: SizedBox(
-        width: 72,
-        height: 80,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Glowing neon elliptical base platform at the bottom
-            Positioned(
-              bottom: 2,
-              left: 0,
-              right: 0,
-              height: 20,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isUnlocked
-                      ? _XrayStyle.cyan.withValues(alpha: 0.28)
-                      : const Color(0xFF26333D).withValues(alpha: 0.3),
-                  border: Border.all(
-                    color: isSelected
-                        ? Colors.white
-                        : (isCompleted
-                              ? _XrayStyle.cyan
-                              : color.withValues(alpha: 0.6)),
-                    width: isSelected ? 3.0 : 1.8,
-                  ),
-                  borderRadius: const BorderRadius.all(
-                    Radius.elliptical(36, 10),
-                  ),
-                  boxShadow: [
-                    if (isSelected || isUnlocked)
-                      BoxShadow(
-                        color: color.withValues(alpha: isSelected ? 0.9 : 0.45),
-                        blurRadius: isSelected ? 18 : 10,
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            // Left Pillar of the metal detector
-            Positioned(
-              left: 16,
-              top: 6,
-              bottom: 12,
-              width: 7,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.92),
-                  borderRadius: BorderRadius.circular(1.5),
-                  boxShadow: [
-                    if (isUnlocked)
-                      BoxShadow(
-                        color: _XrayStyle.cyan.withValues(alpha: 0.3),
-                        blurRadius: 4,
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            // Right Pillar of the metal detector
-            Positioned(
-              right: 16,
-              top: 6,
-              bottom: 12,
-              width: 7,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.92),
-                  borderRadius: BorderRadius.circular(1.5),
-                  boxShadow: [
-                    if (isUnlocked)
-                      BoxShadow(
-                        color: _XrayStyle.cyan.withValues(alpha: 0.3),
-                        blurRadius: 4,
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            // Top Arch Bar of the metal detector
-            Positioned(
-              left: 16,
-              right: 16,
-              top: 0,
-              height: 10,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(3),
-                  ),
-                  boxShadow: [
-                    if (isUnlocked)
-                      BoxShadow(
-                        color: _XrayStyle.cyan.withValues(alpha: 0.5),
-                        blurRadius: 6,
-                      ),
-                  ],
-                ),
-                child: isUnlocked
-                    ? Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          width: 5,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: isCompleted
-                                ? _XrayStyle.success
-                                : _XrayStyle.danger,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      )
-                    : null,
-              ),
-            ),
-            // Middle Content: Lock badge or Number or Check hanging inside the arch
-            Align(
-              alignment: const Alignment(0, -0.05),
-              child: isCompleted
-                  ? const Icon(
-                      Icons.check_rounded,
-                      color: _XrayStyle.cyan,
-                      size: 24,
-                    )
-                  : (!isUnlocked
-                        ? Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF151D24),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.lock_rounded,
-                              color: Color(0xFF9EABB8),
-                              size: 11,
-                            ),
-                          )
-                        : Text(
-                            '10',
-                            style: Theme.of(context).textTheme.bodyLarge
-                                ?.copyWith(
-                                  color: _XrayStyle.text,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 13,
-                                ),
-                          )),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MapNode extends StatelessWidget {
-  const _MapNode({
-    required this.level,
-    required this.centerOffset,
-    required this.isSelected,
-    required this.isCompleted,
-    required this.isUnlocked,
-    required this.stars,
-    required this.onTap,
-  });
-
-  final int level;
-  final Offset centerOffset;
-  final bool isSelected;
-  final bool isCompleted;
-  final bool isUnlocked;
-  final int stars;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isFinal = level == LevelProgressionRules.maxLevelNumber;
-    final width = isFinal ? 86.0 : 72.0;
-    final height = isFinal ? 100.0 : 90.0;
-
-    return Positioned(
-      left: centerOffset.dx - width / 2,
-      top: centerOffset.dy - height / 2,
-      width: width,
-      height: height,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isCompleted)
-              _MiniStars(stars: stars)
-            else
-              const SizedBox(height: 18),
-            if (isFinal)
-              _SecurityGateNode(
-                isUnlocked: isUnlocked,
-                isSelected: isSelected,
-                isCompleted: isCompleted,
-              )
-            else if (isCompleted)
-              // 1. Ultra-premium glassmorphic COMPLETED node with glowing cyan/greenish gradients
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF00E1FD), // Glowing light cyan
-                      Color(0xFF006D84), // Rich dark cyan
-                    ],
-                  ),
-                  border: Border.all(
-                    color: isSelected
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.95),
-                    width: isSelected ? 3.2 : 2.2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _XrayStyle.cyan.withValues(
-                        alpha: isSelected ? 0.95 : 0.72,
-                      ),
-                      blurRadius: isSelected ? 24 : 14,
-                      spreadRadius: isSelected ? 2 : 0.5,
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.28),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.check_rounded,
-                    color: Colors.white,
-                    size: 30,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black38,
-                        blurRadius: 3,
-                        offset: Offset(0, 1.5),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            else if (isUnlocked)
-              // 2. High-contrast white/cyan DOUBLE-RING concentric ACTIVE node
-              Container(
-                width: 54,
-                height: 54,
-                padding: const EdgeInsets.all(
-                  2.5,
-                ), // Beautiful concentric thickness
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.white, Color(0xFF00F2FE)],
-                  ),
-                  border: Border.all(
-                    color: Colors.white,
-                    width: isSelected ? 3.0 : 1.8,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _XrayStyle.cyan.withValues(alpha: 0.95),
-                      blurRadius: isSelected ? 28 : 20,
-                      spreadRadius: isSelected ? 3 : 1.5,
-                    ),
-                    BoxShadow(
-                      color: Colors.white.withValues(alpha: 0.55),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFF0F1E24), // Extremely deep dark teal glass
-                  ),
-                  child: Center(
-                    child: Text(
-                      '$level',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 22,
-                            shadows: [
-                              const Shadow(
-                                color: _XrayStyle.cyan,
-                                blurRadius: 6,
-                              ),
-                            ],
-                          ),
-                    ),
-                  ),
-                ),
-              )
-            else
-              // 3. Dark metallic-grey recessed LOCKED node with padlock badge
-              Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFF3B4A5A), Color(0xFF1E2833)],
-                      ),
-                      border: Border.all(
-                        color: Colors.blueGrey.withValues(alpha: 0.42),
-                        width: 2.2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.35),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        '$level',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              color: Colors.white.withValues(alpha: 0.22),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 20,
-                            ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: -2,
-                    bottom: -2,
-                    child: Container(
-                      width: 22,
-                      height: 22,
-                      padding: const EdgeInsets.all(4.5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F1720),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.blueGrey.withValues(alpha: 0.65),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.55),
-                            blurRadius: 4,
-                            offset: const Offset(0, 1.8),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.lock_rounded,
-                        color: Color(0xFF94A3B8),
-                        size: 11,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MiniStars extends StatelessWidget {
-  const _MiniStars({required this.stars});
-
-  final int stars;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (var i = 1; i <= 3; i++)
-          Icon(
-            Icons.star_rounded,
-            size: 16,
-            color: i <= stars ? _XrayStyle.gold : Colors.white24,
-          ),
       ],
     );
   }
@@ -3436,9 +3632,10 @@ class _ScannerGridPainter extends CustomPainter {
 }
 
 class _LevelRoutePainter extends CustomPainter {
-  _LevelRoutePainter({required this.points});
+  _LevelRoutePainter({required this.points, required this.color});
 
   final List<Offset> points;
+  final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -3472,7 +3669,7 @@ class _LevelRoutePainter extends CustomPainter {
       ..strokeWidth = 42
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.05);
+      ..color = color.withValues(alpha: 0.05);
     canvas.drawPath(path, glow1);
 
     final glow2 = Paint()
@@ -3480,7 +3677,7 @@ class _LevelRoutePainter extends CustomPainter {
       ..strokeWidth = 28
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.10);
+      ..color = color.withValues(alpha: 0.10);
     canvas.drawPath(path, glow2);
 
     final glow3 = Paint()
@@ -3488,26 +3685,26 @@ class _LevelRoutePainter extends CustomPainter {
       ..strokeWidth = 18
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.18);
+      ..color = color.withValues(alpha: 0.18);
     canvas.drawPath(path, glow3);
 
     // 2. High-fidelity 3D Tube Border and Body
-    // Dark-teal outer border to give depth/shading to the translucent tube edges
+    // Darker outer border to give depth/shading to the translucent tube edges
     final tubeBorder = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 14
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = const Color(0xFF003E4A).withValues(alpha: 0.75);
+      ..color = Color.lerp(color, Colors.black, 0.75)!.withValues(alpha: 0.75);
     canvas.drawPath(path, tubeBorder);
 
-    // Light-cyan semi-transparent body of the glass/neon tube
+    // Light semi-transparent body of the glass/neon tube
     final tubeBody = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.38);
+      ..color = color.withValues(alpha: 0.38);
     canvas.drawPath(path, tubeBody);
 
     // 3. Glowing neon core filament
@@ -3516,7 +3713,7 @@ class _LevelRoutePainter extends CustomPainter {
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.85);
+      ..color = color.withValues(alpha: 0.85);
     canvas.drawPath(path, neonCore);
 
     // 4. White-hot center filament
@@ -3531,7 +3728,7 @@ class _LevelRoutePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _LevelRoutePainter oldDelegate) {
-    return oldDelegate.points != points;
+    return oldDelegate.points != points || oldDelegate.color != color;
   }
 }
 
