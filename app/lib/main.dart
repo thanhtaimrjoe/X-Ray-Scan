@@ -830,16 +830,16 @@ class LevelMapScreen extends StatelessWidget {
   static const _levelMapBackground = 'assets/images/backgrounds/bg_level_map.png';
 
   static const List<Alignment> levelPositions = [
-    Alignment(-0.68, -0.80),
-    Alignment(-0.08, -0.78),
-    Alignment(0.52, -0.70),
-    Alignment(0.66, -0.38),
-    Alignment(0.35, -0.15),
-    Alignment(-0.12, 0.04),
-    Alignment(-0.66, 0.18),
-    Alignment(-0.46, 0.48),
-    Alignment(0.02, 0.62),
-    Alignment(0.60, 0.74),
+    Alignment(-0.68, -0.58),
+    Alignment(-0.08, -0.56),
+    Alignment(0.52, -0.52),
+    Alignment(0.66, -0.26),
+    Alignment(0.35, -0.06),
+    Alignment(-0.12, 0.08),
+    Alignment(-0.66, 0.24),
+    Alignment(-0.46, 0.46),
+    Alignment(0.02, 0.54),
+    Alignment(0.60, 0.56),
   ];
 
   const LevelMapScreen({
@@ -865,206 +865,206 @@ class LevelMapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       body: _AirportBackdrop(
         imageAsset: _levelMapBackground,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final size = Size(constraints.maxWidth, constraints.maxHeight);
+            final points = levelPositions.map((alignment) => alignment.alongSize(size)).toList();
+
+            return Stack(
               children: [
-                _GlassPanel(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'World:',
-                              style: Theme.of(context).textTheme.labelMedium
-                                  ?.copyWith(color: _XrayStyle.muted),
-                            ),
-                            Text(
-                              'International Terminal',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: _XrayStyle.text,
-                                    fontWeight: FontWeight.w900,
-                                    height: 1.08,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const _VerticalDivider(),
-                      _TopCurrency(
-                        icon: Icons.monetization_on,
-                        value: coins,
-                        label: 'Coins',
-                      ),
-                      const _VerticalDivider(),
-                      _TopCurrency(
-                        icon: Icons.diamond_rounded,
-                        value: gems,
-                        label: 'Gems',
-                      ),
-                      const _VerticalDivider(),
-                      _IconPanelButton(
-                        icon: Icons.settings_rounded,
-                        onPressed: () {},
-                        tooltip: 'Settings',
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Stack(
-                          children: [
-                            CustomPaint(
-                              size: Size(
-                                constraints.maxWidth,
-                                constraints.maxHeight,
-                              ),
-                              painter: _LevelRoutePainter(
-                                alignments: levelPositions,
-                              ),
-                            ),
-                            for (
-                              var level = 1;
-                              level <= LevelProgressionRules.maxLevelNumber;
-                              level++
-                            )
-                              _MapNode(
-                                level: level,
-                                position: _mapNodePosition(level),
-                                isSelected: selectedLevel == level,
-                                isCompleted: progress.bestStarsFor(level) > 0,
-                                isUnlocked:
-                                    level <= progress.highestUnlockedLevel,
-                                stars: progress.bestStarsFor(level),
-                                onTap: () => onSelectLevel(level),
-                              ),
-                          ],
-                        );
-                      },
+                // 1. Full-screen custom paint for the neon line
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: _LevelRoutePainter(
+                      points: points,
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                _GlassPanel(
-                  padding: const EdgeInsets.all(14),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Level $selectedLevel',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(color: _XrayStyle.muted),
-                            ),
-                            Text(
-                              _levelTitle(selectedLevel),
-                              maxLines: 2,
-                              overflow: TextOverflow.visible,
-                              style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 0,
-                                    height: 1.05,
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Best stars',
-                              style: Theme.of(context).textTheme.labelMedium
-                                  ?.copyWith(color: _XrayStyle.muted),
-                            ),
-                            const SizedBox(height: 2),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                for (var i = 1; i <= 3; i++)
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 4),
-                                    child: Icon(
-                                      i <= progress.bestStarsFor(selectedLevel)
-                                          ? Icons.star_rounded
-                                          : Icons.star_outline_rounded,
-                                      color: i <= progress.bestStarsFor(selectedLevel)
-                                          ? _XrayStyle.gold
-                                          : Colors.white.withValues(alpha: 0.18),
-                                      size: 28,
+                
+                // 2. Full-screen level nodes
+                for (
+                  var level = 1;
+                  level <= LevelProgressionRules.maxLevelNumber;
+                  level++
+                )
+                  _MapNode(
+                    level: level,
+                    centerOffset: points[level - 1],
+                    isSelected: selectedLevel == level,
+                    isCompleted: progress.bestStarsFor(level) > 0,
+                    isUnlocked: level <= progress.highestUnlockedLevel,
+                    stars: progress.bestStarsFor(level),
+                    onTap: () => onSelectLevel(level),
+                  ),
+
+                // 3. Top Currency Header Overlay
+                Positioned(
+                  top: topPadding + 12,
+                  left: 12,
+                  right: 12,
+                  child: _GlassPanel(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'World:',
+                                style: Theme.of(context).textTheme.labelMedium
+                                    ?.copyWith(color: _XrayStyle.muted),
+                              ),
+                              Text(
+                                'International Terminal',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: _XrayStyle.text,
+                                      fontWeight: FontWeight.w900,
+                                      height: 1.08,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const _VerticalDivider(),
+                        _TopCurrency(
+                          icon: Icons.monetization_on,
+                          value: coins,
+                          label: 'Coins',
+                        ),
+                        const _VerticalDivider(),
+                        _TopCurrency(
+                          icon: Icons.diamond_rounded,
+                          value: gems,
+                          label: 'Gems',
+                        ),
+                        const _VerticalDivider(),
+                        _IconPanelButton(
+                          icon: Icons.settings_rounded,
+                          onPressed: () {},
+                          tooltip: 'Settings',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 4. Bottom Action Card Overlay
+                Positioned(
+                  bottom: bottomPadding + 12,
+                  left: 12,
+                  right: 12,
+                  child: _GlassPanel(
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Level $selectedLevel',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(color: _XrayStyle.muted),
+                              ),
+                              Text(
+                                _levelTitle(selectedLevel),
+                                maxLines: 2,
+                                overflow: TextOverflow.visible,
+                                style: Theme.of(context).textTheme.headlineSmall
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 0,
+                                      height: 1.05,
+                                    ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Best stars',
+                                style: Theme.of(context).textTheme.labelMedium
+                                    ?.copyWith(color: _XrayStyle.muted),
+                              ),
+                              const SizedBox(height: 2),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  for (var i = 1; i <= 3; i++)
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 4),
+                                      child: Icon(
+                                        i <= progress.bestStarsFor(selectedLevel)
+                                            ? Icons.star_rounded
+                                            : Icons.star_outline_rounded,
+                                        color: i <= progress.bestStarsFor(selectedLevel)
+                                            ? _XrayStyle.gold
+                                            : Colors.white.withValues(alpha: 0.18),
+                                        size: 28,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          width: 172,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _XrayActionButton.primary(
+                                onPressed: onPlay,
+                                label: 'PLAY',
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _XrayActionButton.secondary(
+                                      onPressed: onOpenDatabase,
+                                      label: 'Database',
+                                      compact: true,
                                     ),
                                   ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      SizedBox(
-                        width: 172,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _XrayActionButton.primary(
-                              onPressed: onPlay,
-                              label: 'PLAY',
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _XrayActionButton.secondary(
-                                    onPressed: onOpenDatabase,
-                                    label: 'Database',
-                                    compact: true,
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: _XrayActionButton.secondary(
+                                      onPressed: onBack,
+                                      label: 'Back',
+                                      compact: true,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: _XrayActionButton.secondary(
-                                    onPressed: onBack,
-                                    label: 'Back',
-                                    compact: true,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
-  }
-
-  Alignment _mapNodePosition(int level) {
-    if (level < 1 || level > levelPositions.length) {
-      return Alignment.center;
-    }
-    return levelPositions[level - 1];
   }
 
   String _levelTitle(int level) {
@@ -1226,34 +1226,34 @@ class _SecurityGateNode extends StatelessWidget {
     final color = isUnlocked ? _XrayStyle.cyan : Colors.blueGrey;
     return Center(
       child: SizedBox(
-        width: 58,
-        height: 64,
+        width: 72,
+        height: 80,
         child: Stack(
           alignment: Alignment.center,
           children: [
             // Glowing neon elliptical base platform at the bottom
             Positioned(
-              bottom: 1,
-              left: 2,
-              right: 2,
-              height: 14,
+              bottom: 2,
+              left: 0,
+              right: 0,
+              height: 20,
               child: Container(
                 decoration: BoxDecoration(
                   color: isUnlocked
-                      ? _XrayStyle.cyan.withValues(alpha: 0.24)
+                      ? _XrayStyle.cyan.withValues(alpha: 0.28)
                       : const Color(0xFF26333D).withValues(alpha: 0.3),
                   border: Border.all(
                     color: isSelected
                         ? Colors.white
                         : (isCompleted ? _XrayStyle.cyan : color.withValues(alpha: 0.6)),
-                    width: isSelected ? 2.2 : 1.6,
+                    width: isSelected ? 3.0 : 1.8,
                   ),
-                  borderRadius: const BorderRadius.all(Radius.elliptical(27, 7)),
+                  borderRadius: const BorderRadius.all(Radius.elliptical(36, 10)),
                   boxShadow: [
                     if (isSelected || isUnlocked)
                       BoxShadow(
-                        color: color.withValues(alpha: isSelected ? 0.8 : 0.3),
-                        blurRadius: isSelected ? 12 : 6,
+                        color: color.withValues(alpha: isSelected ? 0.9 : 0.45),
+                        blurRadius: isSelected ? 18 : 10,
                       ),
                   ],
                 ),
@@ -1261,47 +1261,68 @@ class _SecurityGateNode extends StatelessWidget {
             ),
             // Left Pillar of the metal detector
             Positioned(
-              left: 12,
-              top: 4,
-              bottom: 8,
-              width: 5,
+              left: 16,
+              top: 6,
+              bottom: 12,
+              width: 7,
               child: Container(
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.88),
-                  borderRadius: BorderRadius.circular(1),
+                  color: color.withValues(alpha: 0.92),
+                  borderRadius: BorderRadius.circular(1.5),
+                  boxShadow: [
+                    if (isUnlocked)
+                      BoxShadow(
+                        color: _XrayStyle.cyan.withValues(alpha: 0.3),
+                        blurRadius: 4,
+                      ),
+                  ],
                 ),
               ),
             ),
             // Right Pillar of the metal detector
             Positioned(
-              right: 12,
-              top: 4,
-              bottom: 8,
-              width: 5,
+              right: 16,
+              top: 6,
+              bottom: 12,
+              width: 7,
               child: Container(
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.88),
-                  borderRadius: BorderRadius.circular(1),
+                  color: color.withValues(alpha: 0.92),
+                  borderRadius: BorderRadius.circular(1.5),
+                  boxShadow: [
+                    if (isUnlocked)
+                      BoxShadow(
+                        color: _XrayStyle.cyan.withValues(alpha: 0.3),
+                        blurRadius: 4,
+                      ),
+                  ],
                 ),
               ),
             ),
             // Top Arch Bar of the metal detector
             Positioned(
-              left: 12,
-              right: 12,
+              left: 16,
+              right: 16,
               top: 0,
-              height: 7,
+              height: 10,
               child: Container(
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(3)),
+                  boxShadow: [
+                    if (isUnlocked)
+                      BoxShadow(
+                        color: _XrayStyle.cyan.withValues(alpha: 0.5),
+                        blurRadius: 6,
+                      ),
+                  ],
                 ),
                 child: isUnlocked
                     ? Align(
                         alignment: Alignment.center,
                         child: Container(
-                          width: 4,
-                          height: 4,
+                          width: 5,
+                          height: 5,
                           decoration: BoxDecoration(
                             color: isCompleted ? _XrayStyle.success : _XrayStyle.danger,
                             shape: BoxShape.circle,
@@ -1313,32 +1334,39 @@ class _SecurityGateNode extends StatelessWidget {
             ),
             // Middle Content: Lock badge or Number or Check hanging inside the arch
             Align(
-              alignment: const Alignment(0, -0.1),
+              alignment: const Alignment(0, -0.05),
               child: isCompleted
                   ? const Icon(
                       Icons.check_rounded,
                       color: _XrayStyle.cyan,
-                      size: 20,
+                      size: 24,
                     )
                   : (!isUnlocked
                       ? Container(
-                          padding: const EdgeInsets.all(3),
+                          padding: const EdgeInsets.all(4),
                           decoration: const BoxDecoration(
-                            color: Color(0xFF1E293B),
+                            color: Color(0xFF151D24),
                             shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 4,
+                                offset: Offset(0, 1),
+                              ),
+                            ],
                           ),
                           child: const Icon(
                             Icons.lock_rounded,
-                            color: Colors.white70,
+                            color: Color(0xFF9EABB8),
                             size: 11,
                           ),
                         )
                       : Text(
                           '10',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 color: _XrayStyle.text,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 13,
                               ),
                         )),
             ),
@@ -1352,7 +1380,7 @@ class _SecurityGateNode extends StatelessWidget {
 class _MapNode extends StatelessWidget {
   const _MapNode({
     required this.level,
-    required this.position,
+    required this.centerOffset,
     required this.isSelected,
     required this.isCompleted,
     required this.isUnlocked,
@@ -1361,7 +1389,7 @@ class _MapNode extends StatelessWidget {
   });
 
   final int level;
-  final Alignment position;
+  final Offset centerOffset;
   final bool isSelected;
   final bool isCompleted;
   final bool isUnlocked;
@@ -1371,103 +1399,205 @@ class _MapNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isFinal = level == LevelProgressionRules.maxLevelNumber;
-    final color = isUnlocked ? _XrayStyle.cyan : Colors.blueGrey;
-    return Align(
-      alignment: position,
+    final width = isFinal ? 86.0 : 72.0;
+    final height = isFinal ? 100.0 : 90.0;
+
+    return Positioned(
+      left: centerOffset.dx - width / 2,
+      top: centerOffset.dy - height / 2,
+      width: width,
+      height: height,
       child: GestureDetector(
         onTap: onTap,
-        child: SizedBox(
-          width: isFinal ? 86 : 72,
-          height: isFinal ? 100 : 90,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (isCompleted)
-                _MiniStars(stars: stars)
-              else
-                const SizedBox(height: 18),
-              if (isFinal)
-                _SecurityGateNode(
-                  isUnlocked: isUnlocked,
-                  isSelected: isSelected,
-                  isCompleted: isCompleted,
-                )
-              else
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isUnlocked
-                        ? const Color(0xFF0D4762).withValues(alpha: 0.72)
-                        : const Color(0xFF26333D).withValues(alpha: 0.72),
-                    border: Border.all(
-                      color: isSelected
-                          ? Colors.white
-                          : (isCompleted ? _XrayStyle.cyan : color.withValues(alpha: 0.7)),
-                      width: isSelected ? 3 : 2,
-                    ),
-                    boxShadow: [
-                      if (isSelected || isUnlocked)
-                        BoxShadow(
-                          color: color.withValues(alpha: isSelected ? 0.8 : 0.38),
-                          blurRadius: isSelected ? 24 : 14,
-                        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isCompleted)
+              _MiniStars(stars: stars)
+            else
+              const SizedBox(height: 18),
+            if (isFinal)
+              _SecurityGateNode(
+                isUnlocked: isUnlocked,
+                isSelected: isSelected,
+                isCompleted: isCompleted,
+              )
+            else if (isCompleted)
+              // 1. Ultra-premium glassmorphic COMPLETED node with glowing cyan/greenish gradients
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF00E1FD), // Glowing light cyan
+                      Color(0xFF006D84), // Rich dark cyan
                     ],
                   ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      if (isCompleted)
-                        const Icon(
-                          Icons.check_rounded,
-                          color: _XrayStyle.cyan,
-                          size: 34,
-                        )
-                      else
-                        Text(
-                          '$level',
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(
-                                color: isUnlocked
-                                    ? _XrayStyle.text
-                                    : Colors.white54,
-                                fontWeight: FontWeight.w900,
-                              ),
-                        ),
-                      if (!isUnlocked)
-                        Positioned(
-                          right: -3,
-                          bottom: -3,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1E293B),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.blueGrey.withValues(alpha: 0.6),
-                                width: 1.5,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.4),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.lock_rounded,
-                              color: Colors.white70,
-                              size: 11,
-                            ),
-                          ),
-                        ),
+                  border: Border.all(
+                    color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.95),
+                    width: isSelected ? 3.2 : 2.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _XrayStyle.cyan.withValues(alpha: isSelected ? 0.95 : 0.72),
+                      blurRadius: isSelected ? 24 : 14,
+                      spreadRadius: isSelected ? 2 : 0.5,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.28),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.check_rounded,
+                    color: Colors.white,
+                    size: 30,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black38,
+                        blurRadius: 3,
+                        offset: Offset(0, 1.5),
+                      ),
                     ],
                   ),
                 ),
-            ],
-          ),
+              )
+            else if (isUnlocked)
+              // 2. High-contrast white/cyan DOUBLE-RING concentric ACTIVE node
+              Container(
+                width: 54,
+                height: 54,
+                padding: const EdgeInsets.all(2.5), // Beautiful concentric thickness
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white,
+                      Color(0xFF00F2FE),
+                    ],
+                  ),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: isSelected ? 3.0 : 1.8,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _XrayStyle.cyan.withValues(alpha: 0.95),
+                      blurRadius: isSelected ? 28 : 20,
+                      spreadRadius: isSelected ? 3 : 1.5,
+                    ),
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.55),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFF0F1E24), // Extremely deep dark teal glass
+                  ),
+                  child: Center(
+                    child: Text(
+                      '$level',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 22,
+                        shadows: [
+                          const Shadow(
+                            color: _XrayStyle.cyan,
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            else
+              // 3. Dark metallic-grey recessed LOCKED node with padlock badge
+              Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF3B4A5A),
+                          Color(0xFF1E2833),
+                        ],
+                      ),
+                      border: Border.all(
+                        color: Colors.blueGrey.withValues(alpha: 0.42),
+                        width: 2.2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.35),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$level',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.22),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: -2,
+                    bottom: -2,
+                    child: Container(
+                      width: 22,
+                      height: 22,
+                      padding: const EdgeInsets.all(4.5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F1720),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.blueGrey.withValues(alpha: 0.65),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.55),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1.8),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.lock_rounded,
+                        color: Color(0xFF94A3B8),
+                        size: 11,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ),
       ),
     );
@@ -3280,61 +3410,93 @@ class _ScannerGridPainter extends CustomPainter {
 }
 
 class _LevelRoutePainter extends CustomPainter {
-  _LevelRoutePainter({required this.alignments});
+  _LevelRoutePainter({required this.points});
 
-  final List<Alignment> alignments;
+  final List<Offset> points;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final points = alignments.map((alignment) => alignment.alongSize(size)).toList();
     if (points.isEmpty) return;
 
     final path = Path();
     if (points.length > 1) {
-      // Use CatmullRomSpline for a beautifully smooth curve passing exactly through the level node centers!
-      final controlPoints = [points.first, ...points, points.last];
-      final spline = CatmullRomSpline(controlPoints);
-      final start = spline.transform(0);
-      path.moveTo(start.dx, start.dy);
-      
-      const samples = 80;
-      for (var i = 1; i <= samples; i++) {
-        final p = spline.transform(i / samples);
-        path.lineTo(p.dx, p.dy);
+      path.moveTo(points.first.dx, points.first.dy);
+      for (var i = 0; i < points.length - 1; i++) {
+        final p0 = i == 0 ? points[i] : points[i - 1];
+        final p1 = points[i];
+        final p2 = points[i + 1];
+        final p3 = i + 2 >= points.length ? points[i + 1] : points[i + 2];
+
+        // Smooth Cardinal spline / Catmull-Rom curve passing exactly through the node centers
+        final cp1 = p1 + (p2 - p0) * 0.18;
+        final cp2 = p2 - (p3 - p1) * 0.18;
+
+        path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, p2.dx, p2.dy);
       }
     } else {
       path.moveTo(points.first.dx, points.first.dy);
     }
 
-    final glowOuter = Paint()
+    // Paint a magnificent, ultra-premium 3D neon glowing tube path using a vector stack.
+    // This is 100% robust on all devices/engines (Skia, Impeller, iOS, Android) and avoids MaskFilter.blur crashes.
+    
+    // 1. Ambient outer soft glows (increasing density, decreasing widths)
+    final glow1 = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 26
+      ..strokeWidth = 42
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.12)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
-    canvas.drawPath(path, glowOuter);
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.05);
+    canvas.drawPath(path, glow1);
 
-    final glowInner = Paint()
+    final glow2 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 28
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.10);
+    canvas.drawPath(path, glow2);
+
+    final glow3 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 18
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.18);
+    canvas.drawPath(path, glow3);
+
+    // 2. High-fidelity 3D Tube Border and Body
+    // Dark-teal outer border to give depth/shading to the translucent tube edges
+    final tubeBorder = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 14
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = _XrayStyle.cyan.withValues(alpha: 0.38)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
-    canvas.drawPath(path, glowInner);
+      ..color = const Color(0xFF003E4A).withValues(alpha: 0.75);
+    canvas.drawPath(path, tubeBorder);
 
-    final solidLine = Paint()
+    // Light-cyan semi-transparent body of the glass/neon tube
+    final tubeBody = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 7
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..color = _XrayStyle.cyan.withValues(alpha: 0.38);
+    canvas.drawPath(path, tubeBody);
+
+    // 3. Glowing neon core filament
+    final neonCore = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..color = _XrayStyle.cyan.withValues(alpha: 0.85);
-    canvas.drawPath(path, solidLine);
+    canvas.drawPath(path, neonCore);
 
+    // 4. White-hot center filament
     final whiteCore = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
+      ..strokeWidth = 1.8
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..color = Colors.white.withValues(alpha: 0.95);
@@ -3343,7 +3505,7 @@ class _LevelRoutePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _LevelRoutePainter oldDelegate) {
-    return oldDelegate.alignments != alignments;
+    return oldDelegate.points != points;
   }
 }
 
